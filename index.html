@@ -371,7 +371,6 @@
         <div class="bar">
           <input id="cari" type="text" placeholder="Cari nama, NIP, jabatan, divisi, atau kata kunci..." />
           <select id="filterDivisi"><option value="">Semua Divisi</option></select>
-          <button class="act" onclick="resetSemua()">Reset</button>
           <button class="act primary" onclick="muat(true)">Refresh Data</button>
           <button class="act tema" id="btnTema" onclick="gantiModeTema()">Tema: Otomatis WIB</button>
         </div>
@@ -435,7 +434,7 @@
 
   <script>
     const URL_DATA = "https://script.google.com/macros/s/AKfycbzKrn6vwNSM5hJGywoYmEXzKwA_rjFKeu9YRQq3lcNdYyO6Z0wIgNC2PYU1DmKNtm7l/exec";
-    const CACHE_KEY = "cachePersonelKpdjp2026_v2";
+    const CACHE_KEY = "cachePersonilKpdjp2026_v2";
     const DURASI_CACHE_MS = 6 * 60 * 60 * 1000;
     const ABAIKAN = ["data karyawan november 2026", "data personel november 2026", "data personil november 2026"];
 
@@ -678,12 +677,6 @@
       tampil();
     }
 
-    function resetSemua() {
-      batasTampil = BATAS_AWAL;
-      document.getElementById("cari").value = "";
-      pilihDivisi("");
-    }
-
     function muatLebihBanyak() {
       batasTampil += 50;
       tampil();
@@ -724,82 +717,4 @@
     }
 
     function unduhCSV() {
-      if (!hasilTerakhir.length) {
-        alert("Tidak ada data personel untuk diunduh.");
-        return;
-      }
-      var barisCsv = [kolomList.map(function(k) { return '"' + String(k).replace(/"/g, '""') + '"'; }).join(",")];
-      hasilTerakhir.forEach(function(r) {
-        var rowCsv = kolomList.map(function(k) {
-          return '"' + String(r[k] || "").replace(/"/g, '""') + '"';
-        }).join(",");
-        barisCsv.push(rowCsv);
-      });
-      var blob = new Blob([barisCsv.join("\n")], { type: "text/csv;charset=utf-8;" });
-      var link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "data-personel-bm-kpdjp-2026.csv";
-      link.click();
-    }
-
-    function tampil(labelTambahan) {
-      var kata = document.getElementById("cari").value.toLowerCase().trim();
-      var div = document.getElementById("filterDivisi").value;
-
-      var saring = semuaData.filter(function(r) {
-        var okD = !div || getDiv(r) === div;
-        var okK = !kata || Object.values(r).some(function(v) { return String(v || "").toLowerCase().indexOf(kata) !== -1; });
-        return okD && okK;
-      });
-      hasilTerakhir = saring;
-
-      var jmlLaki = saring.filter(function(r) { return getGender(r).indexOf("laki") !== -1; }).length;
-      var jmlPerempuan = saring.filter(function(r) { return getGender(r).indexOf("perempuan") !== -1; }).length;
-
-      var barisPotongan = saring.slice(0, batasTampil);
-      var suffix = labelTambahan ? " " + labelTambahan : "";
-
-      document.getElementById("infoStats").textContent = "Menampilkan " + barisPotongan.length + " dari " + saring.length + " data cocok (" + semuaData.length + " total personel)" + suffix;
-      document.getElementById("kpiTampil").textContent = saring.length;
-      document.getElementById("kpiLaki").textContent = jmlLaki;
-      document.getElementById("kpiPerempuan").textContent = jmlPerempuan;
-      document.getElementById("infoBarisTabel").textContent = "Baris tampil: " + barisPotongan.length + " dari " + saring.length;
-
-      var btnLebih = document.getElementById("btnMuatLagi");
-      var btnSemuaBaris = document.getElementById("btnTampilSemua");
-      var masihAda = barisPotongan.length < saring.length;
-      btnLebih.style.display = masihAda ? "inline-block" : "none";
-      btnSemuaBaris.style.display = masihAda ? "inline-block" : "none";
-
-      var fragment = document.createDocumentFragment();
-      barisPotongan.forEach(function(r) {
-        var tr = document.createElement("tr");
-        tr.innerHTML = kolomList.map(function(k) { return "<td>" + formatSel(k, r[k]) + "</td>"; }).join("");
-        tr.onclick = function() {
-          dataModalAktif = r;
-          var nama = r["Nama Lengkap (Sesuai KTP)"] || r.Nama || "Detail Personel";
-          document.getElementById("modalJudul").textContent = nama;
-          document.getElementById("detailIsi").innerHTML = kolomList.map(function(k) {
-            return "<p style='margin:6px 0;'><b>" + k + ":</b> " + (r[k] || "-") + "</p>";
-          }).join("");
-          document.getElementById("modal").classList.add("aktif");
-        };
-        fragment.appendChild(tr);
-      });
-
-      var tbody = document.getElementById("isiTabel");
-      tbody.innerHTML = "";
-      tbody.appendChild(fragment);
-    }
-
-    document.getElementById("cari").addEventListener("input", function() {
-      batasTampil = BATAS_AWAL;
-      clearTimeout(timerKetik);
-      timerKetik = setTimeout(tampil, 120);
-    });
-    document.getElementById("filterDivisi").addEventListener("change", function(e) { pilihDivisi(e.target.value); });
-
-    muat(false);
-  </script>
-</body>
-</html>
+      if (!hasilTerakhir.
