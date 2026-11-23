@@ -14,10 +14,37 @@
       --text: #0f172a;
       --muted: #64748b;
       --border: #e2e8f0;
+      --row-alt: #fafcff;
+      --row-hover: #eff6ff;
+      --th-bg: #f8fafc;
+      --th-text: #334155;
+      --pill-bg: #f1f5f9;
+      --pill-text: #334155;
       --primary: #2563eb;
       --primary-soft: #eff6ff;
       --hero: linear-gradient(135deg, #0f172a 0%, #1d4ed8 58%, #4338ca 100%);
       --shadow: 0 10px 24px -6px rgba(15, 23, 42, 0.08);
+    }
+
+    body.mode-malam {
+      --sidebar: #05070c;
+      --sidebar-hover: #111827;
+      --sidebar-active: #1d4ed8;
+      --bg: #07090f;
+      --card: #101522;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --border: #1e293b;
+      --row-alt: #0d121d;
+      --row-hover: #172554;
+      --th-bg: #131a2b;
+      --th-text: #e2e8f0;
+      --pill-bg: #1e293b;
+      --pill-text: #e2e8f0;
+      --primary: #3b82f6;
+      --primary-soft: #172554;
+      --hero: linear-gradient(135deg, #05070c 0%, #111c3a 58%, #1e1b4b 100%);
+      --shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.65);
     }
 
     * { box-sizing: border-box; }
@@ -26,6 +53,7 @@
       font-family: "Segoe UI", Arial, sans-serif;
       background: var(--bg);
       color: var(--text);
+      transition: background 0.25s ease, color 0.25s ease;
     }
 
     .wrap { display: flex; min-height: 100vh; }
@@ -40,6 +68,7 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
+      border-right: 1px solid var(--border);
     }
     .side h3 {
       margin: 0 0 8px;
@@ -90,32 +119,54 @@
       border-radius: 18px;
       margin-bottom: 16px;
       box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
     }
     .hero h1 { margin: 0 0 6px; font-size: 24px; font-weight: 800; }
     .hero p { margin: 0 0 14px; font-size: 13px; color: #dbeafe; }
+
+    .jam-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.32);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #f8fafc;
+      padding: 6px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
 
     .bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
     input, select, button.act {
       padding: 9px 12px;
       border-radius: 9px;
-      border: 0;
+      border: 1px solid var(--border);
       font-size: 13px;
     }
     input {
       flex: 1;
       min-width: 210px;
-      background: #fff;
+      background: var(--card);
       color: var(--text);
       outline: none;
     }
     select {
-      background: #fff;
+      background: var(--card);
       color: var(--text);
       cursor: pointer;
     }
     button.act {
       background: #e2e8f0;
       color: #0f172a;
+      border-color: transparent;
       font-weight: 700;
       cursor: pointer;
     }
@@ -125,6 +176,12 @@
       color: #082f49;
     }
     button.act.primary:hover { background: #7dd3fc; }
+    button.act.tema {
+      background: rgba(255, 255, 255, 0.16);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+    button.act.tema:hover { background: rgba(255, 255, 255, 0.26); }
 
     /* KPI Ringkasan */
     .kpi-grid {
@@ -138,7 +195,7 @@
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 12px 14px;
-      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
     }
     .kpi .k-label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; }
     .kpi .k-val { font-size: 20px; font-weight: 800; margin-top: 4px; color: var(--text); }
@@ -160,6 +217,7 @@
     }
     .card:hover { border-color: var(--primary); transform: translateY(-2px); }
     .card.aktif { border-color: var(--primary); background: var(--primary-soft); }
+    .card-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
     /* Toolbar Tabel & Tabel */
     .table-top {
@@ -171,7 +229,7 @@
       margin-bottom: 10px;
     }
     .btn-mini {
-      background: #fff;
+      background: var(--card);
       border: 1px solid var(--border);
       color: var(--text);
       padding: 6px 11px;
@@ -189,11 +247,11 @@
       border: 1px solid var(--border);
       overflow: auto;
       max-height: 540px;
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th, td {
-      border-bottom: 1px solid #eef2f6;
+      border-bottom: 1px solid var(--border);
       padding: 9px 11px;
       text-align: left;
       white-space: nowrap;
@@ -201,13 +259,13 @@
     th {
       position: sticky;
       top: 0;
-      background: #f8fafc;
-      color: #334155;
+      background: var(--th-bg);
+      color: var(--th-text);
       z-index: 1;
       border-bottom: 1px solid var(--border);
     }
-    tbody tr:nth-child(even) { background: #fafcff; }
-    tbody tr:hover { background: var(--primary-soft); cursor: pointer; }
+    tbody tr:nth-child(even) { background: var(--row-alt); }
+    tbody tr:hover { background: var(--row-hover); cursor: pointer; }
 
     .avatar {
       display: inline-grid;
@@ -215,8 +273,9 @@
       width: 26px;
       height: 26px;
       border-radius: 999px;
-      background: #dbeafe;
-      color: #1d4ed8;
+      background: var(--primary-soft);
+      color: var(--primary);
+      border: 1px solid var(--border);
       font-size: 11px;
       font-weight: 700;
       margin-right: 7px;
@@ -224,8 +283,8 @@
     }
     .pill {
       display: inline-block;
-      background: #f1f5f9;
-      color: #334155;
+      background: var(--pill-bg);
+      color: var(--pill-text);
       padding: 2px 9px;
       border-radius: 999px;
       font-size: 12px;
@@ -237,7 +296,7 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.58);
+      background: rgba(0, 0, 0, 0.72);
       align-items: center;
       justify-content: center;
       padding: 16px;
@@ -245,18 +304,20 @@
     }
     #modal.aktif { display: flex; }
     .modal-isi {
-      background: #fff;
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
       padding: 20px;
       border-radius: 14px;
       max-width: 520px;
       width: 100%;
       max-height: 82vh;
       overflow: auto;
-      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
     }
     .modal-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
     .btn-dark {
-      background: var(--sidebar);
+      background: var(--primary);
       color: #fff;
       border: 0;
       padding: 8px 14px;
@@ -266,9 +327,9 @@
       cursor: pointer;
     }
     .btn-sec {
-      background: #e2e8f0;
+      background: var(--pill-bg);
       color: var(--text);
-      border: 0;
+      border: 1px solid var(--border);
       padding: 8px 12px;
       border-radius: 8px;
       font-size: 12px;
@@ -278,7 +339,7 @@
 
     @media (max-width: 768px) {
       .wrap { flex-direction: column; }
-      .side { width: 100%; }
+      .side { width: 100%; border-right: 0; border-bottom: 1px solid var(--border); }
       .main { padding: 14px; }
     }
   </style>
@@ -295,13 +356,19 @@
 
     <main class="main">
       <div class="hero">
-        <h1>DATA KARYAWAN BM KPDJP 2026</h1>
-        <p id="infoStats">Memuat data...</p>
+        <div class="hero-top">
+          <div>
+            <h1>DATA KARYAWAN BM KPDJP 2026</h1>
+            <p id="infoStats">Memuat data...</p>
+          </div>
+          <span class="jam-pill" id="infoWaktuWIB">WIB: --:--:-- • Mode Otomatis</span>
+        </div>
         <div class="bar">
           <input id="cari" type="text" placeholder="Cari nama, NIP, jabatan, atau kata kunci..." />
           <select id="filterDivisi"><option value="">Semua Divisi</option></select>
           <button class="act" onclick="resetSemua()">Reset</button>
           <button class="act primary" onclick="muat()">Refresh Data</button>
+          <button class="act tema" id="btnTema" onclick="gantiModeTema()">Mode: Otomatis WIB</button>
         </div>
       </div>
 
@@ -357,204 +424,38 @@
     const ABAIKAN = ["data karyawan november 2026"];
     const URUTAN = ["manajemen office", "engineering", "engieering", "security", "housekeeping", "banquet", "sopir", "resepsionis"];
 
-    let semuaData = [];
-    let hasilTerakhir = [];
-    let kolomList = [];
-    let dataModalAktif = null;
+    // Mode tema: "auto" (mengikuti jam WIB), "dark" (hitam), "light" (terang)
+    let modeTema = localStorage.getItem("modeTemaKpdjp") || "auto";
 
-    function getDiv(row) {
-      return String(row.Divisi || row.DIvisi || row.divisi || "").trim();
-    }
+    function ambilJamWIB() {
+      var bagian = new Intl.DateTimeFormat("id-ID", {
+        timeZone: "Asia/Jakarta",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+      }).formatToParts(new Date());
 
-    function getGender(row) {
-      return String(row["Jenis Kelamin"] || row["jenis kelamin"] || "").trim().toLowerCase();
-    }
-
-    function getNip(row) {
-      return String(row.NIP || row.nip || "").trim();
-    }
-
-    function getEmail(row) {
-      return String(row["Alamat Email"] || row.Email || row.email || "").trim();
-    }
-
-    function diabaikan(nama) {
-      return ABAIKAN.indexOf(String(nama || "").trim().toLowerCase()) !== -1;
-    }
-
-    function urutDiv(arr) {
-      return arr.slice().sort(function(a, b) {
-        var ia = URUTAN.indexOf(a.toLowerCase());
-        var ib = URUTAN.indexOf(b.toLowerCase());
-        if (ia !== -1 && ib !== -1) return ia - ib;
-        if (ia !== -1) return -1;
-        if (ib !== -1) return 1;
-        return a.localeCompare(b);
+      var jam = 0;
+      var teksJam = "";
+      bagian.forEach(function(p) {
+        if (p.type === "hour") {
+          jam = parseInt(p.value, 10);
+          teksJam += p.value;
+        } else if (p.type === "minute" || p.type === "second") {
+          teksJam += ":" + p.value;
+        }
       });
+
+      // Malam = jam 18:00 WIB sampai 05:59 WIB
+      var adalahMalam = (jam >= 18 || jam < 6);
+      return { jam: jam, teksJam: teksJam, adalahMalam: adalahMalam };
     }
 
-    function inisial(teks) {
-      var kata = String(teks || "PG").trim().split(/\s+/).filter(Boolean);
-      if (!kata.length) return "PG";
-      if (kata.length === 1) return kata[0].slice(0, 2).toUpperCase();
-      return ((kata[0][0] || "") + (kata[1][0] || "")).toUpperCase();
-    }
+    function terapkanTema() {
+      var info = ambilJamWIB();
+      var pakaiGelap = modeTema === "dark" || (modeTema === "auto" && info.adalahMalam);
+      document.body.classList.toggle("mode-malam", pakaiGelap);
 
-    async function muat() {
-      document.getElementById("infoStats").textContent = "Memuat data terbaru...";
-      try {
-        var res = await fetch(URL_DATA);
-        var json = await res.json();
-        var raw = Array.isArray(json) ? json : (Array.isArray(json && json.data) ? json.data : []);
-        semuaData = raw.filter(function(r) { return !diabaikan(getDiv(r)); });
-
-        var setK = {};
-        semuaData.forEach(function(r) {
-          Object.keys(r || {}).forEach(function(k) { setK[k] = 1; });
-        });
-        kolomList = Object.keys(setK);
-        document.getElementById("kepalaTabel").innerHTML = kolomList.map(function(k) { return "<th>" + k + "</th>"; }).join("");
-
-        bangunDivisi();
-        tampil();
-      } catch (e) {
-        document.getElementById("infoStats").textContent = "Gagal memuat data: " + e.message;
-      }
-    }
-
-    function bangunDivisi() {
-      var hitung = {};
-      semuaData.forEach(function(r) {
-        var d = getDiv(r);
-        if (d && !diabaikan(d)) hitung[d] = (hitung[d] || 0) + 1;
-      });
-      var listDiv = urutDiv(Object.keys(hitung));
-      var divAktif = document.getElementById("filterDivisi").value;
-
-      document.getElementById("jmlSemua").textContent = semuaData.length;
-      document.getElementById("kpiDivisi").textContent = listDiv.length;
-
-      document.getElementById("filterDivisi").innerHTML = '<option value="">Semua Divisi</option>' +
-        listDiv.map(function(d) { return '<option value="' + d + '">' + d + ' (' + hitung[d] + ')</option>'; }).join("");
-      document.getElementById("filterDivisi").value = divAktif;
-
-      document.getElementById("menuDivisi").innerHTML = listDiv.map(function(d) {
-        var aktifClass = divAktif === d ? " aktif" : "";
-        return '<button class="nav-btn' + aktifClass + '" data-d="' + d + '" onclick="pilihDivisi(\'' + d.replace(/'/g, "\\'") + '\')"><span>' + d + '</span><span class="badge-jml">' + hitung[d] + '</span></button>';
-      }).join("");
-
-      document.getElementById("kartuDivisi").innerHTML = listDiv.map(function(d) {
-        var aktifClass = divAktif === d ? " aktif" : "";
-        return '<div class="card' + aktifClass + '" onclick="pilihDivisi(\'' + d.replace(/'/g, "\\'") + '\')"><b>' + d + '</b><div style="font-size:12px;color:#64748b;margin-top:4px;">' + hitung[d] + ' pegawai</div></div>';
-      }).join("");
-    }
-
-    function pilihDivisi(d) {
-      document.getElementById("filterDivisi").value = d;
-      document.querySelectorAll(".nav-btn").forEach(function(b) {
-        b.classList.toggle("aktif", (d === "" && b.id === "btnSemua") || b.getAttribute("data-d") === d);
-      });
-      document.querySelectorAll("#kartuDivisi .card").forEach(function(c) {
-        var judul = c.querySelector("b") ? c.querySelector("b").textContent.trim() : "";
-        c.classList.toggle("aktif", Boolean(d) && judul === d);
-      });
-      tampil();
-    }
-
-    function resetSemua() {
-      document.getElementById("cari").value = "";
-      pilihDivisi("");
-    }
-
-    function tutupModal() {
-      document.getElementById("modal").classList.remove("aktif");
-      dataModalAktif = null;
-    }
-
-    function salinNilai(jenis) {
-      if (!dataModalAktif) return;
-      var nilai = jenis === "nip" ? getNip(dataModalAktif) : getEmail(dataModalAktif);
-      if (!nilai) {
-        alert(jenis === "nip" ? "NIP kosong." : "Email kosong.");
-        return;
-      }
-      navigator.clipboard.writeText(nilai).then(function() {
-        alert((jenis === "nip" ? "NIP " : "Email ") + nilai + " berhasil disalin.");
-      });
-    }
-
-    function formatSel(kolom, nilai) {
-      var teks = String(nilai || "");
-      var kl = kolom.toLowerCase();
-      if (kl.indexOf("nama") !== -1 && teks) {
-        return '<span class="avatar">' + inisial(teks) + '</span><span>' + teks + '</span>';
-      }
-      if (kl === "divisi" && teks) {
-        return '<span class="pill">' + teks + '</span>';
-      }
-      return teks;
-    }
-
-    function unduhCSV() {
-      if (!hasilTerakhir.length) {
-        alert("Tidak ada data untuk diunduh.");
-        return;
-      }
-      var barisCsv = [kolomList.map(function(k) { return '"' + String(k).replace(/"/g, '""') + '"'; }).join(",")];
-      hasilTerakhir.forEach(function(r) {
-        var rowCsv = kolomList.map(function(k) {
-          return '"' + String(r[k] || "").replace(/"/g, '""') + '"';
-        }).join(",");
-        barisCsv.push(rowCsv);
-      });
-      var blob = new Blob([barisCsv.join("\n")], { type: "text/csv;charset=utf-8;" });
-      var link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "data-karyawan-bm-kpdjp-2026.csv";
-      link.click();
-    }
-
-    function tampil() {
-      var kata = document.getElementById("cari").value.toLowerCase().trim();
-      var div = document.getElementById("filterDivisi").value;
-
-      var saring = semuaData.filter(function(r) {
-        var okD = !div || getDiv(r) === div;
-        var okK = !kata || Object.values(r).some(function(v) { return String(v || "").toLowerCase().indexOf(kata) !== -1; });
-        return okD && okK;
-      });
-      hasilTerakhir = saring;
-
-      var jmlLaki = saring.filter(function(r) { return getGender(r).indexOf("laki") !== -1; }).length;
-      var jmlPerempuan = saring.filter(function(r) { return getGender(r).indexOf("perempuan") !== -1; }).length;
-
-      document.getElementById("infoStats").textContent = "Menampilkan " + saring.length + " dari " + semuaData.length + " data";
-      document.getElementById("kpiTampil").textContent = saring.length;
-      document.getElementById("kpiLaki").textContent = jmlLaki;
-      document.getElementById("kpiPerempuan").textContent = jmlPerempuan;
-
-      var tbody = document.getElementById("isiTabel");
-      tbody.innerHTML = "";
-      saring.forEach(function(r) {
-        var tr = document.createElement("tr");
-        tr.innerHTML = kolomList.map(function(k) { return "<td>" + formatSel(k, r[k]) + "</td>"; }).join("");
-        tr.onclick = function() {
-          dataModalAktif = r;
-          var nama = r["Nama Lengkap (Sesuai KTP)"] || r.Nama || "Detail Karyawan";
-          document.getElementById("modalJudul").textContent = nama;
-          document.getElementById("detailIsi").innerHTML = kolomList.map(function(k) {
-            return "<p style='margin:6px 0;'><b>" + k + ":</b> " + (r[k] || "-") + "</p>";
-          }).join("");
-          document.getElementById("modal").classList.add("aktif");
-        };
-        tbody.appendChild(tr);
-      });
-    }
-
-    document.getElementById("cari").addEventListener("input", tampil);
-    document.getElementById("filterDivisi").addEventListener("change", function(e) { pilihDivisi(e.target.value); });
-
-    muat();
-  </script>
-</body>
-</html>
+      var labelMode = modeTema === "auto"
+        ? (info.adalahMalam ? "Otom
