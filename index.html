@@ -49,10 +49,29 @@
     let semuaData = [];
     let daftarKolom = [];
 
+    function ambilDivisi(row) {
+      return String(row.Divisi ?? row.divisi ?? row.DIVISI ?? "").trim();
+    }
+
     async function ambilData() {
       try {
         const respon = await fetch(URL_DATA);
-        semuaData = await respon.json();
+        const json = await respon.json();
+
+        if (json && json.error) {
+          throw new Error(json.error);
+        }
+        if (json && json.message && !Array.isArray(json) && !Array.isArray(json.data)) {
+          throw new Error(json.message);
+        }
+
+        const mentah = Array.isArray(json)
+          ? json
+          : Array.isArray(json?.data)
+          ? json.data
+          : [];
+
+        semuaData = Array.isArray(mentah) ? mentah : [];
         siapkanKolom();
         siapkanDivisi();
         tampilkan();
@@ -63,13 +82,17 @@
 
     function siapkanKolom() {
       const setKolom = new Set();
-      semuaData.forEach(row => Object.keys(row).forEach(k => setKolom.add(k)));
+      semuaData.forEach(row => {
+        if (row && typeof row === "object") {
+          Object.keys(row).forEach(k => setKolom.add(k));
+        }
+      });
       daftarKolom = Array.from(setKolom);
       document.getElementById("kepalaTabel").innerHTML = daftarKolom.map(k => `<th>${k}</th>`).join("");
     }
 
     function siapkanDivisi() {
-      const divisiUnik = [...new Set(semuaData.map(r => r.Divisi).filter(Boolean))].sort();
+      const divisiUnik = [...new Set(semuaData.map(ambilDivisi).filter(Boolean))].sort();
       const select = document.getElementById("filterDivisi");
       select.innerHTML = '<option value="">Semua Divisi</option>' + divisiUnik.map(d => `<option value="${d}">${d}</option>`).join("");
     }
@@ -79,7 +102,7 @@
       const div = document.getElementById("filterDivisi").value;
 
       const saring = semuaData.filter(row => {
-        const cocokDiv = !div || row.Divisi === div;
+        const cocokDiv = !div || ambilDivisi(row) === div;
         const cocokKata = !kata || Object.values(row).some(v => String(v ?? "").toLowerCase().includes(kata));
         return cocokDiv && cocokKata;
       });
