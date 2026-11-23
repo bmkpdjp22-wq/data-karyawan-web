@@ -371,7 +371,7 @@
         <div class="bar">
           <input id="cari" type="text" placeholder="Cari nama, NIP, jabatan, divisi, atau kata kunci..." />
           <select id="filterDivisi"><option value="">Semua Divisi</option></select>
-          <button class="act primary" onclick="muat(true)">Refresh Data</button>
+          <button class="act primary" id="btnRefresh" onclick="muat(true)">Refresh Data</button>
           <button class="act tema" id="btnTema" onclick="gantiModeTema()">Tema: Otomatis WIB</button>
         </div>
       </div>
@@ -517,6 +517,7 @@
 
     let semuaData = [];
     let hasilTerakhir = [];
+    let barisDitampilkan = [];
     let kolomList = [];
     let dataModalAktif = null;
 
@@ -608,9 +609,9 @@
     }
 
     async function muat(paksaSegar) {
-      var statusCache = { ada: false, segar: false };
+      var btnRefresh = document.getElementById("btnRefresh");
       if (!paksaSegar) {
-        statusCache = bacaCache();
+        var statusCache = bacaCache();
         if (statusCache.ada && statusCache.segar) {
           return;
         }
@@ -618,8 +619,14 @@
         document.getElementById("infoStats").textContent = "Memuat data personel terbaru...";
       }
 
+      if (btnRefresh) btnRefresh.disabled = true;
+
+      var controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+      var timeoutId = controller ? setTimeout(function() { controller.abort(); }, 20000) : null;
+
       try {
-        var res = await fetch(URL_DATA);
+        var res = await fetch(URL_DATA, controller ? { signal: controller.signal } : {});
+        if (timeoutId) clearTimeout(timeoutId);
         var json = await res.json();
         var raw = Array.isArray(json) ? json : (Array.isArray(json && json.data) ? json.data : []);
         try {
@@ -627,11 +634,14 @@
         } catch (e) {}
         prosesDataArray(raw, "(data terbaru)");
       } catch (e) {
+        if (timeoutId) clearTimeout(timeoutId);
         if (!semuaData.length) {
-          document.getElementById("infoStats").textContent = "Gagal memuat data: " + e.message;
+          document.getElementById("infoStats").textContent = "Gagal memuat data (server lambat/timeout). Coba klik Refresh Data lagi.";
         } else {
           tampil("(pakai cache)");
         }
+      } finally {
+        if (btnRefresh) btnRefresh.disabled = false;
       }
     }
 
@@ -653,4 +663,163 @@
 
       document.getElementById("menuDivisi").innerHTML = listDiv.map(function(d) {
         var aktifClass = divAktif === d ? " aktif" : "";
-        return '<button class="nav-btn' + aktifClass + '" data-d="' + d + '" onclick="pilihDivisi(\'' + d
+        return '<button class="nav-btn' + aktifClass + '" data-d="' + d + '" onclick="pilihDivisi(\'' + d.replace(/'/g, "\\'") + '\')"><span>' + d + '</span><span class="badge-jml">' + hitung[d] + '</span></button>';
+      }).join("");
+
+      document.getElementById("kartuDivisi").innerHTML = listDiv.map(function(d) {
+        var aktifClass = divAktif === d ? " aktif" : "";
+        return '<div class="card' + aktifClass + '" onclick="pilihDivisi(\'' + d.replace(/'/g, "\\'") + '\')"><b>' + d + '</b><div class="card-sub">' + hitung[d] + ' personel</div></div>';
+      }).join("");
+    }
+
+    function pilihDivisi(d) {
+      batasTampil = BATAS_AWAL;
+      document.getElementById("filterDivisi").value = d;
+      document.querySelectorAll(".nav-btn").forEach(function(b) {
+        b.classList.toggle("aktif", (d === "" && b.id === "btnSemua") || b.getAttribute("data-d") === d);
+      });
+      document.querySelectorAll("#kartuDivisi .card").forEach(function(c) {
+        var judul = c.querySelector("b") ? c.querySelector("b").textContent.trim() : "";
+        c.classList.toggle("aktif", Boolean(d) && judul === d);
+      });
+      tampil();
+    }
+
+    function muatLebihBanyak() {
+      batasTampil += 50;
+      tampil();
+    }
+
+    function tampilkanSemuaBaris() {
+      batasTampil = hasilTerakhir.length || semuaData.length;
+      tampil();
+    }
+
+    function tutupModal() {
+      document.getElementById("modal").classList.remove("aktif");
+      dataModalAktif = null;
+    }
+
+    function salinNilai(jenis) {
+      if (!dataModalAktif) return;
+      var nilai = jenis === "nip" ? getNip(dataModalAktif) : getEmail(dataModalAktif);
+      if (!nilai) {
+        alert(jenis === "nip" ? "NIP kosong." : "Email kosong.");
+        return;
+      }
+      navigator.clipboard.writeText(nilai).then(function() {
+        alert((jenis === "nip" ? "NIP " : "Email ") + nilai + " berhasil disalin.");
+      });
+    }
+
+    function formatSel(kolom, nilai) {
+      var kl = kolom.toLowerCase();
+      if (kl === "divisi") {
+        var divTampil = formatDivisiInggris(nilai);
+        return divTampil ? '<span class="pill">' + divTampil + '</span>' : "";
+      }
+      var teks = String(nilai || "");
+      if (kl.indexOf("nama") !== -1 && teks) {
+        return '<span class="avatar">' + inisial(teks) + '</span><span>' + teks + '</span>';
+      }
+      return teks;
+    }
+
+    function unduhCSV() {
+      if (!hasilTerakhir.length) {
+        alert("Tidak ada data personel untuk diunduh.");
+        return;
+      }
+      var sep = ";";
+      var barisCsv = [kolomList.map(function(k) { return '"' + String(k).replace(/"/g, '""') + '"'; }).join(sep)];
+      hasilTerakhir.forEach(function(r) {
+        var rowCsv = kolomList.map(function(k) {
+          var val = k.toLowerCase() === "divisi" ? formatDivisiInggris(r[k]) : (r[k] || "");
+          return '"' + String(val).replace(/[\r\n]+/g, " ").replace(/"/g, '""') + '"';
+        }).join(sep);
+        barisCsv.push(rowCsv);
+      });
+      var bom = "\uFEFF";
+      var blob = new Blob([bom + barisCsv.join("\r\n")], { type: "text/csv;charset=utf-8;" });
+      var link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "data-personel-bm-kpdjp-2026.csv";
+      link.click();
+    }
+
+    function tampil(labelTambahan) {
+      var kata = document.getElementById("cari").value.toLowerCase().trim();
+      var div = document.getElementById("filterDivisi").value;
+
+      var saring = semuaData.filter(function(r) {
+        var okD = !div || getDiv(r) === div;
+        var okK = !kata || Object.values(r).some(function(v) { return String(v || "").toLowerCase().indexOf(kata) !== -1; });
+        return okD && okK;
+      });
+      hasilTerakhir = saring;
+
+      var jmlLaki = 0;
+      var jmlPerempuan = 0;
+      for (var i = 0; i < saring.length; i++) {
+        var g = getGender(saring[i]);
+        if (g.indexOf("laki") !== -1) jmlLaki++;
+        else if (g.indexOf("perempuan") !== -1) jmlPerempuan++;
+      }
+
+      var barisPotongan = saring.slice(0, batasTampil);
+      barisDitampilkan = barisPotongan;
+      var suffix = labelTambahan ? " " + labelTambahan : "";
+
+      document.getElementById("infoStats").textContent = "Menampilkan " + barisPotongan.length + " dari " + saring.length + " data cocok (" + semuaData.length + " total personel)" + suffix;
+      document.getElementById("kpiTampil").textContent = saring.length;
+      document.getElementById("kpiLaki").textContent = jmlLaki;
+      document.getElementById("kpiPerempuan").textContent = jmlPerempuan;
+      document.getElementById("infoBarisTabel").textContent = "Baris tampil: " + barisPotongan.length + " dari " + saring.length;
+
+      var btnLebih = document.getElementById("btnMuatLagi");
+      var btnSemuaBaris = document.getElementById("btnTampilSemua");
+      var masihAda = barisPotongan.length < saring.length;
+      btnLebih.style.display = masihAda ? "inline-block" : "none";
+      btnSemuaBaris.style.display = masihAda ? "inline-block" : "none";
+
+      var htmlRows = "";
+      for (var p = 0; p < barisPotongan.length; p++) {
+        var r = barisPotongan[p];
+        var cells = "";
+        for (var c = 0; c < kolomList.length; c++) {
+          var k = kolomList[c];
+          cells += "<td>" + formatSel(k, r[k]) + "</td>";
+        }
+        htmlRows += '<tr data-idx="' + p + '">' + cells + "</tr>";
+      }
+
+      document.getElementById("isiTabel").innerHTML = htmlRows;
+    }
+
+    document.getElementById("isiTabel").addEventListener("click", function(e) {
+      var tr = e.target.closest("tr[data-idx]");
+      if (!tr) return;
+      var idx = parseInt(tr.getAttribute("data-idx"), 10);
+      var r = barisDitampilkan[idx];
+      if (!r) return;
+      dataModalAktif = r;
+      var nama = r["Nama Lengkap (Sesuai KTP)"] || r.Nama || "Detail Personel";
+      document.getElementById("modalJudul").textContent = nama;
+      document.getElementById("detailIsi").innerHTML = kolomList.map(function(k) {
+        var valTampil = k.toLowerCase() === "divisi" ? formatDivisiInggris(r[k]) : r[k];
+        return "<p style='margin:6px 0;'><b>" + k + ":</b> " + (valTampil || "-") + "</p>";
+      }).join("");
+      document.getElementById("modal").classList.add("aktif");
+    });
+
+    document.getElementById("cari").addEventListener("input", function() {
+      batasTampil = BATAS_AWAL;
+      clearTimeout(timerKetik);
+      timerKetik = setTimeout(tampil, 120);
+    });
+    document.getElementById("filterDivisi").addEventListener("change", function(e) { pilihDivisi(e.target.value); });
+
+    muat(false);
+  </script>
+</body>
+</html>
