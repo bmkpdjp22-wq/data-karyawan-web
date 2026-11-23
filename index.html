@@ -416,7 +416,7 @@
 
       <div class="footer-bar">
         <span id="infoBarisTabel">Baris tampil: 0</span>
-        <span>Tip: Tampilan awal dibatasi 50 baris agar buka cepat & ringan.</span>
+        <span>Data tersimpan lokal 6 jam agar buka cepat. Klik Refresh Data untuk tarik terbaru.</span>
       </div>
     </main>
   </div>
@@ -435,7 +435,8 @@
 
   <script>
     const URL_DATA = "https://script.google.com/macros/s/AKfycbzKrn6vwNSM5hJGywoYmEXzKwA_rjFKeu9YRQq3lcNdYyO6Z0wIgNC2PYU1DmKNtm7l/exec";
-    const CACHE_KEY = "cacheKaryawanKpdjp2026";
+    const CACHE_KEY = "cacheKaryawanKpdjp2026_v2";
+    const DURASI_CACHE_MS = 6 * 60 * 60 * 1000; // 6 jam
     const ABAIKAN = ["data karyawan november 2026"];
     const URUTAN = ["manajemen office", "engineering", "engieering", "security", "housekeeping", "banquet", "sopir", "resepsionis"];
     const BATAS_AWAL = 50;
@@ -470,4 +471,290 @@
 
     function terapkanTema() {
       var info = ambilJamWIB();
-      var pakaiGelap = modeTema === "dark" || (modeTema === "
+      var pakaiGelap = modeTema === "dark" || (modeTema === "auto" && info.adalahMalam);
+      document.body.classList.toggle("mode-malam", pakaiGelap);
+
+      var labelMode = modeTema === "auto"
+        ? (info.adalahMalam ? "Otomatis WIB (Malam)" : "Otomatis WIB (Siang)")
+        : (modeTema === "dark" ? "Hitam" : "Terang");
+
+      document.getElementById("infoWaktuWIB").textContent = "WIB: " + info.teksJam + " • " + labelMode;
+      document.getElementById("btnTema").textContent = "Tema: " + (modeTema === "auto" ? "Otomatis WIB" : (modeTema === "dark" ? "Hitam" : "Terang"));
+    }
+
+    function gantiModeTema() {
+      if (modeTema === "auto") modeTema = "dark";
+      else if (modeTema === "dark") modeTema = "light";
+      else modeTema = "auto";
+      localStorage.setItem("modeTemaKpdjp", modeTema);
+      terapkanTema();
+    }
+
+    terapkanTema();
+    setInterval(terapkanTema, 1000);
+
+    let semuaData = [];
+    let hasilTerakhir = [];
+    let kolomList = [];
+    let dataModalAktif = null;
+
+    function getDiv(row) {
+      return String(row.Divisi || row.DIvisi || row.divisi || "").trim();
+    }
+
+    function getGender(row) {
+      return String(row["Jenis Kelamin"] || row["jenis kelamin"] || "").trim().toLowerCase();
+    }
+
+    function getNip(row) {
+      return String(row.NIP || row.nip || "").trim();
+    }
+
+    function getEmail(row) {
+      return String(row["Alamat Email"] || row.Email || row.email || "").trim();
+    }
+
+    function diabaikan(nama) {
+      return ABAIKAN.indexOf(String(nama || "").trim().toLowerCase()) !== -1;
+    }
+
+    function urutDiv(arr) {
+      return arr.slice().sort(function(a, b) {
+        var ia = URUTAN.indexOf(a.toLowerCase());
+        var ib = URUTAN.indexOf(b.toLowerCase());
+        if (ia !== -1 && ib !== -1) return ia - ib;
+        if (ia !== -1) return -1;
+        if (ib !== -1) return 1;
+        return a.localeCompare(b);
+      });
+    }
+
+    function inisial(teks) {
+      var kata = String(teks || "PG").trim().split(/\s+/).filter(Boolean);
+      if (!kata.length) return "PG";
+      if (kata.length === 1) return kata[0].slice(0, 2).toUpperCase();
+      return ((kata[0][0] || "") + (kata[1][0] || "")).toUpperCase();
+    }
+
+    function prosesDataArray(raw, labelTambahan) {
+      semuaData = raw.filter(function(r) { return !diabaikan(getDiv(r)); });
+
+      var setK = {};
+      semuaData.forEach(function(r) {
+        Object.keys(r || {}).forEach(function(k) { setK[k] = 1; });
+      });
+      kolomList = Object.keys(setK);
+      document.getElementById("kepalaTabel").innerHTML = kolomList.map(function(k) { return "<th>" + k + "</th>"; }).join("");
+
+      bangunDivisi();
+      tampil(labelTambahan);
+    }
+
+    function bacaCache() {
+      try {
+        var rawCache = localStorage.getItem(CACHE_KEY);
+        if (!rawCache) return { ada: false, segar: false };
+        var parsed = JSON.parse(rawCache);
+        if (parsed && Array.isArray(parsed.data) && parsed.data.length) {
+          var umur = Date.now() - (parsed.ts || 0);
+          var masihSegar = umur < DURASI_CACHE_MS;
+          prosesDataArray(parsed.data, masihSegar ? "(dari cache cepat)" : "(cache lama, menyegarkan...)");
+          return { ada: true, segar: masihSegar };
+        }
+      } catch (e) {}
+      return { ada: false, segar: false };
+    }
+
+    async function muat(paksaSegar) {
+      var statusCache = { ada: false, segar: false };
+      if (!paksaSegar) {
+        statusCache = bacaCache();
+        if (statusCache.ada && statusCache.segar) {
+          return;
+        }
+      } else {
+        document.getElementById("infoStats").textContent = "Memuat data terbaru dari Google Sheets...";
+      }
+
+      try {
+        var res = await fetch(URL_DATA, { cache: "no-store" });
+        var json = await res.json();
+        var raw = Array.isArray(json) ? json : (Array.isArray(json && json.data) ? json.data : []);
+        try {
+          localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: raw }));
+        } catch (e) {}
+        prosesDataArray(raw, "(data terbaru)");
+      } catch (e) {
+        if (!semuaData.length) {
+          document.getElementById("infoStats").textContent = "Gagal memuat data: " + e.message;
+        } else {
+          tampil("(gagal menyegarkan, pakai cache)");
+        }
+      }
+    }
+
+    function bangunDivisi() {
+      var hitung = {};
+      semuaData.forEach(function(r) {
+        var d = getDiv(r);
+        if (d && !diabaikan(d)) hitung[d] = (hitung[d] || 0) + 1;
+      });
+      var listDiv = urutDiv(Object.keys(hitung));
+      var divAktif = document.getElementById("filterDivisi").value;
+
+      document.getElementById("jmlSemua").textContent = semuaData.length;
+      document.getElementById("kpiDivisi").textContent = listDiv.length;
+
+      document.getElementById("filterDivisi").innerHTML = '<option value="">Semua Divisi</option>' +
+        listDiv.map(function(d) { return '<option value="' + d + '">' + d + ' (' + hitung[d] + ')</option>'; }).join("");
+      document.getElementById("filterDivisi").value = divAktif;
+
+      document.getElementById("menuDivisi").innerHTML = listDiv.map(function(d) {
+        var aktifClass = divAktif === d ? " aktif" : "";
+        return '<button class="nav-btn' + aktifClass + '" data-d="' + d + '" onclick="pilihDivisi(\'' + d.replace(/'/g, "\\'") + '\')"><span>' + d + '</span><span class="badge-jml">' + hitung[d] + '</span></button>';
+      }).join("");
+
+      document.getElementById("kartuDivisi").innerHTML = listDiv.map(function(d) {
+        var aktifClass = divAktif === d ? " aktif" : "";
+        return '<div class="card' + aktifClass + '" onclick="pilihDivisi(\'' + d.replace(/'/g, "\\'") + '\')"><b>' + d + '</b><div class="card-sub">' + hitung[d] + ' pegawai</div></div>';
+      }).join("");
+    }
+
+    function pilihDivisi(d) {
+      batasTampil = BATAS_AWAL;
+      document.getElementById("filterDivisi").value = d;
+      document.querySelectorAll(".nav-btn").forEach(function(b) {
+        b.classList.toggle("aktif", (d === "" && b.id === "btnSemua") || b.getAttribute("data-d") === d);
+      });
+      document.querySelectorAll("#kartuDivisi .card").forEach(function(c) {
+        var judul = c.querySelector("b") ? c.querySelector("b").textContent.trim() : "";
+        c.classList.toggle("aktif", Boolean(d) && judul === d);
+      });
+      tampil();
+    }
+
+    function resetSemua() {
+      batasTampil = BATAS_AWAL;
+      document.getElementById("cari").value = "";
+      pilihDivisi("");
+    }
+
+    function muatLebihBanyak() {
+      batasTampil += 50;
+      tampil();
+    }
+
+    function tampilkanSemuaBaris() {
+      batasTampil = hasilTerakhir.length || semuaData.length;
+      tampil();
+    }
+
+    function tutupModal() {
+      document.getElementById("modal").classList.remove("aktif");
+      dataModalAktif = null;
+    }
+
+    function salinNilai(jenis) {
+      if (!dataModalAktif) return;
+      var nilai = jenis === "nip" ? getNip(dataModalAktif) : getEmail(dataModalAktif);
+      if (!nilai) {
+        alert(jenis === "nip" ? "NIP kosong." : "Email kosong.");
+        return;
+      }
+      navigator.clipboard.writeText(nilai).then(function() {
+        alert((jenis === "nip" ? "NIP " : "Email ") + nilai + " berhasil disalin.");
+      });
+    }
+
+    function formatSel(kolom, nilai) {
+      var teks = String(nilai || "");
+      var kl = kolom.toLowerCase();
+      if (kl.indexOf("nama") !== -1 && teks) {
+        return '<span class="avatar">' + inisial(teks) + '</span><span>' + teks + '</span>';
+      }
+      if (kl === "divisi" && teks) {
+        return '<span class="pill">' + teks + '</span>';
+      }
+      return teks;
+    }
+
+    function unduhCSV() {
+      if (!hasilTerakhir.length) {
+        alert("Tidak ada data untuk diunduh.");
+        return;
+      }
+      var barisCsv = [kolomList.map(function(k) { return '"' + String(k).replace(/"/g, '""') + '"'; }).join(",")];
+      hasilTerakhir.forEach(function(r) {
+        var rowCsv = kolomList.map(function(k) {
+          return '"' + String(r[k] || "").replace(/"/g, '""') + '"';
+        }).join(",");
+        barisCsv.push(rowCsv);
+      });
+      var blob = new Blob([barisCsv.join("\n")], { type: "text/csv;charset=utf-8;" });
+      var link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "data-karyawan-bm-kpdjp-2026.csv";
+      link.click();
+    }
+
+    function tampil(labelTambahan) {
+      var kata = document.getElementById("cari").value.toLowerCase().trim();
+      var div = document.getElementById("filterDivisi").value;
+
+      var saring = semuaData.filter(function(r) {
+        var okD = !div || getDiv(r) === div;
+        var okK = !kata || Object.values(r).some(function(v) { return String(v || "").toLowerCase().indexOf(kata) !== -1; });
+        return okD && okK;
+      });
+      hasilTerakhir = saring;
+
+      var jmlLaki = saring.filter(function(r) { return getGender(r).indexOf("laki") !== -1; }).length;
+      var jmlPerempuan = saring.filter(function(r) { return getGender(r).indexOf("perempuan") !== -1; }).length;
+
+      var barisPotongan = saring.slice(0, batasTampil);
+      var suffix = labelTambahan ? " " + labelTambahan : "";
+
+      document.getElementById("infoStats").textContent = "Menampilkan " + barisPotongan.length + " dari " + saring.length + " data cocok (" + semuaData.length + " total data)" + suffix;
+      document.getElementById("kpiTampil").textContent = saring.length;
+      document.getElementById("kpiLaki").textContent = jmlLaki;
+      document.getElementById("kpiPerempuan").textContent = jmlPerempuan;
+      document.getElementById("infoBarisTabel").textContent = "Baris tampil: " + barisPotongan.length + " dari " + saring.length;
+
+      var btnLebih = document.getElementById("btnMuatLagi");
+      var btnSemuaBaris = document.getElementById("btnTampilSemua");
+      var masihAda = barisPotongan.length < saring.length;
+      btnLebih.style.display = masihAda ? "inline-block" : "none";
+      btnSemuaBaris.style.display = masihAda ? "inline-block" : "none";
+
+      var fragment = document.createDocumentFragment();
+      barisPotongan.forEach(function(r) {
+        var tr = document.createElement("tr");
+        tr.innerHTML = kolomList.map(function(k) { return "<td>" + formatSel(k, r[k]) + "</td>"; }).join("");
+        tr.onclick = function() {
+          dataModalAktif = r;
+          var nama = r["Nama Lengkap (Sesuai KTP)"] || r.Nama || "Detail Karyawan";
+          document.getElementById("modalJudul").textContent = nama;
+          document.getElementById("detailIsi").innerHTML = kolomList.map(function(k) {
+            return "<p style='margin:6px 0;'><b>" + k + ":</b> " + (r[k] || "-") + "</p>";
+          }).join("");
+          document.getElementById("modal").classList.add("aktif");
+        };
+        fragment.appendChild(tr);
+      });
+
+      var tbody = document.getElementById("isiTabel");
+      tbody.innerHTML = "";
+      tbody.appendChild(fragment);
+    }
+
+    document.getElementById("cari").addEventListener("input", function() {
+      batasTampil = BATAS_AWAL;
+      clearTimeout(timerKetik);
+      timerKetik = setTimeout(tampil, 120);
+    });
+    document.getElementById("filterDivisi").addEventListener("change", function(e) { pilihDivisi(e.target.value); });
+
+    muat(false);
+  </script>
+</body>
+</html>
