@@ -3,44 +3,367 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Data Karyawan</title>
+  <title>Direktori Data Karyawan</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f4f6f9; padding: 20px; margin: 0; }
-    .box { max-width: 1000px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; }
-    .bar { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
-    input, select { padding: 8px 10px; font-size: 14px; }
-    input { flex: 1; min-width: 200px; }
-    table { width: 100%; border-collapse: collapse; font-size: 14px; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-    th { background: #f0f2f5; }
-    tr:hover { background: #f9fafb; cursor: pointer; }
-    #modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+    :root {
+      --sidebar: #162238;
+      --sidebar-hover: #213252;
+      --sidebar-active: #2a3f66;
+      --bg: #f3f5fa;
+      --card: #ffffff;
+      --text: #1b2432;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --accent: #2563eb;
+      --hero-grad: linear-gradient(120deg, #1b263b 0%, #2d3a6e 55%, #4338ca 100%);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Kiri */
+    .sidebar {
+      width: 250px;
+      background: var(--sidebar);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      padding: 16px 12px;
+      gap: 14px;
+    }
+    .brand {
+      padding: 6px 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 14px;
+    }
+    .brand-title { font-weight: 700; font-size: 16px; }
+    .brand-sub { font-size: 11px; color: #cbd5e1; margin-top: 2px; }
+
+    .nav-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #94a3b8;
+      padding: 4px 10px;
+    }
+    .nav-btn {
+      width: 100%;
+      background: transparent;
+      color: #e2e8f0;
+      border: none;
+      text-align: left;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3px;
+    }
+    .nav-btn:hover { background: var(--sidebar-hover); }
+    .nav-btn.aktif { background: var(--sidebar-active); color: #fff; font-weight: 600; }
+    .badge {
+      background: rgba(255,255,255,0.14);
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-size: 11px;
+    }
+
+    /* Area Utama Kanan */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .topbar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .topbar-left { font-weight: 600; font-size: 14px; }
+    .topbar-search {
+      width: 300px;
+      max-width: 100%;
+      padding: 7px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      background: #f8fafc;
+    }
+
+    .content { padding: 20px 24px 36px; max-width: 1280px; width: 100%; margin: 0 auto; }
+
+    /* Banner Hero Pencarian */
+    .hero {
+      background: var(--hero-grad);
+      color: #fff;
+      border-radius: 16px;
+      padding: 28px 24px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(27, 38, 59, 0.14);
+    }
+    .hero h1 { margin: 0 0 6px; font-size: 26px; }
+    .hero p { margin: 0 0 18px; color: #dbeafe; font-size: 13px; }
+
+    .search-box {
+      max-width: 680px;
+      margin: 0 auto 14px;
+      display: flex;
+      gap: 8px;
+      background: #fff;
+      padding: 6px;
+      border-radius: 10px;
+    }
+    .search-box input {
+      flex: 1;
+      border: none;
+      outline: none;
+      padding: 8px 12px;
+      font-size: 14px;
+      color: var(--text);
+    }
+    .search-box select {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 13px;
+      background: #f8fafc;
+      color: var(--text);
+    }
+    .btn-reset {
+      border: none;
+      background: #e2e8f0;
+      color: var(--text);
+      padding: 0 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      font-size: 12px;
+      margin-bottom: 16px;
+    }
+    .chip {
+      background: rgba(255,255,255,0.16);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.22);
+      padding: 4px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .chip:hover { background: rgba(255,255,255,0.28); }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      font-size: 13px;
+      color: #e2e8f0;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+    }
+    .stats b { color: #fff; }
+
+    /* Kartu Akses Cepat */
+    .section-title {
+      margin: 22px 0 10px;
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .quick-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .quick-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .quick-card .q-title { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+    .quick-card .q-sub { font-size: 12px; color: var(--muted); }
+
+    /* Tabel Data */
+    .table-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 12px;
+    }
+    .table-wrap { overflow-x: auto; max-height: 520px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td {
+      border-bottom: 1px solid var(--border);
+      padding: 9px 10px;
+      text-align: left;
+      white-space: nowrap;
+    }
+    th {
+      position: sticky;
+      top: 0;
+      background: #f8fafc;
+      font-weight: 700;
+      z-index: 1;
+    }
+    tbody tr:hover { background: #eff6ff; cursor: pointer; }
+
+    /* Modal Detail */
+    #modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      padding: 16px;
+    }
     #modal.aktif { display: flex; }
-    .modal-isi { background: #fff; padding: 20px; border-radius: 8px; max-width: 480px; width: 90%; max-height: 80vh; overflow: auto; }
+    .modal-box {
+      background: #fff;
+      border-radius: 14px;
+      max-width: 540px;
+      width: 100%;
+      max-height: 82vh;
+      overflow: auto;
+      padding: 20px;
+    }
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 7px 0;
+      border-bottom: 1px dashed var(--border);
+      font-size: 13px;
+    }
+    .detail-key { color: var(--muted); font-weight: 600; }
+    .detail-val { text-align: right; font-weight: 500; }
+    .btn-tutup {
+      margin-top: 14px;
+      background: var(--sidebar);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 820px) {
+      body { flex-direction: column; }
+      .sidebar { width: 100%; }
+    }
   </style>
 </head>
 <body>
-  <div class="box">
-    <h2>Data Karyawan</h2>
-    <div class="bar">
-      <input id="cari" type="text" placeholder="Cari nama, NIP, atau kata apa saja..." />
-      <select id="filterDivisi"><option value="">Semua Divisi</option></select>
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-title">Direktori Pegawai</div>
+      <div class="brand-sub">Database Google Sheets & Vercel</div>
     </div>
-    <p id="status">Memuat data...</p>
-    <div style="overflow-x:auto">
-      <table>
-        <thead><tr id="kepalaTabel"></tr></thead>
-        <tbody id="isiTabel"></tbody>
-      </table>
+
+    <div>
+      <div class="nav-label">Menu Utama</div>
+      <button class="nav-btn aktif" id="btnSemua" onclick="pilihDivisi('')">
+        <span>Semua Data</span>
+        <span class="badge" id="badgeSemua">0</span>
+      </button>
     </div>
+
+    <div>
+      <div class="nav-label">Divisi / Sheet</div>
+      <div id="daftarMenuDivisi"></div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-left" id="judulHalaman">Beranda — Semua Karyawan</div>
+      <input class="topbar-search" id="cariAtas" type="text" placeholder="Cari cepat nama, NIP, jabatan..." />
+    </header>
+
+    <main class="content">
+      <section class="hero">
+        <h1>Cari Data Karyawan</h1>
+        <p>Nama, NIP, jabatan, divisi, dan informasi pegawai langsung dari Google Sheets.</p>
+
+        <div class="search-box">
+          <input id="cariUtama" type="text" placeholder="Ketik nama, NIP, jabatan, atau kata kunci..." />
+          <select id="filterDivisi">
+            <option value="">Semua Divisi</option>
+          </select>
+          <button class="btn-reset" onclick="resetFilter()">Reset</button>
+        </div>
+
+        <div class="chips">
+          <span>Coba:</span>
+          <button class="chip" onclick="cepatCari('Manajemen Office')">Manajemen Office</button>
+          <button class="chip" onclick="cepatCari('Building Manager')">Building Manager</button>
+          <button class="chip" onclick="cepatCari('Administrasi')">Administrasi</button>
+        </div>
+
+        <div class="stats">
+          <div><b id="statTampil">0</b> tampil</div>
+          <div><b id="statTotal">0</b> total data</div>
+          <div><b id="statDivisi">0</b> divisi</div>
+        </div>
+      </section>
+
+      <div class="section-title">
+        <span>Akses Cepat Divisi</span>
+      </div>
+      <div class="quick-grid" id="kartuDivisi"></div>
+
+      <div class="section-title">
+        <span>Daftar Karyawan</span>
+        <span id="statusTeks" style="font-size:13px; color:var(--muted); font-weight:400;">Memuat data...</span>
+      </div>
+      <div class="table-card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr id="kepalaTabel"></tr></thead>
+            <tbody id="isiTabel"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
   </div>
 
-  <div id="modal">
-    <div class="modal-isi">
-      <h3>Detail Karyawan</h3>
+  <div id="modal" onclick="if(event.target.id==='modal') tutupModal()">
+    <div class="modal-box">
+      <h3 style="margin-top:0;">Detail Karyawan</h3>
       <div id="detailIsi"></div>
-      <br />
-      <button onclick="document.getElementById('modal').classList.remove('aktif')">Tutup</button>
+      <button class="btn-tutup" onclick="tutupModal()">Tutup</button>
     </div>
   </div>
 
@@ -49,84 +372,140 @@
     let semuaData = [];
     let daftarKolom = [];
 
-    function ambilDivisi(row) {
-      return String(row.Divisi ?? row.divisi ?? row.DIVISI ?? "").trim();
+    function getDivisi(row) {
+      return String(row.Divisi ?? row.DIvisi ?? row.divisi ?? "").trim();
     }
 
-    async function ambilData() {
+    async function muatData() {
       try {
-        const respon = await fetch(URL_DATA);
-        const json = await respon.json();
-
-        if (json && json.error) {
-          throw new Error(json.error);
-        }
-        if (json && json.message && !Array.isArray(json) && !Array.isArray(json.data)) {
-          throw new Error(json.message);
-        }
-
-        const mentah = Array.isArray(json)
-          ? json
-          : Array.isArray(json?.data)
-          ? json.data
-          : [];
-
-        semuaData = Array.isArray(mentah) ? mentah : [];
+        const res = await fetch(URL_DATA);
+        const json = await res.json();
+        semuaData = Array.isArray(json) ? json : (Array.isArray(json?.data) ? json.data : []);
         siapkanKolom();
         siapkanDivisi();
-        tampilkan();
-      } catch (e) {
-        document.getElementById("status").textContent = "Gagal ambil data: " + e.message;
+        render();
+      } catch (err) {
+        document.getElementById("statusTeks").textContent = "Gagal memuat data: " + err.message;
       }
     }
 
     function siapkanKolom() {
-      const setKolom = new Set();
-      semuaData.forEach(row => {
-        if (row && typeof row === "object") {
-          Object.keys(row).forEach(k => setKolom.add(k));
-        }
+      const setKol = new Set();
+      semuaData.forEach(r => {
+        if (r && typeof r === "object") Object.keys(r).forEach(k => setKol.add(k));
       });
-      daftarKolom = Array.from(setKolom);
+      daftarKolom = Array.from(setKol);
       document.getElementById("kepalaTabel").innerHTML = daftarKolom.map(k => `<th>${k}</th>`).join("");
     }
 
     function siapkanDivisi() {
-      const divisiUnik = [...new Set(semuaData.map(ambilDivisi).filter(Boolean))].sort();
-      const select = document.getElementById("filterDivisi");
-      select.innerHTML = '<option value="">Semua Divisi</option>' + divisiUnik.map(d => `<option value="${d}">${d}</option>`).join("");
+      const hitungan = {};
+      semuaData.forEach(r => {
+        const d = getDivisi(r);
+        if (d) hitungan[d] = (hitungan[d] || 0) + 1;
+      });
+      const daftarDiv = Object.keys(hitungan).sort();
+
+      document.getElementById("badgeSemua").textContent = semuaData.length;
+      document.getElementById("statDivisi").textContent = daftarDiv.length;
+
+      // Dropdown
+      const sel = document.getElementById("filterDivisi");
+      sel.innerHTML = '<option value="">Semua Divisi</option>' +
+        daftarDiv.map(d => `<option value="${d}">${d} (${hitungan[d]})</option>`).join("");
+
+      // Menu Sidebar
+      document.getElementById("daftarMenuDivisi").innerHTML = daftarDiv.map(d => `
+        <button class="nav-btn" data-div="${d}" onclick="pilihDivisi('${d.replace(/'/g, "\\'")}')">
+          <span>${d}</span>
+          <span class="badge">${hitungan[d]}</span>
+        </button>
+      `).join("");
+
+      // Kartu Akses Cepat (maksimal 8 kartu teratas)
+      document.getElementById("kartuDivisi").innerHTML = daftarDiv.slice(0, 8).map(d => `
+        <div class="quick-card" onclick="pilihDivisi('${d.replace(/'/g, "\\'")}')">
+          <div class="q-title">${d}</div>
+          <div class="q-sub">${hitungan[d]} pegawai • Klik untuk filter</div>
+        </div>
+      `).join("");
     }
 
-    function tampilkan() {
-      const kata = document.getElementById("cari").value.toLowerCase().trim();
+    function sinkronPencarian(sumberId) {
+      const val = document.getElementById(sumberId).value;
+      document.getElementById("cariUtama").value = val;
+      document.getElementById("cariAtas").value = val;
+      render();
+    }
+
+    function pilihDivisi(div) {
+      document.getElementById("filterDivisi").value = div;
+      document.getElementById("judulHalaman").textContent = div ? `Divisi — ${div}` : "Beranda — Semua Karyawan";
+
+      document.querySelectorAll(".sidebar .nav-btn").forEach(btn => {
+        btn.classList.remove("aktif");
+        if (div === "" && btn.id === "btnSemua") btn.classList.add("aktif");
+        if (div !== "" && btn.dataset.div === div) btn.classList.add("aktif");
+      });
+
+      render();
+    }
+
+    function cepatCari(kata) {
+      document.getElementById("cariUtama").value = kata;
+      document.getElementById("cariAtas").value = kata;
+      render();
+    }
+
+    function resetFilter() {
+      document.getElementById("cariUtama").value = "";
+      document.getElementById("cariAtas").value = "";
+      pilihDivisi("");
+    }
+
+    function bukaDetail(row) {
+      document.getElementById("detailIsi").innerHTML = daftarKolom.map(k => `
+        <div class="detail-row">
+          <span class="detail-key">${k}</span>
+          <span class="detail-val">${row[k] ?? "-"}</span>
+        </div>
+      `).join("");
+      document.getElementById("modal").classList.add("aktif");
+    }
+
+    function tutupModal() {
+      document.getElementById("modal").classList.remove("aktif");
+    }
+
+    function render() {
+      const kata = document.getElementById("cariUtama").value.toLowerCase().trim();
       const div = document.getElementById("filterDivisi").value;
 
-      const saring = semuaData.filter(row => {
-        const cocokDiv = !div || ambilDivisi(row) === div;
+      const hasil = semuaData.filter(row => {
+        const cocokDiv = !div || getDivisi(row) === div;
         const cocokKata = !kata || Object.values(row).some(v => String(v ?? "").toLowerCase().includes(kata));
         return cocokDiv && cocokKata;
       });
 
-      document.getElementById("status").textContent = `Menampilkan ${saring.length} dari ${semuaData.length} data.`;
+      document.getElementById("statTampil").textContent = hasil.length;
+      document.getElementById("statTotal").textContent = semuaData.length;
+      document.getElementById("statusTeks").textContent = `Menampilkan ${hasil.length} dari ${semuaData.length} data`;
+
       const tbody = document.getElementById("isiTabel");
       tbody.innerHTML = "";
-
-      saring.forEach(row => {
+      hasil.forEach(row => {
         const tr = document.createElement("tr");
         tr.innerHTML = daftarKolom.map(k => `<td>${row[k] ?? ""}</td>`).join("");
-        tr.onclick = () => {
-          document.getElementById("detailIsi").innerHTML = daftarKolom
-            .map(k => `<p><b>${k}:</b> ${row[k] ?? "-"}</p>`)
-            .join("");
-          document.getElementById("modal").classList.add("aktif");
-        };
+        tr.onclick = () => bukaDetail(row);
         tbody.appendChild(tr);
       });
     }
 
-    document.getElementById("cari").addEventListener("input", tampilkan);
-    document.getElementById("filterDivisi").addEventListener("change", tampilkan);
-    ambilData();
+    document.getElementById("cariUtama").addEventListener("input", () => sinkronPencarian("cariUtama"));
+    document.getElementById("cariAtas").addEventListener("input", () => sinkronPencarian("cariAtas"));
+    document.getElementById("filterDivisi").addEventListener("change", (e) => pilihDivisi(e.target.value));
+
+    muatData();
   </script>
 </body>
 </html>
