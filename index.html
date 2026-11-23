@@ -369,6 +369,18 @@
 
   <script>
     const URL_DATA = "https://script.google.com/macros/s/AKfycbzKrn6vwNSM5hJGywoYmEXzKwA_rjFKeu9YRQq3lcNdYyO6Z0wIgNC2PYU1DmKNtm7l/exec";
+    const DIVISI_DIABAIKAN = ["data karyawan november 2026"];
+    const URUTAN_DIVISI = [
+      "manajemen office",
+      "engineering",
+      "engieering",
+      "security",
+      "housekeeping",
+      "banquet",
+      "sopir",
+      "resepsionis"
+    ];
+
     let semuaData = [];
     let daftarKolom = [];
 
@@ -376,11 +388,30 @@
       return String(row.Divisi ?? row.DIvisi ?? row.divisi ?? "").trim();
     }
 
+    function isDivisiDiabaikan(namaDivisi) {
+      return DIVISI_DIABAIKAN.includes(String(namaDivisi || "").trim().toLowerCase());
+    }
+
+    function urutkanDivisi(daftar) {
+      return [...daftar].sort((a, b) => {
+        const ka = a.trim().toLowerCase();
+        const kb = b.trim().toLowerCase();
+        const idxA = URUTAN_DIVISI.indexOf(ka);
+        const idxB = URUTAN_DIVISI.indexOf(kb);
+
+        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+        if (idxA !== -1) return -1;
+        if (idxB !== -1) return 1;
+        return a.localeCompare(b, "id");
+      });
+    }
+
     async function muatData() {
       try {
         const res = await fetch(URL_DATA);
         const json = await res.json();
-        semuaData = Array.isArray(json) ? json : (Array.isArray(json?.data) ? json.data : []);
+        const mentah = Array.isArray(json) ? json : (Array.isArray(json?.data) ? json.data : []);
+        semuaData = mentah.filter(row => !isDivisiDiabaikan(getDivisi(row)));
         siapkanKolom();
         siapkanDivisi();
         render();
@@ -402,19 +433,19 @@
       const hitungan = {};
       semuaData.forEach(r => {
         const d = getDivisi(r);
-        if (d) hitungan[d] = (hitungan[d] || 0) + 1;
+        if (d && !isDivisiDiabaikan(d)) {
+          hitungan[d] = (hitungan[d] || 0) + 1;
+        }
       });
-      const daftarDiv = Object.keys(hitungan).sort();
+      const daftarDiv = urutkanDivisi(Object.keys(hitungan));
 
       document.getElementById("badgeSemua").textContent = semuaData.length;
       document.getElementById("statDivisi").textContent = daftarDiv.length;
 
-      // Dropdown
       const sel = document.getElementById("filterDivisi");
       sel.innerHTML = '<option value="">Semua Divisi</option>' +
         daftarDiv.map(d => `<option value="${d}">${d} (${hitungan[d]})</option>`).join("");
 
-      // Menu Sidebar
       document.getElementById("daftarMenuDivisi").innerHTML = daftarDiv.map(d => `
         <button class="nav-btn" data-div="${d}" onclick="pilihDivisi('${d.replace(/'/g, "\\'")}')">
           <span>${d}</span>
@@ -422,8 +453,7 @@
         </button>
       `).join("");
 
-      // Kartu Akses Cepat (maksimal 8 kartu teratas)
-      document.getElementById("kartuDivisi").innerHTML = daftarDiv.slice(0, 8).map(d => `
+      document.getElementById("kartuDivisi").innerHTML = daftarDiv.map(d => `
         <div class="quick-card" onclick="pilihDivisi('${d.replace(/'/g, "\\'")}')">
           <div class="q-title">${d}</div>
           <div class="q-sub">${hitungan[d]} pegawai • Klik untuk filter</div>
