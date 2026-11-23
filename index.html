@@ -1,83 +1,271 @@
-function doGet(e) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheets = ss.getSheets();
-    var allData = [];
-    var nomorUrut = 1;
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Database Karyawan</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+    body {
+      background: #f4f6f9;
+      color: #1f2937;
+      padding: 24px;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 24px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    }
+    h1 {
+      font-size: 22px;
+      margin-bottom: 16px;
+    }
+    .controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    input, select {
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    input {
+      flex: 1;
+      min-width: 220px;
+    }
+    .status {
+      margin-bottom: 14px;
+      font-size: 14px;
+      color: #4b5563;
+    }
+    .table-wrap {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid #e5e7eb;
+      padding: 10px 12px;
+      text-align: left;
+    }
+    th {
+      background: #f9fafb;
+      font-weight: bold;
+    }
+    tr:hover td {
+      background: #f3f4f6;
+      cursor: pointer;
+    }
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-backdrop.show {
+      display: flex;
+    }
+    .modal {
+      background: #ffffff;
+      border-radius: 10px;
+      max-width: 520px;
+      width: 100%;
+      padding: 22px;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .close-btn {
+      border: none;
+      background: #ef4444;
+      color: #ffffff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .detail-row {
+      padding: 8px 0;
+      border-bottom: 1px solid #f3f4f6;
+      font-size: 14px;
+    }
+    .detail-key {
+      font-weight: bold;
+      color: #374151;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Data Karyawan</h1>
 
-    // Jika ingin membatasi ke 1 sheet saja, isi nama sheet-nya di bawah, misal: "Data_Karyawan"
-    // Biarkan kosong "" untuk membaca semua tab divisi yang ada di spreadsheet
-    var targetSheetName = "";
+    <div class="controls">
+      <input type="text" id="searchInput" placeholder="Cari nama, NIP, jabatan, atau kata kunci..." />
+      <select id="divisionFilter">
+        <option value="">Semua Divisi</option>
+      </select>
+    </div>
 
-    for (var s = 0; s < sheets.length; s++) {
-      var sheet = sheets[s];
-      var sheetName = sheet.getName().trim();
+    <div class="status" id="statusText">Memuat data...</div>
 
-      // Lewati sheet yang tersembunyi atau tidak sesuai targetSheetName
-      if (sheet.isSheetHidden()) continue;
-      if (targetSheetName !== "" && sheetName !== targetSheetName) continue;
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr id="tableHead"></tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
 
-      var lastRow = sheet.getLastRow();
-      var lastCol = sheet.getLastColumn();
-      if (lastRow < 2 || lastCol < 1) continue;
+  <div class="modal-backdrop" id="detailModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Detail Karyawan</h2>
+        <button class="close-btn" id="closeModalBtn" type="button">Tutup</button>
+      </div>
+      <div id="modalContent"></div>
+    </div>
+  </div>
 
-      var rows = sheet.getRange(1, 1, lastRow, lastCol).getValues();
-      var headers = rows[0];
+  <script>
+    const API_URL = "GANTI_DENGAN_URL_EXEC_ANDA";
 
-      // Pastikan sheet ini memang tabel karyawan (ada header NIP atau Nama)
-      var headerText = headers.join(" ").toLowerCase();
-      if (headerText.indexOf("nip") === -1 && headerText.indexOf("nama") === -1) {
-        continue;
+    let allEmployees = [];
+    let columns = [];
+
+    const searchInput = document.getElementById("searchInput");
+    const divisionFilter = document.getElementById("divisionFilter");
+    const statusText = document.getElementById("statusText");
+    const tableHead = document.getElementById("tableHead");
+    const tableBody = document.getElementById("tableBody");
+    const detailModal = document.getElementById("detailModal");
+    const modalContent = document.getElementById("modalContent");
+    const closeModalBtn = document.getElementById("closeModalBtn");
+
+    function getDivisionValue(item) {
+      return (item.Divisi || item.divisi || item.DIVISI || "").toString().trim();
+    }
+
+    function populateDivisions(data) {
+      const divisions = [...new Set(data.map(getDivisionValue).filter(Boolean))].sort();
+      divisionFilter.innerHTML = '<option value="">Semua Divisi</option>';
+      divisions.forEach((div) => {
+        const opt = document.createElement("option");
+        opt.value = div;
+        opt.textContent = div;
+        divisionFilter.appendChild(opt);
+      });
+    }
+
+    function buildColumns(data) {
+      const keys = new Set();
+      data.forEach((row) => {
+        Object.keys(row).forEach((k) => keys.add(k));
+      });
+      columns = Array.from(keys);
+      tableHead.innerHTML = columns.map((col) => `<th>${escapeHtml(col)}</th>`).join("");
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function openModal(row) {
+      modalContent.innerHTML = columns
+        .map(
+          (col) => `
+          <div class="detail-row">
+            <span class="detail-key">${escapeHtml(col)}:</span>
+            <span>${escapeHtml(row[col] ?? "-")}</span>
+          </div>`
+        )
+        .join("");
+      detailModal.classList.add("show");
+    }
+
+    function renderTable() {
+      const keyword = searchInput.value.trim().toLowerCase();
+      const selectedDiv = divisionFilter.value;
+
+      const filtered = allEmployees.filter((row) => {
+        const divMatch = !selectedDiv || getDivisionValue(row) === selectedDiv;
+        const textMatch =
+          !keyword ||
+          Object.values(row).some((val) =>
+            String(val ?? "").toLowerCase().includes(keyword)
+          );
+        return divMatch && textMatch;
+      });
+
+      statusText.textContent = `Menampilkan ${filtered.length} dari ${allEmployees.length} data karyawan.`;
+
+      if (!filtered.length) {
+        tableBody.innerHTML = `<tr><td colspan="${Math.max(columns.length, 1)}">Tidak ada data yang cocok.</td></tr>`;
+        return;
       }
 
-      for (var i = 1; i < rows.length; i++) {
-        var row = rows[i];
-        if (row.join("").toString().trim() === "") continue;
+      tableBody.innerHTML = "";
+      filtered.forEach((row) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = columns.map((col) => `<td>${escapeHtml(row[col] ?? "")}</td>`).join("");
+        tr.addEventListener("click", () => openModal(row));
+        tableBody.appendChild(tr);
+      });
+    }
 
-        var rowObject = {};
-        for (var j = 0; j < headers.length; j++) {
-          var headerName = headers[j].toString().trim();
-          if (headerName === "") continue;
+    async function loadData() {
+      if (!API_URL || API_URL.includes("GANTI_DENGAN_URL_EXEC_ANDA")) {
+        statusText.textContent = "URL Google Apps Script (/exec) belum diisi pada variabel API_URL.";
+        return;
+      }
 
-          var cellVal = row[j];
-          // Format tanggal agar tidak berubah menjadi format panjang GMT
-          if (Object.prototype.toString.call(cellVal) === "[object Date]" && !isNaN(cellVal.getTime())) {
-            cellVal = Utilities.formatDate(cellVal, Session.getScriptTimeZone(), "yyyy-MM-dd");
-          }
-          rowObject[headerName] = cellVal;
-        }
-
-        // Jika kolom DIvisi kosong/belum ada, otomatis pakai nama tab sheet
-        var divVal = (rowObject["DIvisi"] || rowObject["Divisi"] || rowObject["DIVISI"] || "").toString().trim();
-        if (divVal === "") {
-          rowObject["DIvisi"] = sheetName;
-        }
-
-        // Jika kolom Nomor kosong, isi nomor urut otomatis
-        var noVal = (rowObject["Nomor"] || rowObject["No"] || "").toString().trim();
-        if (noVal === "") {
-          rowObject["Nomor"] = nomorUrut;
-        }
-        nomorUrut++;
-
-        allData.push(rowObject);
+      try {
+        const res = await fetch(API_URL);
+        const json = await res.json();
+        const rows = Array.isArray(json) ? json : (json.data || []);
+        allEmployees = rows;
+        buildColumns(allEmployees);
+        populateDivisions(allEmployees);
+        renderTable();
+      } catch (err) {
+        statusText.textContent = "Gagal memuat data dari Google Apps Script: " + err.message;
       }
     }
 
-    return ContentService
-      .createTextOutput(JSON.stringify({
-        status: "success",
-        total: allData.length,
-        data: allData
-      }))
-      .setMimeType(ContentService.MimeType.JSON);
+    searchInput.addEventListener("input", renderTable);
+    divisionFilter.addEventListener("change", renderTable);
+    closeModalBtn.addEventListener("click", () => detailModal.classList.remove("show"));
+    detailModal.addEventListener("click", (e) => {
+      if (e.target === detailModal) detailModal.classList.remove("show");
+    });
 
-  } catch (err) {
-    return ContentService
-      .createTextOutput(JSON.stringify({
-        status: "error",
-        message: err.message
-      }))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-}
+    loadData();
+  </script>
+</body>
+</html>
