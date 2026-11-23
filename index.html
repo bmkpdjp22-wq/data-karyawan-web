@@ -1,0 +1,83 @@
+function doGet(e) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheets = ss.getSheets();
+    var allData = [];
+    var nomorUrut = 1;
+
+    // Jika ingin membatasi ke 1 sheet saja, isi nama sheet-nya di bawah, misal: "Data_Karyawan"
+    // Biarkan kosong "" untuk membaca semua tab divisi yang ada di spreadsheet
+    var targetSheetName = "";
+
+    for (var s = 0; s < sheets.length; s++) {
+      var sheet = sheets[s];
+      var sheetName = sheet.getName().trim();
+
+      // Lewati sheet yang tersembunyi atau tidak sesuai targetSheetName
+      if (sheet.isSheetHidden()) continue;
+      if (targetSheetName !== "" && sheetName !== targetSheetName) continue;
+
+      var lastRow = sheet.getLastRow();
+      var lastCol = sheet.getLastColumn();
+      if (lastRow < 2 || lastCol < 1) continue;
+
+      var rows = sheet.getRange(1, 1, lastRow, lastCol).getValues();
+      var headers = rows[0];
+
+      // Pastikan sheet ini memang tabel karyawan (ada header NIP atau Nama)
+      var headerText = headers.join(" ").toLowerCase();
+      if (headerText.indexOf("nip") === -1 && headerText.indexOf("nama") === -1) {
+        continue;
+      }
+
+      for (var i = 1; i < rows.length; i++) {
+        var row = rows[i];
+        if (row.join("").toString().trim() === "") continue;
+
+        var rowObject = {};
+        for (var j = 0; j < headers.length; j++) {
+          var headerName = headers[j].toString().trim();
+          if (headerName === "") continue;
+
+          var cellVal = row[j];
+          // Format tanggal agar tidak berubah menjadi format panjang GMT
+          if (Object.prototype.toString.call(cellVal) === "[object Date]" && !isNaN(cellVal.getTime())) {
+            cellVal = Utilities.formatDate(cellVal, Session.getScriptTimeZone(), "yyyy-MM-dd");
+          }
+          rowObject[headerName] = cellVal;
+        }
+
+        // Jika kolom DIvisi kosong/belum ada, otomatis pakai nama tab sheet
+        var divVal = (rowObject["DIvisi"] || rowObject["Divisi"] || rowObject["DIVISI"] || "").toString().trim();
+        if (divVal === "") {
+          rowObject["DIvisi"] = sheetName;
+        }
+
+        // Jika kolom Nomor kosong, isi nomor urut otomatis
+        var noVal = (rowObject["Nomor"] || rowObject["No"] || "").toString().trim();
+        if (noVal === "") {
+          rowObject["Nomor"] = nomorUrut;
+        }
+        nomorUrut++;
+
+        allData.push(rowObject);
+      }
+    }
+
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        status: "success",
+        total: allData.length,
+        data: allData
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+
+  } catch (err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        status: "error",
+        message: err.message
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
