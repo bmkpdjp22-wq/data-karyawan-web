@@ -193,8 +193,20 @@
       border-radius: 12px;
       padding: 12px 14px;
     }
+    .kpi.klik {
+      cursor: pointer;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+    .kpi.klik:hover {
+      border-color: var(--primary);
+    }
+    .kpi.klik.aktif {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+    }
     .kpi .k-label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; }
     .kpi .k-val { font-size: 20px; font-weight: 800; margin-top: 4px; color: var(--text); }
+    .kpi .k-hint { font-size: 11px; color: var(--muted); margin-top: 3px; }
 
     /* Kartu Divisi */
     .cards {
@@ -387,34 +399,43 @@
         <div class="bar">
           <input id="cari" type="text" placeholder="Cari nama, NIP, jabatan, divisi, atau kata kunci..." />
           <select id="filterDivisi"><option value="">Semua Divisi</option></select>
+          <select id="filterGender" onchange="pilihGender(this.value)">
+            <option value="">Semua Gender</option>
+            <option value="laki">Laki - Laki</option>
+            <option value="perempuan">Perempuan</option>
+          </select>
           <button class="act primary" id="btnRefresh" onclick="muat(true)">Refresh Data</button>
           <button class="act tema" id="btnTema" onclick="gantiModeTema()">Tema: Otomatis WIB</button>
         </div>
       </div>
 
       <div class="kpi-grid">
-        <div class="kpi">
+        <div class="kpi klik" id="kpiCardSemua" onclick="pilihGender('')">
           <div class="k-label">Data Cocok Filter</div>
           <div class="k-val" id="kpiTampil">0</div>
+          <div class="k-hint">Klik untuk tampilkan semua gender</div>
         </div>
-        <div class="kpi">
+        <div class="kpi klik" id="kpiCardLaki" onclick="toggleGender('laki')">
           <div class="k-label">Laki - Laki</div>
           <div class="k-val" id="kpiLaki">0</div>
+          <div class="k-hint">Klik untuk filter Laki - Laki</div>
         </div>
-        <div class="kpi">
+        <div class="kpi klik" id="kpiCardPerempuan" onclick="toggleGender('perempuan')">
           <div class="k-label">Perempuan</div>
           <div class="k-val" id="kpiPerempuan">0</div>
+          <div class="k-hint">Klik untuk filter Perempuan</div>
         </div>
         <div class="kpi">
           <div class="k-label">Jumlah Divisi</div>
           <div class="k-val" id="kpiDivisi">0</div>
+          <div class="k-hint">Divisi aktif</div>
         </div>
       </div>
 
       <div class="cards" id="kartuDivisi"></div>
 
       <div class="table-top">
-        <span style="font-weight:700; font-size:14px;">Daftar Personel</span>
+        <span style="font-weight:700; font-size:14px;" id="judulTabel">Daftar Personel</span>
         <div class="table-actions">
           <button class="btn-mini" onclick="unduhCSV()">Unduh CSV Hasil Filter</button>
         </div>
@@ -484,6 +505,7 @@
     let batasTampil = BATAS_AWAL;
     let timerKetik = null;
     let modeTema = localStorage.getItem("modeTemaKpdjp") || "auto";
+    let filterGenderAktif = ""; // "" | "laki" | "perempuan"
 
     function ambilJamWIB() {
       var bagian = new Intl.DateTimeFormat("id-ID", {
@@ -727,6 +749,35 @@
       tampil();
     }
 
+    function pilihGender(g) {
+      filterGenderAktif = g || "";
+      document.getElementById("filterGender").value = filterGenderAktif;
+      batasTampil = BATAS_AWAL;
+      tampil();
+    }
+
+    function toggleGender(g) {
+      if (filterGenderAktif === g) {
+        pilihGender("");
+      } else {
+        pilihGender(g);
+      }
+    }
+
+    function perbaruiStatusGenderUI() {
+      document.getElementById("kpiCardLaki").classList.toggle("aktif", filterGenderAktif === "laki");
+      document.getElementById("kpiCardPerempuan").classList.toggle("aktif", filterGenderAktif === "perempuan");
+      document.getElementById("kpiCardSemua").classList.toggle("aktif", filterGenderAktif === "");
+
+      if (filterGenderAktif === "laki") {
+        document.getElementById("judulTabel").textContent = "Daftar Personel • Laki - Laki";
+      } else if (filterGenderAktif === "perempuan") {
+        document.getElementById("judulTabel").textContent = "Daftar Personel • Perempuan";
+      } else {
+        document.getElementById("judulTabel").textContent = "Daftar Personel";
+      }
+    }
+
     function muatLebihBanyak() {
       batasTampil += 50;
       tampil();
@@ -798,7 +849,7 @@
       var kata = document.getElementById("cari").value.toLowerCase().trim();
       var div = document.getElementById("filterDivisi").value;
 
-      var saringRaw = [];
+      var saringTanpaGender = [];
       var jmlLaki = 0;
       var jmlPerempuan = 0;
 
@@ -807,19 +858,29 @@
         var okD = !div || item.div === div;
         var okK = !kata || item.teksCari.indexOf(kata) !== -1;
         if (okD && okK) {
-          saringRaw.push(item.raw);
+          saringTanpaGender.push(item);
           if (item.isLaki) jmlLaki++;
           else if (item.isPerempuan) jmlPerempuan++;
         }
       }
 
+      var saringRaw = [];
+      for (var j = 0; j < saringTanpaGender.length; j++) {
+        var it = saringTanpaGender[j];
+        if (filterGenderAktif === "laki" && !it.isLaki) continue;
+        if (filterGenderAktif === "perempuan" && !it.isPerempuan) continue;
+        saringRaw.push(it.raw);
+      }
+
       hasilTerakhir = saringRaw;
+      perbaruiStatusGenderUI();
 
       var barisPotongan = saringRaw.slice(0, batasTampil);
       barisDitampilkan = barisPotongan;
       var suffix = labelTambahan ? " " + labelTambahan : "";
+      var labelGender = filterGenderAktif === "laki" ? " [Laki - Laki]" : (filterGenderAktif === "perempuan" ? " [Perempuan]" : "");
 
-      document.getElementById("infoStats").textContent = "Menampilkan " + barisPotongan.length + " dari " + saringRaw.length + " data cocok (" + semuaData.length + " total personel)" + suffix;
+      document.getElementById("infoStats").textContent = "Menampilkan " + barisPotongan.length + " dari " + saringRaw.length + " data cocok" + labelGender + " (" + semuaData.length + " total personel)" + suffix;
       document.getElementById("kpiTampil").textContent = saringRaw.length;
       document.getElementById("kpiLaki").textContent = jmlLaki;
       document.getElementById("kpiPerempuan").textContent = jmlPerempuan;
