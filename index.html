@@ -58,53 +58,84 @@
 
     .wrap { display: flex; min-height: 100vh; }
 
-    /* Sidebar */
+    /* Sidebar Kiri: Visi Misi & Operasional */
     .side {
-      width: 248px;
+      width: 276px;
       background: var(--sidebar);
       color: #fff;
-      padding: 18px 14px;
+      padding: 18px 15px;
       flex-shrink: 0;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
       border-right: 1px solid var(--border);
     }
-    .side h3 {
-      margin: 0 0 8px;
+    .side-head h3 {
+      margin: 0 0 4px;
       font-size: 15px;
       line-height: 1.35;
-      padding-bottom: 12px;
+    }
+    .side-loc {
+      font-size: 11px;
+      color: #93c5fd;
+      line-height: 1.4;
+      padding-bottom: 10px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     }
-    .nav-btn {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      width: 100%;
-      background: transparent;
+    .vm-box {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 11px 12px;
+    }
+    .vm-tag {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #60a5fa;
+      margin-bottom: 5px;
+    }
+    .vm-visi {
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.48;
+      color: #f8fafc;
+      margin: 0;
+    }
+    .vm-list {
+      margin: 0;
+      padding-left: 15px;
+      font-size: 11.5px;
+      line-height: 1.48;
       color: #cbd5e1;
-      border: 0;
+    }
+    .vm-list li { margin-bottom: 6px; }
+    .vm-list li:last-child { margin-bottom: 0; }
+    .vm-list b { color: #e2e8f0; }
+
+    .side-btn-ops {
+      width: 100%;
+      background: rgba(37, 99, 235, 0.25);
+      border: 1px solid rgba(96, 165, 250, 0.45);
+      color: #eff6ff;
       padding: 9px 11px;
       border-radius: 9px;
-      text-align: left;
+      font-size: 12px;
+      font-weight: 700;
       cursor: pointer;
-      margin-bottom: 4px;
-      font-size: 13px;
+      text-align: left;
     }
-    .nav-btn:hover { background: var(--sidebar-hover); color: #fff; }
-    .nav-btn.aktif {
-      background: var(--sidebar-active);
-      color: #fff;
-      font-weight: 600;
+    .side-btn-ops:hover {
+      background: rgba(37, 99, 235, 0.45);
     }
-    .badge-jml {
-      background: rgba(255, 255, 255, 0.15);
-      padding: 2px 8px;
-      border-radius: 999px;
+    .side-foot {
+      margin-top: auto;
       font-size: 11px;
-      font-weight: 600;
+      color: #94a3b8;
+      line-height: 1.45;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 10px;
     }
 
     /* Main Content */
@@ -197,13 +228,8 @@
       cursor: pointer;
       transition: border-color 0.15s ease, background 0.15s ease;
     }
-    .kpi.klik:hover {
-      border-color: var(--primary);
-    }
-    .kpi.klik.aktif {
-      border-color: var(--primary);
-      background: var(--primary-soft);
-    }
+    .kpi.klik:hover { border-color: var(--primary); }
+    .kpi.klik.aktif { border-color: var(--primary); background: var(--primary-soft); }
     .kpi .k-label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; }
     .kpi .k-val { font-size: 20px; font-weight: 800; margin-top: 4px; color: var(--text); }
     .kpi .k-hint { font-size: 11px; color: var(--muted); margin-top: 3px; }
@@ -326,7 +352,7 @@
     }
 
     /* Modal */
-    #modal {
+    .modal-backdrop {
       display: none;
       position: fixed;
       inset: 0;
@@ -336,18 +362,19 @@
       padding: 16px;
       z-index: 50;
     }
-    #modal.aktif { display: flex; }
+    .modal-backdrop.aktif { display: flex; }
     .modal-isi {
       background: var(--card);
       color: var(--text);
       border: 1px solid var(--border);
       padding: 20px;
       border-radius: 14px;
-      max-width: 520px;
+      max-width: 540px;
       width: 100%;
-      max-height: 82vh;
+      max-height: 84vh;
       overflow: auto;
     }
+    .modal-isi.lebar { max-width: 780px; }
     .modal-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
     .btn-dark {
       background: var(--primary);
@@ -369,6 +396,16 @@
       font-weight: 600;
       cursor: pointer;
     }
+    .ops-item {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 13px;
+      margin-bottom: 10px;
+      background: var(--row-alt);
+    }
+    .ops-item h4 { margin: 0 0 5px; font-size: 13px; }
+    .ops-item p, .ops-item ul { margin: 0; font-size: 12px; color: var(--muted); line-height: 1.5; }
+    .ops-item ul { padding-left: 16px; }
 
     @media (max-width: 768px) {
       .wrap { flex-direction: column; }
@@ -379,14 +416,38 @@
 </head>
 <body>
   <div class="wrap">
+    <!-- SIDEBAR KIRI: VISI & MISI -->
     <aside class="side">
-      <h3>DATA PERSONEL BM KPDJP 2026</h3>
-      <button class="nav-btn aktif" id="btnSemua" onclick="pilihDivisi('')">
-        <span>Semua Data</span><span class="badge-jml" id="jmlSemua">0</span>
+      <div class="side-head">
+        <h3>BUILDING MANAGEMENT KPDJP</h3>
+        <div class="side-loc">Jl. Gatot Subroto No. 40–42, Jakarta Selatan • Kantor Pusat DJP</div>
+      </div>
+
+      <div class="vm-box">
+        <div class="vm-tag">Visi Utama</div>
+        <p class="vm-visi">"Mewujudkan Lingkungan Kerja Kantor Pusat DJP yang Aman, Andal, Bersih, Nyaman, dan Berkelanjutan Berstandar Profesional Tinggi."</p>
+      </div>
+
+      <div class="vm-box">
+        <div class="vm-tag">Misi & Pilar Strategis</div>
+        <ul class="vm-list">
+          <li><b>Keandalan Infrastruktur:</b> Memastikan keandalan sistem MEP, kelancaran daya listrik, pasokan air, dan keamanan fisik gedung 24/7.</li>
+          <li><b>Kenyamanan Tenant & Tamu:</b> Menyajikan pelayanan kebersihan standar premium, kerapihan tata ruang rapat, dan keramahan layanan.</li>
+          <li><b>K3 & Tanggap Darurat:</b> Menerapkan standar Keselamatan Kerja terintegrasi serta kesiapsiagaan penuh penanggulangan bencana.</li>
+        </ul>
+      </div>
+
+      <button class="side-btn-ops" onclick="bukaModalOps()">
+        Lihat Tugas 7 Divisi, K3 & Darurat (A3) →
       </button>
-      <div id="menuDivisi" style="margin-top:6px;"></div>
+
+      <div class="side-foot">
+        <b>Helpdesk BM:</b> Ext. 50000 • WA 081188093005<br>
+        <b>Email:</b> bmkpdjp22@gmail.com
+      </div>
     </aside>
 
+    <!-- KONTEN UTAMA -->
     <main class="main">
       <div class="hero">
         <div class="hero-top">
@@ -459,7 +520,8 @@
     </main>
   </div>
 
-  <div id="modal" onclick="if(event.target.id==='modal') tutupModal()">
+  <!-- MODAL DETAIL PERSONEL -->
+  <div id="modal" class="modal-backdrop" onclick="if(event.target.id==='modal') tutupModal()">
     <div class="modal-isi">
       <h3 style="margin-top:0;" id="modalJudul">Detail Personel</h3>
       <div id="detailIsi"></div>
@@ -467,6 +529,81 @@
         <button class="btn-sec" id="btnSalinNip" onclick="salinNilai('nip')">Salin NIP</button>
         <button class="btn-sec" id="btnSalinEmail" onclick="salinNilai('email')">Salin Email</button>
         <button class="btn-dark" onclick="tutupModal()">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL URAIAN TUGAS 7 DIVISI, K3 & DARURAT (A3) -->
+  <div id="modalOps" class="modal-backdrop" onclick="if(event.target.id==='modalOps') tutupModalOps()">
+    <div class="modal-isi lebar">
+      <h3 style="margin-top:0;">Uraian Tugas 7 Divisi, K3 & Kontak Darurat (A3)</h3>
+      <div class="ops-item">
+        <h4>1. Management Office (Tenant Relations & Supervisi)</h4>
+        <ul>
+          <li><b>Layanan Pengaduan & Helpdesk:</b> Mengelola aduan kelayakan fasilitas gedung via Helpdesk (Ext. 50000 / WA 081188093005) & memastikan respon cepat.</li>
+          <li><b>Perencanaan & Perizinan Vendor:</b> Menyusun rencana kerja/realisasi (mingguan, bulanan, tahunan), jadwal pemeliharaan rutin, penerbitan SIK, & pengawasan kualitas kerja.</li>
+          <li><b>Koordinasi Stakeholder & Event:</b> Jembatan komunikasi antara pimpinan DJP, pengelola gedung, penghuni, & mitra kerja.</li>
+        </ul>
+      </div>
+      <div class="ops-item">
+        <h4>2. Engineering (MEP & Fasilitas)</h4>
+        <ul>
+          <li><b>Sistem Kelistrikan & HVAC:</b> Pemeliharaan berkala Trafo, Genset, Panel LVMDP, PLTS, AC Chiller/Split/VRV, penerangan, stop kontak, & air kotor/bekas.</li>
+          <li><b>Plumbing, STP, Lift & Fire Protection:</b> Monitoring air bersih, pengolahan limbah STP terintegrasi PALjaya, supervisi pemeliharaan lift, & sistem fire protection.</li>
+          <li><b>Perbaikan, Preventive & Energi:</b> Inspeksi teknis harian/berkala, penanganan gangguan mendadak, & monitoring energi gedung.</li>
+          <li><b>Integrasi BAS & CCTV:</b> Monitoring & kontrol otomatis terpusat (lampu, lift, efisiensi AC Chiller/VRV, & CCTV) dari Ruang BAS.</li>
+        </ul>
+      </div>
+      <div class="ops-item">
+        <h4>3. Security (Keamanan & Pengamanan)</h4>
+        <ul>
+          <li><b>Pengawasan 24/7 & Patroli Area:</b> Patroli fisik teratur di area vital, pemeriksaan barang/paket masuk, & penjagaan pos.</li>
+          <li><b>Pelaporan & Pendataan Vendor:</b> Menerima laporan vendor ber-SIK dari Management Office, mencatat pekerja/alat kerja, & pengawasan berkala.</li>
+          <li><b>Ketertiban Parkir & Akses Tamu:</b> Pengaturan alur kendaraan VIP/pegawai & akses menggunakan Visitor Badge.</li>
+          <li><b>Tanggap Darurat & Sterilisasi:</b> Evakuasi awal keadaan darurat, pengamanan Assembly Point, & sterilisasi area terbatas.</li>
+        </ul>
+      </div>
+      <div class="ops-item">
+        <h4>4. Housekeeping (Kebersihan & Sanitasi)</h4>
+        <ul>
+          <li><b>Sanitasi Ruangan & Toilet:</b> Pembersihan rutin ruang kerja, toilet, koridor, lift, lobby, disinfeksi berkala, & pest control.</li>
+          <li><b>Pengelolaan Sampah & TPA:</b> Pemilahan & pembuangan sampah tiap lantai hingga TPA serta kebersihan area terbuka.</li>
+          <li><b>Perawatan Facade Kaca & Gondola:</b> Pembersihan kaca luar/dalam menggunakan gondola berstandar K3 tinggi.</li>
+          <li><b>Penataan & Estetika Tanaman:</b> Pemeliharaan RTH, tanaman indoor, & kerapihan lansekap kawasan KPDJP.</li>
+        </ul>
+      </div>
+      <div class="ops-item">
+        <h4>5. Resepsionis (Layanan Informasi & Tamu)</h4>
+        <ul>
+          <li><b>Penerimaan Tamu:</b> Menyambut tamu kedinasan, registrasi identitas visitor, & pengarahan lokasi ruangan.</li>
+          <li><b>Pusat Informasi Central:</b> Melayani pertanyaan alur layanan gedung, konfirmasi surat/dokumen masuk, & koordinasi unit tujuan.</li>
+          <li><b>Pengelolaan Logbook:</b> Pencatatan data tamu secara tertib & penerbitan kartu kunjungan resmi instansi.</li>
+        </ul>
+      </div>
+      <div class="ops-item">
+        <h4>6. Banquet (Dukungan Ruang Rapat & Acara)</h4>
+        <ul>
+          <li><b>Penataan Ruang Rapat (Layout):</b> Setting meja, kursi, & perlengkapan rapat pimpinan, auditorium, maupun seremoni DJP.</li>
+          <li><b>Penyediaan Jamuan Kedinasan:</b> Koordinasi & penyajian konsumsi rapat pimpinan serta kegiatan resmi secara efisien.</li>
+          <li><b>Kesiapan Perangkat Rapat:</b> Pengecekan kelayakan/kelengkapan taplak meja, kebersihan, & kerapihan ruang rapat.</li>
+        </ul>
+      </div>
+      <div class="ops-item">
+        <h4>7. Sopir / Driver (Operasional Transportasi Kedinasan)</h4>
+        <ul>
+          <li><b>Mobilisasi Kedinasan:</b> Penjemputan & pengantaran tugas dinas pimpinan, pegawai, serta tamu resmi DJP.</li>
+          <li><b>Perawatan Armada Kendaraan:</b> Pengecekan rutin mesin, oli, rem, ban, & kebersihan interior-eksterior mobil dinas.</li>
+          <li><b>Pengelolaan Dokumen Kendaraan:</b> Memastikan keabsahan STNK, masa berlaku pajak, & kelengkapan administrasi perjalanan dinas.</li>
+        </ul>
+      </div>
+      <div class="ops-item">
+        <h4>Pedoman K3, APD & Nomor Darurat</h4>
+        <p><b>APD Wajib (1–8):</b> Helm Safety, Kacamata Safety, Masker/Respirator, Rompi Safety, Pelindung Telinga, Sarung Tangan, Pakaian Kerja, Safety Shoes. Pekerjaan risiko tinggi (Tegangan Tinggi, Ruang Terbatas, Ketinggian) wajib <b>Work Permit</b> & <b>LOTO</b>.<br>
+        <b>Alur Kendala:</b> 1. Lapor ke Helpdesk BM (Ext. 50000 / WA 081188093005) &rarr; 2. Tindak lanjut tim teknis &rarr; 3. Selesai & konfirmasi.<br>
+        <b>Darurat DKI Jakarta:</b> Terpadu/Polisi 112 • Damkar 110 • Ambulans (AGD) 113 / 118 / 119 • Gangguan PLN 123.</p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-dark" onclick="tutupModalOps()">Tutup</button>
       </div>
     </div>
   </div>
@@ -505,7 +642,7 @@
     let batasTampil = BATAS_AWAL;
     let timerKetik = null;
     let modeTema = localStorage.getItem("modeTemaKpdjp") || "auto";
-    let filterGenderAktif = ""; // "" | "laki" | "perempuan"
+    let filterGenderAktif = "";
 
     function ambilJamWIB() {
       var bagian = new Intl.DateTimeFormat("id-ID", {
@@ -554,6 +691,14 @@
 
     terapkanTema();
     setInterval(terapkanTema, 1000);
+
+    function bukaModalOps() {
+      document.getElementById("modalOps").classList.add("aktif");
+    }
+
+    function tutupModalOps() {
+      document.getElementById("modalOps").classList.remove("aktif");
+    }
 
     let semuaData = [];
     let dataIndeks = [];
@@ -718,17 +863,11 @@
       var listDiv = urutDiv(Object.keys(hitung));
       var divAktif = document.getElementById("filterDivisi").value;
 
-      document.getElementById("jmlSemua").textContent = dataIndeks.length;
       document.getElementById("kpiDivisi").textContent = listDiv.length;
 
       document.getElementById("filterDivisi").innerHTML = '<option value="">Semua Divisi</option>' +
         listDiv.map(function(d) { return '<option value="' + d + '">' + d + ' (' + hitung[d] + ')</option>'; }).join("");
       document.getElementById("filterDivisi").value = divAktif;
-
-      document.getElementById("menuDivisi").innerHTML = listDiv.map(function(d) {
-        var aktifClass = divAktif === d ? " aktif" : "";
-        return '<button class="nav-btn' + aktifClass + '" data-d="' + d + '" onclick="pilihDivisi(\'' + d.replace(/'/g, "\\'") + '\')"><span>' + d + '</span><span class="badge-jml">' + hitung[d] + '</span></button>';
-      }).join("");
 
       document.getElementById("kartuDivisi").innerHTML = listDiv.map(function(d) {
         var aktifClass = divAktif === d ? " aktif" : "";
@@ -739,9 +878,6 @@
     function pilihDivisi(d) {
       batasTampil = BATAS_AWAL;
       document.getElementById("filterDivisi").value = d;
-      document.querySelectorAll(".nav-btn").forEach(function(b) {
-        b.classList.toggle("aktif", (d === "" && b.id === "btnSemua") || b.getAttribute("data-d") === d);
-      });
       document.querySelectorAll("#kartuDivisi .card").forEach(function(c) {
         var judul = c.querySelector("b") ? c.querySelector("b").textContent.trim() : "";
         c.classList.toggle("aktif", Boolean(d) && judul === d);
@@ -757,11 +893,8 @@
     }
 
     function toggleGender(g) {
-      if (filterGenderAktif === g) {
-        pilihGender("");
-      } else {
-        pilihGender(g);
-      }
+      if (filterGenderAktif === g) pilihGender("");
+      else pilihGender(g);
     }
 
     function perbaruiStatusGenderUI() {
