@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DATA PERSONEL & PELANGGARAN BM KPDJP 2026</title>
+  <title>DATA PERSONEL BM KPDJP 2026</title>
   <style>
     :root {
       --sidebar: #0f172a;
@@ -22,9 +22,6 @@
       --pill-text: #334155;
       --primary: #2563eb;
       --primary-soft: #eff6ff;
-      --danger-bg: #fef2f2;
-      --danger-text: #dc2626;
-      --danger-border: #fecaca;
       --hero: linear-gradient(135deg, #0f172a 0%, #1d4ed8 58%, #4338ca 100%);
       --shadow: 0 10px 24px -6px rgba(15, 23, 42, 0.08);
     }
@@ -46,9 +43,6 @@
       --pill-text: #e2e8f0;
       --primary: #3b82f6;
       --primary-soft: #172554;
-      --danger-bg: #450a0a;
-      --danger-text: #fca5a5;
-      --danger-border: #7f1d1d;
       --hero: linear-gradient(135deg, #05070c 0%, #111c3a 58%, #1e1b4b 100%);
       --shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.65);
     }
@@ -66,30 +60,22 @@
 
     /* Sidebar */
     .side {
-      width: 256px;
+      width: 248px;
       background: var(--sidebar);
       color: #fff;
       padding: 18px 14px;
       flex-shrink: 0;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
       border-right: 1px solid var(--border);
     }
     .side h3 {
-      margin: 0 0 6px;
+      margin: 0 0 8px;
       font-size: 15px;
       line-height: 1.35;
       padding-bottom: 12px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-    }
-    .side-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: #94a3b8;
-      margin: 6px 6px 2px;
-      font-weight: 700;
     }
     .nav-btn {
       display: flex;
@@ -104,17 +90,12 @@
       border-radius: 9px;
       text-align: left;
       cursor: pointer;
-      margin-bottom: 3px;
+      margin-bottom: 4px;
       font-size: 13px;
     }
     .nav-btn:hover { background: var(--sidebar-hover); color: #fff; }
     .nav-btn.aktif {
       background: var(--sidebar-active);
-      color: #fff;
-      font-weight: 600;
-    }
-    .nav-btn.aktif-merah {
-      background: #dc2626;
       color: #fff;
       font-weight: 600;
     }
@@ -145,7 +126,7 @@
       gap: 12px;
       flex-wrap: wrap;
     }
-    .hero h1 { margin: 0 0 6px; font-size: 23px; font-weight: 800; }
+    .hero h1 { margin: 0 0 6px; font-size: 24px; font-weight: 800; }
     .hero p { margin: 0 0 14px; font-size: 13px; color: #dbeafe; }
 
     .jam-pill {
@@ -218,7 +199,7 @@
     /* Kartu Divisi */
     .cards {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
       gap: 10px;
       margin-bottom: 16px;
     }
@@ -310,17 +291,6 @@
       font-size: 12px;
       font-weight: 600;
     }
-    .pill-poin {
-      display: inline-block;
-      background: var(--danger-bg);
-      color: var(--danger-text);
-      border: 1px solid var(--danger-border);
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 700;
-      margin-left: 6px;
-    }
 
     .footer-bar {
       display: flex;
@@ -361,7 +331,7 @@
       border: 1px solid var(--border);
       padding: 20px;
       border-radius: 14px;
-      max-width: 540px;
+      max-width: 520px;
       width: 100%;
       max-height: 82vh;
       overflow: auto;
@@ -387,15 +357,6 @@
       font-weight: 600;
       cursor: pointer;
     }
-    .riwayat-box {
-      margin-top: 12px;
-      padding: 10px 12px;
-      border-radius: 10px;
-      background: var(--danger-bg);
-      border: 1px solid var(--danger-border);
-      color: var(--danger-text);
-      font-size: 12px;
-    }
 
     @media (max-width: 768px) {
       .wrap { flex-direction: column; }
@@ -407,33 +368,18 @@
 <body>
   <div class="wrap">
     <aside class="side">
-      <h3>BM KPDJP 2026</h3>
-
-      <div class="side-label">Menu Utama</div>
-      <button class="nav-btn aktif" id="tabPersonel" onclick="gantiTab('personel')">
-        <span>Data Personel</span><span class="badge-jml" id="jmlTabPersonel">0</span>
+      <h3>DATA PERSONEL BM KPDJP 2026</h3>
+      <button class="nav-btn aktif" id="btnSemua" onclick="pilihDivisi('')">
+        <span>Semua Data</span><span class="badge-jml" id="jmlSemua">0</span>
       </button>
-      <button class="nav-btn" id="tabPelanggaran" onclick="gantiTab('pelanggaran')">
-        <span>Data Pelanggaran</span><span class="badge-jml" id="jmlTabPelanggaran">0</span>
-      </button>
-      <button class="nav-btn" id="tabKlasifikasi" onclick="gantiTab('klasifikasi')">
-        <span>Klasifikasi Pelanggaran</span><span class="badge-jml" id="jmlTabKlasifikasi">0</span>
-      </button>
-
-      <div id="blokSidebarDivisi">
-        <div class="side-label" style="margin-top:10px;">Filter Divisi</div>
-        <button class="nav-btn aktif" id="btnSemua" onclick="pilihDivisi('')">
-          <span>Semua Divisi</span><span class="badge-jml" id="jmlSemua">0</span>
-        </button>
-        <div id="menuDivisi" style="margin-top:4px;"></div>
-      </div>
+      <div id="menuDivisi" style="margin-top:6px;"></div>
     </aside>
 
     <main class="main">
       <div class="hero">
         <div class="hero-top">
           <div>
-            <h1 id="judulUtama">DATA PERSONEL BM KPDJP 2026</h1>
+            <h1>DATA PERSONEL BM KPDJP 2026</h1>
             <p id="infoStats">Memuat data...</p>
           </div>
           <span class="jam-pill" id="infoWaktuWIB">WIB: --:--:-- • Mode Otomatis</span>
@@ -446,29 +392,29 @@
         </div>
       </div>
 
-      <div class="kpi-grid" id="kpiGrid">
+      <div class="kpi-grid">
         <div class="kpi">
-          <div class="k-label" id="kpiLabel1">Data Cocok Filter</div>
-          <div class="k-val" id="kpiVal1">0</div>
+          <div class="k-label">Data Cocok Filter</div>
+          <div class="k-val" id="kpiTampil">0</div>
         </div>
         <div class="kpi">
-          <div class="k-label" id="kpiLabel2">Laki - Laki</div>
-          <div class="k-val" id="kpiVal2">0</div>
+          <div class="k-label">Laki - Laki</div>
+          <div class="k-val" id="kpiLaki">0</div>
         </div>
         <div class="kpi">
-          <div class="k-label" id="kpiLabel3">Perempuan</div>
-          <div class="k-val" id="kpiVal3">0</div>
+          <div class="k-label">Perempuan</div>
+          <div class="k-val" id="kpiPerempuan">0</div>
         </div>
         <div class="kpi">
-          <div class="k-label" id="kpiLabel4">Tercatat Pelanggaran</div>
-          <div class="k-val" id="kpiVal4">0</div>
+          <div class="k-label">Jumlah Divisi</div>
+          <div class="k-val" id="kpiDivisi">0</div>
         </div>
       </div>
 
       <div class="cards" id="kartuDivisi"></div>
 
       <div class="table-top">
-        <span style="font-weight:700; font-size:14px;" id="judulTabel">Daftar Personel</span>
+        <span style="font-weight:700; font-size:14px;">Daftar Personel</span>
         <div class="table-actions">
           <button class="btn-mini" onclick="unduhCSV()">Unduh CSV Hasil Filter</button>
         </div>
@@ -494,7 +440,7 @@
 
   <div id="modal" onclick="if(event.target.id==='modal') tutupModal()">
     <div class="modal-isi">
-      <h3 style="margin-top:0;" id="modalJudul">Detail Data</h3>
+      <h3 style="margin-top:0;" id="modalJudul">Detail Personel</h3>
       <div id="detailIsi"></div>
       <div class="modal-actions">
         <button class="btn-sec" id="btnSalinNip" onclick="salinNilai('nip')">Salin NIP</button>
@@ -506,31 +452,9 @@
 
   <script>
     const URL_DATA = "https://script.google.com/macros/s/AKfycbzKrn6vwNSM5hJGywoYmEXzKwA_rjFKeu9YRQq3lcNdYyO6Z0wIgNC2PYU1DmKNtm7l/exec";
-    const CACHE_KEY = "cacheBmKpdjp2026_v4";
+    const CACHE_KEY = "cachePersonelKpdjp2026_cepat";
     const DURASI_CACHE_MS = 24 * 60 * 60 * 1000;
-
-    // Urutan kolom baku khusus tab Data Pelanggaran (sesuai gambar)
-    const KOLOM_PELANGGARAN = [
-      "No",
-      "NIP",
-      "Nama",
-      "Jabatan",
-      "Divisi",
-      "Tanggal Pelanggaran",
-      "Jenis Pelanggaran",
-      "Poin Pelanggaran",
-      "Total Poin",
-      "Keterangan"
-    ];
-
-    const ABAIKAN_DIVISI = [
-      "data karyawan november 2026",
-      "data personel november 2026",
-      "data personil november 2026",
-      "data pelanggaran",
-      "poin pelanggaran",
-      "klasifikasi pelanggaran"
-    ];
+    const ABAIKAN = ["data karyawan november 2026", "data personel november 2026", "data personil november 2026"];
 
     const MAP_DIVISI_INGGRIS = {
       "manajemen office": "Management Office",
@@ -560,20 +484,6 @@
     let batasTampil = BATAS_AWAL;
     let timerKetik = null;
     let modeTema = localStorage.getItem("modeTemaKpdjp") || "auto";
-    let tabAktif = "personel";
-
-    let dbPersonel = [];
-    let dbPelanggaran = [];
-    let dbKlasifikasi = [];
-    let mapPelanggaranByNip = {};
-    let mapNamaByNip = {};
-    let mapRowByNip = {};
-
-    let dataIndeks = [];
-    let hasilTerakhir = [];
-    let barisDitampilkan = [];
-    let kolomList = [];
-    let dataModalAktif = null;
 
     function ambilJamWIB() {
       var bagian = new Intl.DateTimeFormat("id-ID", {
@@ -623,11 +533,17 @@
     terapkanTema();
     setInterval(terapkanTema, 1000);
 
+    let semuaData = [];
+    let dataIndeks = [];
+    let hasilTerakhir = [];
+    let barisDitampilkan = [];
+    let kolomList = [];
+    let dataModalAktif = null;
+
     function formatDivisiInggris(rawDiv) {
       var bersih = String(rawDiv || "").trim();
       if (!bersih) return "";
       var kunci = bersih.toLowerCase();
-      if (ABAIKAN_DIVISI.indexOf(kunci) !== -1) return "";
       return MAP_DIVISI_INGGRIS[kunci] || bersih;
     }
 
@@ -651,13 +567,9 @@
       return String(row["Alamat Email"] || row.Email || row.email || "").trim();
     }
 
-    function getNamaRow(row) {
-      return String(row["Nama"] || row["Nama Lengkap (Sesuai KTP)"] || row.nama || "").trim();
-    }
-
-    function diabaikanDivisi(nama) {
+    function diabaikan(nama) {
       var k = String(nama || "").trim().toLowerCase();
-      return ABAIKAN_DIVISI.indexOf(k) !== -1 || k.indexOf("november 2026") !== -1;
+      return ABAIKAN.indexOf(k) !== -1 || k.indexOf("november 2026") !== -1;
     }
 
     function urutDiv(arr) {
@@ -678,174 +590,25 @@
       return ((kata[0][0] || "") + (kata[1][0] || "")).toUpperCase();
     }
 
-    // Mengisi kolom kosong (No, NIP, Nama, Jabatan, Divisi) dari baris di atasnya
-    function isiKosongDariAtasPelanggaran(listPelanggaran) {
-      var last = {
-        No: "",
-        NIP: "",
-        Nama: "",
-        Jabatan: "",
-        Divisi: ""
-      };
-
-      return listPelanggaran.map(function(raw) {
-        var r = Object.assign({}, raw);
-
-        var noVal = String(r["No"] || r["Nomor"] || "").trim();
-        var nipVal = getNip(r);
-        var namaVal = String(r["Nama"] || r["Nama Lengkap (Sesuai KTP)"] || r.nama || "").trim();
-        var jabVal = String(r["Jabatan"] || "").trim();
-        var divVal = getDivAsli(r);
-
-        // Jika baris ini memulai orang/record baru (ada NIP atau Nama baru yang berbeda dari sebelumnya)
-        var gantiOrang = (nipVal && last.NIP && nipVal !== last.NIP) ||
-                         (namaVal && last.Nama && namaVal.toLowerCase() !== last.Nama.toLowerCase());
-
-        if (gantiOrang) {
-          last = { No: "", NIP: "", Nama: "", Jabatan: "", Divisi: "" };
-        }
-
-        if (noVal) last.No = noVal;
-        else if (last.No) noVal = last.No;
-
-        if (nipVal) last.NIP = nipVal;
-        else if (last.NIP) nipVal = last.NIP;
-
-        if (!namaVal && nipVal && mapNamaByNip[nipVal]) {
-          namaVal = mapNamaByNip[nipVal];
-        }
-        if (namaVal) last.Nama = namaVal;
-        else if (last.Nama) namaVal = last.Nama;
-
-        if (!jabVal && nipVal && mapRowByNip[nipVal] && mapRowByNip[nipVal]["Jabatan"]) {
-          jabVal = String(mapRowByNip[nipVal]["Jabatan"]).trim();
-        }
-        if (jabVal) last.Jabatan = jabVal;
-        else if (last.Jabatan) jabVal = last.Jabatan;
-
-        if (!divVal && nipVal && mapRowByNip[nipVal] && getDivAsli(mapRowByNip[nipVal])) {
-          divVal = getDivAsli(mapRowByNip[nipVal]);
-        }
-        if (divVal) last.Divisi = divVal;
-        else if (last.Divisi) divVal = last.Divisi;
-
-        var terstruktur = {};
-        KOLOM_PELANGGARAN.forEach(function(kol) {
-          if (kol === "No") terstruktur[kol] = noVal;
-          else if (kol === "NIP") terstruktur[kol] = nipVal;
-          else if (kol === "Nama") terstruktur[kol] = namaVal;
-          else if (kol === "Jabatan") terstruktur[kol] = jabVal;
-          else if (kol === "Divisi") terstruktur[kol] = divVal;
-          else terstruktur[kol] = String(r[kol] || "").trim();
-        });
-
-        return terstruktur;
+    function prosesDataArray(raw, labelTambahan) {
+      semuaData = raw.filter(function(r) {
+        return !diabaikan(getDivAsli(r)) && !diabaikan(getDiv(r));
       });
-    }
 
-    function bangunPetaPelanggaran() {
-      mapPelanggaranByNip = {};
-      for (var i = 0; i < dbPelanggaran.length; i++) {
-        var r = dbPelanggaran[i];
-        var nip = getNip(r);
-        if (!nip) continue;
-        if (!mapPelanggaranByNip[nip]) mapPelanggaranByNip[nip] = [];
-        mapPelanggaranByNip[nip].push(r);
-      }
-    }
-
-    function setPayload(payload, labelTambahan) {
-      var rawPersonel = [];
-      var rawPelanggaran = [];
-      var rawKlasifikasi = [];
-
-      if (Array.isArray(payload)) {
-        rawPersonel = payload;
-      } else if (payload && typeof payload === "object") {
-        rawPersonel = Array.isArray(payload.personel) ? payload.personel : [];
-        rawPelanggaran = Array.isArray(payload.pelanggaran) ? payload.pelanggaran : [];
-        rawKlasifikasi = Array.isArray(payload.klasifikasi) ? payload.klasifikasi : [];
-      }
-
-      mapNamaByNip = {};
-      mapRowByNip = {};
-      for (var m = 0; m < rawPersonel.length; m++) {
-        var pRow = rawPersonel[m];
-        if (!pRow || typeof pRow !== "object") continue;
-        var nipP = getNip(pRow);
-        var namaP = String(pRow["Nama Lengkap (Sesuai KTP)"] || pRow.Nama || pRow.nama || "").trim();
-        if (nipP) {
-          if (namaP && !mapNamaByNip[nipP]) mapNamaByNip[nipP] = namaP;
-          if (!mapRowByNip[nipP]) mapRowByNip[nipP] = pRow;
-        }
-      }
-
-      dbPersonel = rawPersonel;
-      dbPelanggaran = isiKosongDariAtasPelanggaran(rawPelanggaran);
-      dbKlasifikasi = rawKlasifikasi;
-
-      document.getElementById("jmlTabPersonel").textContent = dbPersonel.length;
-      document.getElementById("jmlTabPelanggaran").textContent = dbPelanggaran.length;
-      document.getElementById("jmlTabKlasifikasi").textContent = dbKlasifikasi.length;
-
-      bangunPetaPelanggaran();
-      siapkanTabAktif(labelTambahan);
-    }
-
-    function gantiTab(tab) {
-      tabAktif = tab;
-      batasTampil = BATAS_AWAL;
-      document.getElementById("cari").value = "";
-      document.getElementById("filterDivisi").value = "";
-
-      document.getElementById("tabPersonel").className = "nav-btn" + (tab === "personel" ? " aktif" : "");
-      document.getElementById("tabPelanggaran").className = "nav-btn" + (tab === "pelanggaran" ? " aktif-merah" : "");
-      document.getElementById("tabKlasifikasi").className = "nav-btn" + (tab === "klasifikasi" ? " aktif" : "");
-
-      siapkanTabAktif("");
-    }
-
-    function siapkanTabAktif(labelTambahan) {
-      var sumber = tabAktif === "personel" ? dbPersonel : (tabAktif === "pelanggaran" ? dbPelanggaran : dbKlasifikasi);
-      var pakaiFilterDivisi = (tabAktif === "personel" || tabAktif === "pelanggaran");
-
-      document.getElementById("blokSidebarDivisi").style.display = pakaiFilterDivisi ? "block" : "none";
-      document.getElementById("filterDivisi").style.display = pakaiFilterDivisi ? "inline-block" : "none";
-      document.getElementById("kartuDivisi").style.display = pakaiFilterDivisi ? "grid" : "none";
-
-      if (tabAktif === "personel") {
-        document.getElementById("judulUtama").textContent = "DATA PERSONEL BM KPDJP 2026";
-        document.getElementById("judulTabel").textContent = "Daftar Personel";
-        document.getElementById("cari").placeholder = "Cari nama, NIP, jabatan, divisi, atau kata kunci...";
-      } else if (tabAktif === "pelanggaran") {
-        document.getElementById("judulUtama").textContent = "DATA PELANGGARAN PERSONEL 2026";
-        document.getElementById("judulTabel").textContent = "Daftar Pelanggaran Personel";
-        document.getElementById("cari").placeholder = "Cari NIP, nama, jenis pelanggaran, atau keterangan SP...";
-      } else {
-        document.getElementById("judulUtama").textContent = "KLASIFIKASI & POIN PELANGGARAN";
-        document.getElementById("judulTabel").textContent = "Tabel Klasifikasi Pelanggaran";
-        document.getElementById("cari").placeholder = "Cari jenis pelanggaran, kategori, atau bobot poin...";
-      }
-
-      if (tabAktif === "pelanggaran") {
-        kolomList = KOLOM_PELANGGARAN.slice();
-      } else {
-        var setK = {};
-        for (var i = 0; i < sumber.length; i++) {
-          var r = sumber[i];
-          if (r && typeof r === "object") {
-            var keys = Object.keys(r);
-            for (var j = 0; j < keys.length; j++) {
-              setK[keys[j]] = 1;
-            }
+      var setK = {};
+      for (var i = 0; i < semuaData.length; i++) {
+        var r = semuaData[i];
+        if (r && typeof r === "object") {
+          var keys = Object.keys(r);
+          for (var j = 0; j < keys.length; j++) {
+            setK[keys[j]] = 1;
           }
         }
-        kolomList = Object.keys(setK);
       }
-
+      kolomList = Object.keys(setK);
       document.getElementById("kepalaTabel").innerHTML = kolomList.map(function(k) { return "<th>" + k + "</th>"; }).join("");
 
-      dataIndeks = sumber.map(function(r) {
+      dataIndeks = semuaData.map(function(r) {
         var divNorm = getDiv(r);
         var genderNorm = getGender(r);
         var isLaki = genderNorm.indexOf("laki") !== -1;
@@ -868,9 +631,7 @@
         };
       });
 
-      if (pakaiFilterDivisi) {
-        bangunDivisi();
-      }
+      bangunDivisi();
       tampil(labelTambahan);
     }
 
@@ -879,10 +640,10 @@
         var rawCache = localStorage.getItem(CACHE_KEY);
         if (!rawCache) return { ada: false, segar: false };
         var parsed = JSON.parse(rawCache);
-        if (parsed && parsed.payload) {
+        if (parsed && Array.isArray(parsed.data) && parsed.data.length) {
           var umur = Date.now() - (parsed.ts || 0);
           var masihSegar = umur < DURASI_CACHE_MS;
-          setPayload(parsed.payload, masihSegar ? "(dari cache)" : "(menyegarkan...)");
+          prosesDataArray(parsed.data, masihSegar ? "(dari cache)" : "(menyegarkan...)");
           return { ada: true, segar: masihSegar };
         }
       } catch (e) {}
@@ -897,27 +658,27 @@
           return;
         }
       } else {
-        document.getElementById("infoStats").textContent = "Memuat data terbaru dari Google Sheets...";
+        document.getElementById("infoStats").textContent = "Memuat data personel terbaru...";
       }
 
       if (btnRefresh) btnRefresh.disabled = true;
 
       var controller = typeof AbortController !== "undefined" ? new AbortController() : null;
-      var timeoutId = controller ? setTimeout(function() { controller.abort(); }, 25000) : null;
+      var timeoutId = controller ? setTimeout(function() { controller.abort(); }, 20000) : null;
 
       try {
-        var url = URL_DATA + (paksaSegar ? "?refresh=1" : "");
-        var res = await fetch(url, controller ? { signal: controller.signal } : {});
+        var res = await fetch(URL_DATA, controller ? { signal: controller.signal } : {});
         if (timeoutId) clearTimeout(timeoutId);
         var json = await res.json();
+        var raw = Array.isArray(json) ? json : (Array.isArray(json && json.data) ? json.data : []);
         try {
-          localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), payload: json }));
+          localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: raw }));
         } catch (e) {}
-        setPayload(json, "(data terbaru)");
+        prosesDataArray(raw, "(data terbaru)");
       } catch (e) {
         if (timeoutId) clearTimeout(timeoutId);
-        if (!dbPersonel.length && !dbPelanggaran.length) {
-          document.getElementById("infoStats").textContent = "Gagal memuat data: " + e.message;
+        if (!semuaData.length) {
+          document.getElementById("infoStats").textContent = "Gagal memuat data (server lambat/timeout). Coba klik Refresh Data lagi.";
         } else {
           tampil("(pakai cache)");
         }
@@ -928,18 +689,15 @@
 
     function bangunDivisi() {
       var hitung = {};
-      var totalItem = 0;
       for (var i = 0; i < dataIndeks.length; i++) {
         var d = dataIndeks[i].div;
-        if (d && !diabaikanDivisi(d)) {
-          hitung[d] = (hitung[d] || 0) + 1;
-          totalItem++;
-        }
+        if (d && !diabaikan(d)) hitung[d] = (hitung[d] || 0) + 1;
       }
       var listDiv = urutDiv(Object.keys(hitung));
       var divAktif = document.getElementById("filterDivisi").value;
 
-      document.getElementById("jmlSemua").textContent = totalItem;
+      document.getElementById("jmlSemua").textContent = dataIndeks.length;
+      document.getElementById("kpiDivisi").textContent = listDiv.length;
 
       document.getElementById("filterDivisi").innerHTML = '<option value="">Semua Divisi</option>' +
         listDiv.map(function(d) { return '<option value="' + d + '">' + d + ' (' + hitung[d] + ')</option>'; }).join("");
@@ -950,17 +708,16 @@
         return '<button class="nav-btn' + aktifClass + '" data-d="' + d + '" onclick="pilihDivisi(\'' + d.replace(/'/g, "\\'") + '\')"><span>' + d + '</span><span class="badge-jml">' + hitung[d] + '</span></button>';
       }).join("");
 
-      var unit = tabAktif === "pelanggaran" ? "baris" : "personel";
       document.getElementById("kartuDivisi").innerHTML = listDiv.map(function(d) {
         var aktifClass = divAktif === d ? " aktif" : "";
-        return '<div class="card' + aktifClass + '" onclick="pilihDivisi(\'' + d.replace(/'/g, "\\'") + '\')"><b>' + d + '</b><div class="card-sub">' + hitung[d] + ' ' + unit + '</div></div>';
+        return '<div class="card' + aktifClass + '" onclick="pilihDivisi(\'' + d.replace(/'/g, "\\'") + '\')"><b>' + d + '</b><div class="card-sub">' + hitung[d] + ' personel</div></div>';
       }).join("");
     }
 
     function pilihDivisi(d) {
       batasTampil = BATAS_AWAL;
       document.getElementById("filterDivisi").value = d;
-      document.querySelectorAll("#blokSidebarDivisi .nav-btn").forEach(function(b) {
+      document.querySelectorAll(".nav-btn").forEach(function(b) {
         b.classList.toggle("aktif", (d === "" && b.id === "btnSemua") || b.getAttribute("data-d") === d);
       });
       document.querySelectorAll("#kartuDivisi .card").forEach(function(c) {
@@ -976,7 +733,7 @@
     }
 
     function tampilkanSemuaBaris() {
-      batasTampil = hasilTerakhir.length || dataIndeks.length;
+      batasTampil = hasilTerakhir.length || semuaData.length;
       tampil();
     }
 
@@ -1002,7 +759,7 @@
       });
     }
 
-    function formatSel(kolom, nilai, rowObj) {
+    function formatSel(kolom, nilai) {
       var kl = kolom.toLowerCase();
       if (kl === "divisi") {
         var divTampil = formatDivisiInggris(nilai);
@@ -1010,29 +767,14 @@
       }
       var teks = String(nilai || "");
       if (kl.indexOf("nama") !== -1 && teks) {
-        var lencana = "";
-        if (tabAktif === "personel") {
-          var nip = getNip(rowObj);
-          var daftarP = nip ? mapPelanggaranByNip[nip] : null;
-          if (daftarP && daftarP.length) {
-            var catatan = daftarP.filter(function(x) { return x["Jenis Pelanggaran"] || x["Total Poin"] || x["Keterangan"]; });
-            if (catatan.length) {
-              var infoSingkat = catatan[catatan.length - 1]["Keterangan"] || (catatan[catatan.length - 1]["Total Poin"] + " Poin");
-              lencana = '<span class="pill-poin">' + infoSingkat + '</span>';
-            }
-          }
-        }
-        return '<span class="avatar">' + inisial(teks) + '</span><span>' + teks + '</span>' + lencana;
-      }
-      if ((kl === "keterangan" || kl === "total poin") && teks && tabAktif === "pelanggaran") {
-        return '<span class="pill-poin">' + teks + '</span>';
+        return '<span class="avatar">' + inisial(teks) + '</span><span>' + teks + '</span>';
       }
       return teks;
     }
 
     function unduhCSV() {
       if (!hasilTerakhir.length) {
-        alert("Tidak ada data untuk diunduh.");
+        alert("Tidak ada data personel untuk diunduh.");
         return;
       }
       var sep = ";";
@@ -1048,52 +790,13 @@
       var blob = new Blob([bom + barisCsv.join("\r\n")], { type: "text/csv;charset=utf-8;" });
       var link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.download = "data-" + tabAktif + "-bm-kpdjp-2026.csv";
+      link.download = "data-personel-bm-kpdjp-2026.csv";
       link.click();
-    }
-
-    function perbaruiKpi(saringRaw, jmlLaki, jmlPerempuan) {
-      if (tabAktif === "personel") {
-        document.getElementById("kpiLabel1").textContent = "Data Cocok Filter";
-        document.getElementById("kpiVal1").textContent = saringRaw.length;
-        document.getElementById("kpiLabel2").textContent = "Laki - Laki";
-        document.getElementById("kpiVal2").textContent = jmlLaki;
-        document.getElementById("kpiLabel3").textContent = "Perempuan";
-        document.getElementById("kpiVal3").textContent = jmlPerempuan;
-        document.getElementById("kpiLabel4").textContent = "Baris Pelanggaran";
-        document.getElementById("kpiVal4").textContent = dbPelanggaran.length;
-      } else if (tabAktif === "pelanggaran") {
-        var totalPoin = 0;
-        var jumlahSp = 0;
-        for (var i = 0; i < saringRaw.length; i++) {
-          var p = parseFloat(String(saringRaw[i]["Poin Pelanggaran"] || saringRaw[i]["Total Poin"] || "0").replace(",", "."));
-          if (!isNaN(p)) totalPoin += p;
-          if (String(saringRaw[i]["Keterangan"] || "").trim() !== "") jumlahSp++;
-        }
-        document.getElementById("kpiLabel1").textContent = "Baris Terfilter";
-        document.getElementById("kpiVal1").textContent = saringRaw.length;
-        document.getElementById("kpiLabel2").textContent = "Jumlah Poin";
-        document.getElementById("kpiVal2").textContent = totalPoin;
-        document.getElementById("kpiLabel3").textContent = "Status SP";
-        document.getElementById("kpiVal3").textContent = jumlahSp;
-        document.getElementById("kpiLabel4").textContent = "Total Personel";
-        document.getElementById("kpiVal4").textContent = dbPersonel.length;
-      } else {
-        document.getElementById("kpiLabel1").textContent = "Item Klasifikasi";
-        document.getElementById("kpiVal1").textContent = saringRaw.length;
-        document.getElementById("kpiLabel2").textContent = "Total Klasifikasi";
-        document.getElementById("kpiVal2").textContent = dbKlasifikasi.length;
-        document.getElementById("kpiLabel3").textContent = "Baris Pelanggaran";
-        document.getElementById("kpiVal3").textContent = dbPelanggaran.length;
-        document.getElementById("kpiLabel4").textContent = "Total Personel";
-        document.getElementById("kpiVal4").textContent = dbPersonel.length;
-      }
     }
 
     function tampil(labelTambahan) {
       var kata = document.getElementById("cari").value.toLowerCase().trim();
       var div = document.getElementById("filterDivisi").value;
-      var pakaiFilterDivisi = (tabAktif === "personel" || tabAktif === "pelanggaran");
 
       var saringRaw = [];
       var jmlLaki = 0;
@@ -1101,7 +804,7 @@
 
       for (var i = 0; i < dataIndeks.length; i++) {
         var item = dataIndeks[i];
-        var okD = !pakaiFilterDivisi || !div || item.div === div;
+        var okD = !div || item.div === div;
         var okK = !kata || item.teksCari.indexOf(kata) !== -1;
         if (okD && okK) {
           saringRaw.push(item.raw);
@@ -1111,13 +814,15 @@
       }
 
       hasilTerakhir = saringRaw;
-      perbaruiKpi(saringRaw, jmlLaki, jmlPerempuan);
 
       var barisPotongan = saringRaw.slice(0, batasTampil);
       barisDitampilkan = barisPotongan;
       var suffix = labelTambahan ? " " + labelTambahan : "";
 
-      document.getElementById("infoStats").textContent = "Menampilkan " + barisPotongan.length + " dari " + saringRaw.length + " data cocok (" + dataIndeks.length + " total baris)" + suffix;
+      document.getElementById("infoStats").textContent = "Menampilkan " + barisPotongan.length + " dari " + saringRaw.length + " data cocok (" + semuaData.length + " total personel)" + suffix;
+      document.getElementById("kpiTampil").textContent = saringRaw.length;
+      document.getElementById("kpiLaki").textContent = jmlLaki;
+      document.getElementById("kpiPerempuan").textContent = jmlPerempuan;
       document.getElementById("infoBarisTabel").textContent = "Baris tampil: " + barisPotongan.length + " dari " + saringRaw.length;
 
       var lebihDari50 = saringRaw.length > BATAS_AWAL;
@@ -1135,7 +840,7 @@
         var cells = "";
         for (var c = 0; c < kolomList.length; c++) {
           var k = kolomList[c];
-          cells += "<td>" + formatSel(k, r[k], r) + "</td>";
+          cells += "<td>" + formatSel(k, r[k]) + "</td>";
         }
         htmlRows += '<tr data-idx="' + p + '">' + cells + "</tr>";
       }
@@ -1150,27 +855,12 @@
       var r = barisDitampilkan[idx];
       if (!r) return;
       dataModalAktif = r;
-
-      var nama = getNamaRow(r) || r["Jenis Pelanggaran"] || "Detail Data";
+      var nama = r["Nama Lengkap (Sesuai KTP)"] || r.Nama || "Detail Personel";
       document.getElementById("modalJudul").textContent = nama;
-
-      var htmlDetail = kolomList.map(function(k) {
+      document.getElementById("detailIsi").innerHTML = kolomList.map(function(k) {
         var valTampil = k.toLowerCase() === "divisi" ? formatDivisiInggris(r[k]) : r[k];
         return "<p style='margin:6px 0;'><b>" + k + ":</b> " + (valTampil || "-") + "</p>";
       }).join("");
-
-      if (tabAktif === "personel") {
-        var nip = getNip(r);
-        var riwayat = nip ? mapPelanggaranByNip[nip] : null;
-        if (riwayat && riwayat.length) {
-          htmlDetail += "<div class='riwayat-box'><b>Catatan Pelanggaran (" + riwayat.length + "):</b><ul style='margin:6px 0 0; padding-left:18px;'>" +
-            riwayat.map(function(x) {
-              return "<li>" + (x["Tanggal Pelanggaran"] || "-") + " — " + (x["Jenis Pelanggaran"] || "-") + " (Poin: " + (x["Poin Pelanggaran"] || x["Total Poin"] || "0") + ", Ket: " + (x["Keterangan"] || "-") + ")</li>";
-            }).join("") + "</ul></div>";
-        }
-      }
-
-      document.getElementById("detailIsi").innerHTML = htmlDetail;
       document.getElementById("modal").classList.add("aktif");
     });
 
