@@ -58,16 +58,16 @@
 
     .wrap { display: flex; min-height: 100vh; }
 
-    /* Sidebar Kiri: Visi & Misi */
+    /* Sidebar Kiri: Visi & Misi + Tombol Nomor & Divisi */
     .side {
-      width: 276px;
+      width: 282px;
       background: var(--sidebar);
       color: #fff;
       padding: 18px 15px;
       flex-shrink: 0;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 11px;
       border-right: 1px solid var(--border);
     }
     .side-head h3 {
@@ -114,23 +114,55 @@
     .vm-list li:last-child { margin-bottom: 0; }
     .vm-list b { color: #e2e8f0; }
 
-    .side-btn-ops {
-      width: 100%;
-      background: linear-gradient(135deg, rgba(37, 99, 235, 0.35), rgba(67, 56, 202, 0.35));
-      border: 1px solid rgba(96, 165, 250, 0.55);
-      color: #eff6ff;
-      padding: 10px 12px;
+    .side-div-box {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 10px;
-      font-size: 12px;
-      font-weight: 700;
+      padding: 10px;
+    }
+    .side-div-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .side-div-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #f1f5f9;
+      padding: 6px 9px;
+      border-radius: 8px;
+      font-size: 11.5px;
+      font-weight: 600;
       cursor: pointer;
       text-align: left;
-      transition: transform 0.15s ease, background 0.15s ease;
+      transition: all 0.14s ease;
     }
-    .side-btn-ops:hover {
-      background: linear-gradient(135deg, rgba(37, 99, 235, 0.55), rgba(67, 56, 202, 0.55));
-      transform: translateY(-1px);
+    .side-div-btn:hover {
+      background: rgba(37, 99, 235, 0.35);
+      border-color: rgba(96, 165, 250, 0.6);
+      color: #fff;
     }
+    .num-chip {
+      display: inline-grid;
+      place-items: center;
+      min-width: 19px;
+      height: 19px;
+      padding: 0 4px;
+      border-radius: 5px;
+      background: #2563eb;
+      color: #fff;
+      font-size: 10.5px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .num-chip.alt { background: #0f766e; }
+    .num-chip.warn { background: #b45309; }
+
     .side-foot {
       margin-top: auto;
       font-size: 11px;
@@ -254,14 +286,14 @@
     .card.aktif { border-color: var(--primary); background: var(--primary-soft); }
     .card-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
-    /* Toolbar Tabel & Tombol Per Nomor & Per Divisi */
+    /* Toolbar Tabel & Tabel */
     .table-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 10px;
       flex-wrap: wrap;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
     .table-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
     .btn-mini {
@@ -281,55 +313,6 @@
       color: #fff;
     }
     .btn-mini.utama:hover { opacity: 0.92; color: #fff; }
-
-    .div-num-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 10px;
-      padding: 8px 10px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 11px;
-      align-items: center;
-    }
-    .div-num-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--pill-bg);
-      color: var(--pill-text);
-      border: 1px solid var(--border);
-      padding: 5px 10px;
-      border-radius: 8px;
-      font-size: 11.5px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.14s ease;
-    }
-    .div-num-btn:hover {
-      border-color: var(--primary);
-      color: var(--primary);
-      background: var(--primary-soft);
-    }
-    .num-chip {
-      display: inline-grid;
-      place-items: center;
-      min-width: 18px;
-      height: 18px;
-      padding: 0 4px;
-      border-radius: 5px;
-      background: var(--primary);
-      color: #fff;
-      font-size: 10.5px;
-      font-weight: 800;
-    }
-    .num-chip.alt {
-      background: #0f766e;
-    }
-    .num-chip.warn {
-      background: #b45309;
-    }
 
     .box {
       background: var(--card);
@@ -529,7 +512,7 @@
 </head>
 <body>
   <div class="wrap">
-    <!-- SIDEBAR KIRI: VISI & MISI -->
+    <!-- SIDEBAR KIRI: VISI & MISI + TOMBOL PER NOMOR & PER DIVISI -->
     <aside class="side">
       <div class="side-head">
         <h3>BUILDING MANAGEMENT KPDJP</h3>
@@ -550,9 +533,20 @@
         </ul>
       </div>
 
-      <button class="side-btn-ops" onclick="bukaModalOps('all')">
-        Lihat Tugas 7 Divisi, K3 & Darurat (A3) →
-      </button>
+      <div class="side-div-box">
+        <div class="vm-tag" style="margin-bottom:4px;">Uraian Tugas Per Nomor & Divisi</div>
+        <div class="side-div-list">
+          <button class="side-div-btn" onclick="bukaModalOps('1')"><span class="num-chip">1</span>Management Office</button>
+          <button class="side-div-btn" onclick="bukaModalOps('2')"><span class="num-chip">2</span>Engineering</button>
+          <button class="side-div-btn" onclick="bukaModalOps('3')"><span class="num-chip">3</span>Security</button>
+          <button class="side-div-btn" onclick="bukaModalOps('4')"><span class="num-chip">4</span>Housekeeping</button>
+          <button class="side-div-btn" onclick="bukaModalOps('5')"><span class="num-chip">5</span>Resepsionis</button>
+          <button class="side-div-btn" onclick="bukaModalOps('6')"><span class="num-chip">6</span>Banquet</button>
+          <button class="side-div-btn" onclick="bukaModalOps('7')"><span class="num-chip">7</span>Sopir / Driver</button>
+          <button class="side-div-btn" onclick="bukaModalOps('k3')"><span class="num-chip alt">K3</span>K3 & APD</button>
+          <button class="side-div-btn" onclick="bukaModalOps('darurat')"><span class="num-chip warn">!</span>Alur & Darurat</button>
+        </div>
+      </div>
 
       <div class="side-foot">
         <b>Helpdesk BM:</b> Ext. 50000 • WA 081188093005<br>
@@ -613,19 +607,6 @@
         <div class="table-actions">
           <button class="btn-mini" onclick="unduhCSV()">Unduh CSV Hasil Filter</button>
         </div>
-      </div>
-
-      <!-- TOMBOL PER NOMOR & PER DIVISI (A3) -->
-      <div class="div-num-bar" id="barNomorDivisi">
-        <button class="div-num-btn" onclick="bukaModalOps('1')"><span class="num-chip">1</span>Management Office</button>
-        <button class="div-num-btn" onclick="bukaModalOps('2')"><span class="num-chip">2</span>Engineering</button>
-        <button class="div-num-btn" onclick="bukaModalOps('3')"><span class="num-chip">3</span>Security</button>
-        <button class="div-num-btn" onclick="bukaModalOps('4')"><span class="num-chip">4</span>Housekeeping</button>
-        <button class="div-num-btn" onclick="bukaModalOps('5')"><span class="num-chip">5</span>Resepsionis</button>
-        <button class="div-num-btn" onclick="bukaModalOps('6')"><span class="num-chip">6</span>Banquet</button>
-        <button class="div-num-btn" onclick="bukaModalOps('7')"><span class="num-chip">7</span>Sopir / Driver</button>
-        <button class="div-num-btn" onclick="bukaModalOps('k3')"><span class="num-chip alt">K3</span>K3 & APD</button>
-        <button class="div-num-btn" onclick="bukaModalOps('darurat')"><span class="num-chip warn">!</span>Alur & Darurat</button>
       </div>
 
       <div class="box">
