@@ -58,7 +58,7 @@
 
     .wrap { display: flex; min-height: 100vh; }
 
-    /* Sidebar Kiri: Visi Misi & Operasional */
+    /* Sidebar Kiri: Visi & Misi */
     .side {
       width: 276px;
       background: var(--sidebar);
@@ -116,18 +116,20 @@
 
     .side-btn-ops {
       width: 100%;
-      background: rgba(37, 99, 235, 0.25);
-      border: 1px solid rgba(96, 165, 250, 0.45);
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.35), rgba(67, 56, 202, 0.35));
+      border: 1px solid rgba(96, 165, 250, 0.55);
       color: #eff6ff;
-      padding: 9px 11px;
-      border-radius: 9px;
+      padding: 10px 12px;
+      border-radius: 10px;
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
       text-align: left;
+      transition: transform 0.15s ease, background 0.15s ease;
     }
     .side-btn-ops:hover {
-      background: rgba(37, 99, 235, 0.45);
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.55), rgba(67, 56, 202, 0.55));
+      transform: translateY(-1px);
     }
     .side-foot {
       margin-top: auto;
@@ -371,10 +373,10 @@
       border-radius: 14px;
       max-width: 540px;
       width: 100%;
-      max-height: 84vh;
+      max-height: 86vh;
       overflow: auto;
     }
-    .modal-isi.lebar { max-width: 780px; }
+    .modal-isi.lebar { max-width: 820px; }
     .modal-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
     .btn-dark {
       background: var(--primary);
@@ -396,16 +398,100 @@
       font-weight: 600;
       cursor: pointer;
     }
+
+    /* Tombol Nomor & Kategori di Modal Operasional */
+    .kat-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin: 12px 0 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .kat-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--pill-bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 7px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .kat-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .kat-btn.aktif {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+    .kat-no {
+      display: inline-grid;
+      place-items: center;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 800;
+      background: rgba(15, 23, 42, 0.14);
+    }
+    .kat-btn.aktif .kat-no {
+      background: rgba(255, 255, 255, 0.25);
+      color: #fff;
+    }
+
     .ops-item {
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 11px 13px;
+      border-radius: 12px;
+      padding: 14px 16px;
       margin-bottom: 10px;
       background: var(--row-alt);
     }
-    .ops-item h4 { margin: 0 0 5px; font-size: 13px; }
-    .ops-item p, .ops-item ul { margin: 0; font-size: 12px; color: var(--muted); line-height: 1.5; }
-    .ops-item ul { padding-left: 16px; }
+    .ops-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .ops-badge {
+      display: inline-grid;
+      place-items: center;
+      min-width: 24px;
+      height: 24px;
+      padding: 0 6px;
+      border-radius: 7px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .ops-item h4 { margin: 0; font-size: 14px; font-weight: 700; }
+    .ops-item p, .ops-item ul { margin: 0; font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+    .ops-item ul { padding-left: 18px; }
+    .ops-item li { margin-bottom: 5px; }
+    .ops-item li:last-child { margin-bottom: 0; }
+    .apd-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .apd-tag {
+      background: var(--pill-bg);
+      color: var(--pill-text);
+      border: 1px solid var(--border);
+      padding: 4px 9px;
+      border-radius: 7px;
+      font-size: 11.5px;
+      font-weight: 600;
+    }
 
     @media (max-width: 768px) {
       .wrap { flex-direction: column; }
@@ -437,7 +523,7 @@
         </ul>
       </div>
 
-      <button class="side-btn-ops" onclick="bukaModalOps()">
+      <button class="side-btn-ops" onclick="bukaModalOps('all')">
         Lihat Tugas 7 Divisi, K3 & Darurat (A3) →
       </button>
 
@@ -533,539 +619,25 @@
     </div>
   </div>
 
-  <!-- MODAL URAIAN TUGAS 7 DIVISI, K3 & DARURAT (A3) -->
+  <!-- MODAL URAIAN TUGAS 7 DIVISI, K3 & DARURAT (A3) DENGAN TOMBOL PER NOMOR & KATEGORI -->
   <div id="modalOps" class="modal-backdrop" onclick="if(event.target.id==='modalOps') tutupModalOps()">
     <div class="modal-isi lebar">
-      <h3 style="margin-top:0;">Uraian Tugas 7 Divisi, K3 & Kontak Darurat (A3)</h3>
-      <div class="ops-item">
-        <h4>1. Management Office (Tenant Relations & Supervisi)</h4>
-        <ul>
-          <li><b>Layanan Pengaduan & Helpdesk:</b> Mengelola aduan kelayakan fasilitas gedung via Helpdesk (Ext. 50000 / WA 081188093005) & memastikan respon cepat.</li>
-          <li><b>Perencanaan & Perizinan Vendor:</b> Menyusun rencana kerja/realisasi (mingguan, bulanan, tahunan), jadwal pemeliharaan rutin, penerbitan SIK, & pengawasan kualitas kerja.</li>
-          <li><b>Koordinasi Stakeholder & Event:</b> Jembatan komunikasi antara pimpinan DJP, pengelola gedung, penghuni, & mitra kerja.</li>
-        </ul>
+      <h3 style="margin-top:0 0 4px;">Garis Besar Operasional BM KPDJP (A3)</h3>
+      <div style="font-size:12px; color:var(--muted);">Pilih tombol nomor & kategori untuk melihat rincian tugas, K3, alur kendala, atau kontak darurat.</div>
+
+      <div class="kat-tabs" id="katTabsOps">
+        <button class="kat-btn aktif" data-kat="all" onclick="pilihKategoriOps('all')"><span class="kat-no">★</span>Semua</button>
+        <button class="kat-btn" data-kat="1" onclick="pilihKategoriOps('1')"><span class="kat-no">1</span>Management Office</button>
+        <button class="kat-btn" data-kat="2" onclick="pilihKategoriOps('2')"><span class="kat-no">2</span>Engineering</button>
+        <button class="kat-btn" data-kat="3" onclick="pilihKategoriOps('3')"><span class="kat-no">3</span>Security</button>
+        <button class="kat-btn" data-kat="4" onclick="pilihKategoriOps('4')"><span class="kat-no">4</span>Housekeeping</button>
+        <button class="kat-btn" data-kat="5" onclick="pilihKategoriOps('5')"><span class="kat-no">5</span>Resepsionis</button>
+        <button class="kat-btn" data-kat="6" onclick="pilihKategoriOps('6')"><span class="kat-no">6</span>Banquet</button>
+        <button class="kat-btn" data-kat="7" onclick="pilihKategoriOps('7')"><span class="kat-no">7</span>Sopir / Driver</button>
+        <button class="kat-btn" data-kat="k3" onclick="pilihKategoriOps('k3')"><span class="kat-no">K3</span>K3 & APD</button>
+        <button class="kat-btn" data-kat="darurat" onclick="pilihKategoriOps('darurat')"><span class="kat-no">!</span>Alur & Darurat</button>
       </div>
-      <div class="ops-item">
-        <h4>2. Engineering (MEP & Fasilitas)</h4>
-        <ul>
-          <li><b>Sistem Kelistrikan & HVAC:</b> Pemeliharaan berkala Trafo, Genset, Panel LVMDP, PLTS, AC Chiller/Split/VRV, penerangan, stop kontak, & air kotor/bekas.</li>
-          <li><b>Plumbing, STP, Lift & Fire Protection:</b> Monitoring air bersih, pengolahan limbah STP terintegrasi PALjaya, supervisi pemeliharaan lift, & sistem fire protection.</li>
-          <li><b>Perbaikan, Preventive & Energi:</b> Inspeksi teknis harian/berkala, penanganan gangguan mendadak, & monitoring energi gedung.</li>
-          <li><b>Integrasi BAS & CCTV:</b> Monitoring & kontrol otomatis terpusat (lampu, lift, efisiensi AC Chiller/VRV, & CCTV) dari Ruang BAS.</li>
-        </ul>
-      </div>
-      <div class="ops-item">
-        <h4>3. Security (Keamanan & Pengamanan)</h4>
-        <ul>
-          <li><b>Pengawasan 24/7 & Patroli Area:</b> Patroli fisik teratur di area vital, pemeriksaan barang/paket masuk, & penjagaan pos.</li>
-          <li><b>Pelaporan & Pendataan Vendor:</b> Menerima laporan vendor ber-SIK dari Management Office, mencatat pekerja/alat kerja, & pengawasan berkala.</li>
-          <li><b>Ketertiban Parkir & Akses Tamu:</b> Pengaturan alur kendaraan VIP/pegawai & akses menggunakan Visitor Badge.</li>
-          <li><b>Tanggap Darurat & Sterilisasi:</b> Evakuasi awal keadaan darurat, pengamanan Assembly Point, & sterilisasi area terbatas.</li>
-        </ul>
-      </div>
-      <div class="ops-item">
-        <h4>4. Housekeeping (Kebersihan & Sanitasi)</h4>
-        <ul>
-          <li><b>Sanitasi Ruangan & Toilet:</b> Pembersihan rutin ruang kerja, toilet, koridor, lift, lobby, disinfeksi berkala, & pest control.</li>
-          <li><b>Pengelolaan Sampah & TPA:</b> Pemilahan & pembuangan sampah tiap lantai hingga TPA serta kebersihan area terbuka.</li>
-          <li><b>Perawatan Facade Kaca & Gondola:</b> Pembersihan kaca luar/dalam menggunakan gondola berstandar K3 tinggi.</li>
-          <li><b>Penataan & Estetika Tanaman:</b> Pemeliharaan RTH, tanaman indoor, & kerapihan lansekap kawasan KPDJP.</li>
-        </ul>
-      </div>
-      <div class="ops-item">
-        <h4>5. Resepsionis (Layanan Informasi & Tamu)</h4>
-        <ul>
-          <li><b>Penerimaan Tamu:</b> Menyambut tamu kedinasan, registrasi identitas visitor, & pengarahan lokasi ruangan.</li>
-          <li><b>Pusat Informasi Central:</b> Melayani pertanyaan alur layanan gedung, konfirmasi surat/dokumen masuk, & koordinasi unit tujuan.</li>
-          <li><b>Pengelolaan Logbook:</b> Pencatatan data tamu secara tertib & penerbitan kartu kunjungan resmi instansi.</li>
-        </ul>
-      </div>
-      <div class="ops-item">
-        <h4>6. Banquet (Dukungan Ruang Rapat & Acara)</h4>
-        <ul>
-          <li><b>Penataan Ruang Rapat (Layout):</b> Setting meja, kursi, & perlengkapan rapat pimpinan, auditorium, maupun seremoni DJP.</li>
-          <li><b>Penyediaan Jamuan Kedinasan:</b> Koordinasi & penyajian konsumsi rapat pimpinan serta kegiatan resmi secara efisien.</li>
-          <li><b>Kesiapan Perangkat Rapat:</b> Pengecekan kelayakan/kelengkapan taplak meja, kebersihan, & kerapihan ruang rapat.</li>
-        </ul>
-      </div>
-      <div class="ops-item">
-        <h4>7. Sopir / Driver (Operasional Transportasi Kedinasan)</h4>
-        <ul>
-          <li><b>Mobilisasi Kedinasan:</b> Penjemputan & pengantaran tugas dinas pimpinan, pegawai, serta tamu resmi DJP.</li>
-          <li><b>Perawatan Armada Kendaraan:</b> Pengecekan rutin mesin, oli, rem, ban, & kebersihan interior-eksterior mobil dinas.</li>
-          <li><b>Pengelolaan Dokumen Kendaraan:</b> Memastikan keabsahan STNK, masa berlaku pajak, & kelengkapan administrasi perjalanan dinas.</li>
-        </ul>
-      </div>
-      <div class="ops-item">
-        <h4>Pedoman K3, APD & Nomor Darurat</h4>
-        <p><b>APD Wajib (1–8):</b> Helm Safety, Kacamata Safety, Masker/Respirator, Rompi Safety, Pelindung Telinga, Sarung Tangan, Pakaian Kerja, Safety Shoes. Pekerjaan risiko tinggi (Tegangan Tinggi, Ruang Terbatas, Ketinggian) wajib <b>Work Permit</b> & <b>LOTO</b>.<br>
-        <b>Alur Kendala:</b> 1. Lapor ke Helpdesk BM (Ext. 50000 / WA 081188093005) &rarr; 2. Tindak lanjut tim teknis &rarr; 3. Selesai & konfirmasi.<br>
-        <b>Darurat DKI Jakarta:</b> Terpadu/Polisi 112 • Damkar 110 • Ambulans (AGD) 113 / 118 / 119 • Gangguan PLN 123.</p>
-      </div>
-      <div class="modal-actions">
-        <button class="btn-dark" onclick="tutupModalOps()">Tutup</button>
-      </div>
-    </div>
-  </div>
 
-  <script>
-    const URL_DATA = "https://script.google.com/macros/s/AKfycbzKrn6vwNSM5hJGywoYmEXzKwA_rjFKeu9YRQq3lcNdYyO6Z0wIgNC2PYU1DmKNtm7l/exec";
-    const CACHE_KEY = "cachePersonelKpdjp2026_cepat";
-    const DURASI_CACHE_MS = 24 * 60 * 60 * 1000;
-    const ABAIKAN = ["data karyawan november 2026", "data personel november 2026", "data personil november 2026"];
-
-    const MAP_DIVISI_INGGRIS = {
-      "manajemen office": "Management Office",
-      "management office": "Management Office",
-      "engineering": "Engineering",
-      "engieering": "Engineering",
-      "security": "Security",
-      "housekeeping": "Housekeeping",
-      "banquet": "Banquet",
-      "sopir": "Driver",
-      "driver": "Driver",
-      "resepsionis": "Receptionist",
-      "receptionist": "Receptionist"
-    };
-
-    const URUTAN_DIVISI = [
-      "Management Office",
-      "Engineering",
-      "Security",
-      "Housekeeping",
-      "Banquet",
-      "Driver",
-      "Receptionist"
-    ];
-
-    const BATAS_AWAL = 50;
-    let batasTampil = BATAS_AWAL;
-    let timerKetik = null;
-    let modeTema = localStorage.getItem("modeTemaKpdjp") || "auto";
-    let filterGenderAktif = "";
-
-    function ambilJamWIB() {
-      var bagian = new Intl.DateTimeFormat("id-ID", {
-        timeZone: "Asia/Jakarta",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false
-      }).formatToParts(new Date());
-
-      var jam = 0;
-      var teksJam = "";
-      bagian.forEach(function(p) {
-        if (p.type === "hour") {
-          jam = parseInt(p.value, 10);
-          teksJam += p.value;
-        } else if (p.type === "minute" || p.type === "second") {
-          teksJam += ":" + p.value;
-        }
-      });
-
-      var adalahMalam = (jam >= 18 || jam < 6);
-      return { jam: jam, teksJam: teksJam, adalahMalam: adalahMalam };
-    }
-
-    function terapkanTema() {
-      var info = ambilJamWIB();
-      var pakaiGelap = modeTema === "dark" || (modeTema === "auto" && info.adalahMalam);
-      document.body.classList.toggle("mode-malam", pakaiGelap);
-
-      var labelMode = modeTema === "auto"
-        ? (info.adalahMalam ? "Otomatis WIB (Malam)" : "Otomatis WIB (Siang)")
-        : (modeTema === "dark" ? "Hitam" : "Terang");
-
-      document.getElementById("infoWaktuWIB").textContent = "WIB: " + info.teksJam + " • " + labelMode;
-      document.getElementById("btnTema").textContent = "Tema: " + (modeTema === "auto" ? "Otomatis WIB" : (modeTema === "dark" ? "Hitam" : "Terang"));
-    }
-
-    function gantiModeTema() {
-      if (modeTema === "auto") modeTema = "dark";
-      else if (modeTema === "dark") modeTema = "light";
-      else modeTema = "auto";
-      localStorage.setItem("modeTemaKpdjp", modeTema);
-      terapkanTema();
-    }
-
-    terapkanTema();
-    setInterval(terapkanTema, 1000);
-
-    function bukaModalOps() {
-      document.getElementById("modalOps").classList.add("aktif");
-    }
-
-    function tutupModalOps() {
-      document.getElementById("modalOps").classList.remove("aktif");
-    }
-
-    let semuaData = [];
-    let dataIndeks = [];
-    let hasilTerakhir = [];
-    let barisDitampilkan = [];
-    let kolomList = [];
-    let dataModalAktif = null;
-
-    function formatDivisiInggris(rawDiv) {
-      var bersih = String(rawDiv || "").trim();
-      if (!bersih) return "";
-      var kunci = bersih.toLowerCase();
-      return MAP_DIVISI_INGGRIS[kunci] || bersih;
-    }
-
-    function getDivAsli(row) {
-      return String(row.Divisi || row.DIvisi || row.divisi || "").trim();
-    }
-
-    function getDiv(row) {
-      return formatDivisiInggris(getDivAsli(row));
-    }
-
-    function getGender(row) {
-      return String(row["Jenis Kelamin"] || row["jenis kelamin"] || "").trim().toLowerCase();
-    }
-
-    function getNip(row) {
-      return String(row.NIP || row.nip || "").trim();
-    }
-
-    function getEmail(row) {
-      return String(row["Alamat Email"] || row.Email || row.email || "").trim();
-    }
-
-    function diabaikan(nama) {
-      var k = String(nama || "").trim().toLowerCase();
-      return ABAIKAN.indexOf(k) !== -1 || k.indexOf("november 2026") !== -1;
-    }
-
-    function urutDiv(arr) {
-      return arr.slice().sort(function(a, b) {
-        var ia = URUTAN_DIVISI.indexOf(a);
-        var ib = URUTAN_DIVISI.indexOf(b);
-        if (ia !== -1 && ib !== -1) return ia - ib;
-        if (ia !== -1) return -1;
-        if (ib !== -1) return 1;
-        return a.localeCompare(b, "en");
-      });
-    }
-
-    function inisial(teks) {
-      var kata = String(teks || "PR").trim().split(/\s+/).filter(Boolean);
-      if (!kata.length) return "PR";
-      if (kata.length === 1) return kata[0].slice(0, 2).toUpperCase();
-      return ((kata[0][0] || "") + (kata[1][0] || "")).toUpperCase();
-    }
-
-    function prosesDataArray(raw, labelTambahan) {
-      semuaData = raw.filter(function(r) {
-        return !diabaikan(getDivAsli(r)) && !diabaikan(getDiv(r));
-      });
-
-      var setK = {};
-      for (var i = 0; i < semuaData.length; i++) {
-        var r = semuaData[i];
-        if (r && typeof r === "object") {
-          var keys = Object.keys(r);
-          for (var j = 0; j < keys.length; j++) {
-            setK[keys[j]] = 1;
-          }
-        }
-      }
-      kolomList = Object.keys(setK);
-      document.getElementById("kepalaTabel").innerHTML = kolomList.map(function(k) { return "<th>" + k + "</th>"; }).join("");
-
-      dataIndeks = semuaData.map(function(r) {
-        var divNorm = getDiv(r);
-        var genderNorm = getGender(r);
-        var isLaki = genderNorm.indexOf("laki") !== -1;
-        var isPerempuan = !isLaki && genderNorm.indexOf("perempuan") !== -1;
-
-        var gabungan = [divNorm];
-        for (var k = 0; k < kolomList.length; k++) {
-          var v = r[kolomList[k]];
-          if (v !== undefined && v !== null && v !== "") {
-            gabungan.push(String(v));
-          }
-        }
-
-        return {
-          raw: r,
-          div: divNorm,
-          isLaki: isLaki,
-          isPerempuan: isPerempuan,
-          teksCari: gabungan.join(" ").toLowerCase()
-        };
-      });
-
-      bangunDivisi();
-      tampil(labelTambahan);
-    }
-
-    function bacaCache() {
-      try {
-        var rawCache = localStorage.getItem(CACHE_KEY);
-        if (!rawCache) return { ada: false, segar: false };
-        var parsed = JSON.parse(rawCache);
-        if (parsed && Array.isArray(parsed.data) && parsed.data.length) {
-          var umur = Date.now() - (parsed.ts || 0);
-          var masihSegar = umur < DURASI_CACHE_MS;
-          prosesDataArray(parsed.data, masihSegar ? "(dari cache)" : "(menyegarkan...)");
-          return { ada: true, segar: masihSegar };
-        }
-      } catch (e) {}
-      return { ada: false, segar: false };
-    }
-
-    async function muat(paksaSegar) {
-      var btnRefresh = document.getElementById("btnRefresh");
-      if (!paksaSegar) {
-        var statusCache = bacaCache();
-        if (statusCache.ada && statusCache.segar) {
-          return;
-        }
-      } else {
-        document.getElementById("infoStats").textContent = "Memuat data personel terbaru...";
-      }
-
-      if (btnRefresh) btnRefresh.disabled = true;
-
-      var controller = typeof AbortController !== "undefined" ? new AbortController() : null;
-      var timeoutId = controller ? setTimeout(function() { controller.abort(); }, 20000) : null;
-
-      try {
-        var res = await fetch(URL_DATA, controller ? { signal: controller.signal } : {});
-        if (timeoutId) clearTimeout(timeoutId);
-        var json = await res.json();
-        var raw = Array.isArray(json) ? json : (Array.isArray(json && json.data) ? json.data : []);
-        try {
-          localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: raw }));
-        } catch (e) {}
-        prosesDataArray(raw, "(data terbaru)");
-      } catch (e) {
-        if (timeoutId) clearTimeout(timeoutId);
-        if (!semuaData.length) {
-          document.getElementById("infoStats").textContent = "Gagal memuat data (server lambat/timeout). Coba klik Refresh Data lagi.";
-        } else {
-          tampil("(pakai cache)");
-        }
-      } finally {
-        if (btnRefresh) btnRefresh.disabled = false;
-      }
-    }
-
-    function bangunDivisi() {
-      var hitung = {};
-      for (var i = 0; i < dataIndeks.length; i++) {
-        var d = dataIndeks[i].div;
-        if (d && !diabaikan(d)) hitung[d] = (hitung[d] || 0) + 1;
-      }
-      var listDiv = urutDiv(Object.keys(hitung));
-      var divAktif = document.getElementById("filterDivisi").value;
-
-      document.getElementById("kpiDivisi").textContent = listDiv.length;
-
-      document.getElementById("filterDivisi").innerHTML = '<option value="">Semua Divisi</option>' +
-        listDiv.map(function(d) { return '<option value="' + d + '">' + d + ' (' + hitung[d] + ')</option>'; }).join("");
-      document.getElementById("filterDivisi").value = divAktif;
-
-      document.getElementById("kartuDivisi").innerHTML = listDiv.map(function(d) {
-        var aktifClass = divAktif === d ? " aktif" : "";
-        return '<div class="card' + aktifClass + '" onclick="pilihDivisi(\'' + d.replace(/'/g, "\\'") + '\')"><b>' + d + '</b><div class="card-sub">' + hitung[d] + ' personel</div></div>';
-      }).join("");
-    }
-
-    function pilihDivisi(d) {
-      batasTampil = BATAS_AWAL;
-      document.getElementById("filterDivisi").value = d;
-      document.querySelectorAll("#kartuDivisi .card").forEach(function(c) {
-        var judul = c.querySelector("b") ? c.querySelector("b").textContent.trim() : "";
-        c.classList.toggle("aktif", Boolean(d) && judul === d);
-      });
-      tampil();
-    }
-
-    function pilihGender(g) {
-      filterGenderAktif = g || "";
-      document.getElementById("filterGender").value = filterGenderAktif;
-      batasTampil = BATAS_AWAL;
-      tampil();
-    }
-
-    function toggleGender(g) {
-      if (filterGenderAktif === g) pilihGender("");
-      else pilihGender(g);
-    }
-
-    function perbaruiStatusGenderUI() {
-      document.getElementById("kpiCardLaki").classList.toggle("aktif", filterGenderAktif === "laki");
-      document.getElementById("kpiCardPerempuan").classList.toggle("aktif", filterGenderAktif === "perempuan");
-      document.getElementById("kpiCardSemua").classList.toggle("aktif", filterGenderAktif === "");
-
-      if (filterGenderAktif === "laki") {
-        document.getElementById("judulTabel").textContent = "Daftar Personel • Laki - Laki";
-      } else if (filterGenderAktif === "perempuan") {
-        document.getElementById("judulTabel").textContent = "Daftar Personel • Perempuan";
-      } else {
-        document.getElementById("judulTabel").textContent = "Daftar Personel";
-      }
-    }
-
-    function muatLebihBanyak() {
-      batasTampil += 50;
-      tampil();
-    }
-
-    function tampilkanSemuaBaris() {
-      batasTampil = hasilTerakhir.length || semuaData.length;
-      tampil();
-    }
-
-    function ringkasKeAwal() {
-      batasTampil = BATAS_AWAL;
-      tampil();
-    }
-
-    function tutupModal() {
-      document.getElementById("modal").classList.remove("aktif");
-      dataModalAktif = null;
-    }
-
-    function salinNilai(jenis) {
-      if (!dataModalAktif) return;
-      var nilai = jenis === "nip" ? getNip(dataModalAktif) : getEmail(dataModalAktif);
-      if (!nilai) {
-        alert(jenis === "nip" ? "NIP kosong." : "Email kosong.");
-        return;
-      }
-      navigator.clipboard.writeText(nilai).then(function() {
-        alert((jenis === "nip" ? "NIP " : "Email ") + nilai + " berhasil disalin.");
-      });
-    }
-
-    function formatSel(kolom, nilai) {
-      var kl = kolom.toLowerCase();
-      if (kl === "divisi") {
-        var divTampil = formatDivisiInggris(nilai);
-        return divTampil ? '<span class="pill">' + divTampil + '</span>' : "";
-      }
-      var teks = String(nilai || "");
-      if (kl.indexOf("nama") !== -1 && teks) {
-        return '<span class="avatar">' + inisial(teks) + '</span><span>' + teks + '</span>';
-      }
-      return teks;
-    }
-
-    function unduhCSV() {
-      if (!hasilTerakhir.length) {
-        alert("Tidak ada data personel untuk diunduh.");
-        return;
-      }
-      var sep = ";";
-      var barisCsv = [kolomList.map(function(k) { return '"' + String(k).replace(/"/g, '""') + '"'; }).join(sep)];
-      hasilTerakhir.forEach(function(r) {
-        var rowCsv = kolomList.map(function(k) {
-          var val = k.toLowerCase() === "divisi" ? formatDivisiInggris(r[k]) : (r[k] || "");
-          return '"' + String(val).replace(/[\r\n]+/g, " ").replace(/"/g, '""') + '"';
-        }).join(sep);
-        barisCsv.push(rowCsv);
-      });
-      var bom = "\uFEFF";
-      var blob = new Blob([bom + barisCsv.join("\r\n")], { type: "text/csv;charset=utf-8;" });
-      var link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "data-personel-bm-kpdjp-2026.csv";
-      link.click();
-    }
-
-    function tampil(labelTambahan) {
-      var kata = document.getElementById("cari").value.toLowerCase().trim();
-      var div = document.getElementById("filterDivisi").value;
-
-      var saringTanpaGender = [];
-      var jmlLaki = 0;
-      var jmlPerempuan = 0;
-
-      for (var i = 0; i < dataIndeks.length; i++) {
-        var item = dataIndeks[i];
-        var okD = !div || item.div === div;
-        var okK = !kata || item.teksCari.indexOf(kata) !== -1;
-        if (okD && okK) {
-          saringTanpaGender.push(item);
-          if (item.isLaki) jmlLaki++;
-          else if (item.isPerempuan) jmlPerempuan++;
-        }
-      }
-
-      var saringRaw = [];
-      for (var j = 0; j < saringTanpaGender.length; j++) {
-        var it = saringTanpaGender[j];
-        if (filterGenderAktif === "laki" && !it.isLaki) continue;
-        if (filterGenderAktif === "perempuan" && !it.isPerempuan) continue;
-        saringRaw.push(it.raw);
-      }
-
-      hasilTerakhir = saringRaw;
-      perbaruiStatusGenderUI();
-
-      var barisPotongan = saringRaw.slice(0, batasTampil);
-      barisDitampilkan = barisPotongan;
-      var suffix = labelTambahan ? " " + labelTambahan : "";
-      var labelGender = filterGenderAktif === "laki" ? " [Laki - Laki]" : (filterGenderAktif === "perempuan" ? " [Perempuan]" : "");
-
-      document.getElementById("infoStats").textContent = "Menampilkan " + barisPotongan.length + " dari " + saringRaw.length + " data cocok" + labelGender + " (" + semuaData.length + " total personel)" + suffix;
-      document.getElementById("kpiTampil").textContent = saringRaw.length;
-      document.getElementById("kpiLaki").textContent = jmlLaki;
-      document.getElementById("kpiPerempuan").textContent = jmlPerempuan;
-      document.getElementById("infoBarisTabel").textContent = "Baris tampil: " + barisPotongan.length + " dari " + saringRaw.length;
-
-      var lebihDari50 = saringRaw.length > BATAS_AWAL;
-      var masihAda = barisPotongan.length < saringRaw.length;
-      var sudahDiperluas = barisPotongan.length > BATAS_AWAL;
-
-      document.getElementById("navigasiBawah").style.display = lebihDari50 ? "flex" : "none";
-      document.getElementById("btnBawahTambah").style.display = masihAda ? "inline-block" : "none";
-      document.getElementById("btnBawahSemua").style.display = masihAda ? "inline-block" : "none";
-      document.getElementById("btnBawahRingkas").style.display = sudahDiperluas ? "inline-block" : "none";
-
-      var htmlRows = "";
-      for (var p = 0; p < barisPotongan.length; p++) {
-        var r = barisPotongan[p];
-        var cells = "";
-        for (var c = 0; c < kolomList.length; c++) {
-          var k = kolomList[c];
-          cells += "<td>" + formatSel(k, r[k]) + "</td>";
-        }
-        htmlRows += '<tr data-idx="' + p + '">' + cells + "</tr>";
-      }
-
-      document.getElementById("isiTabel").innerHTML = htmlRows;
-    }
-
-    document.getElementById("isiTabel").addEventListener("click", function(e) {
-      var tr = e.target.closest("tr[data-idx]");
-      if (!tr) return;
-      var idx = parseInt(tr.getAttribute("data-idx"), 10);
-      var r = barisDitampilkan[idx];
-      if (!r) return;
-      dataModalAktif = r;
-      var nama = r["Nama Lengkap (Sesuai KTP)"] || r.Nama || "Detail Personel";
-      document.getElementById("modalJudul").textContent = nama;
-      document.getElementById("detailIsi").innerHTML = kolomList.map(function(k) {
-        var valTampil = k.toLowerCase() === "divisi" ? formatDivisiInggris(r[k]) : r[k];
-        return "<p style='margin:6px 0;'><b>" + k + ":</b> " + (valTampil || "-") + "</p>";
-      }).join("");
-      document.getElementById("modal").classList.add("aktif");
-    });
-
-    document.getElementById("cari").addEventListener("input", function() {
-      batasTampil = BATAS_AWAL;
-      clearTimeout(timerKetik);
-      timerKetik = setTimeout(tampil, 120);
-    });
-    document.getElementById("filterDivisi").addEventListener("change", function(e) { pilihDivisi(e.target.value); });
-
-    muat(false);
-  </script>
-</body>
-</html>
+      <div id="kontenKatOps">
+        <div class="ops-item" data-kat-box="1">
+          <div class="ops-head"><span class="ops-badge">1</span><h4>Management
