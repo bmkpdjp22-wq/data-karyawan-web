@@ -587,7 +587,7 @@
 </head>
 <body>
   <div class="wrap">
-    <!-- SIDEBAR KIRI: VISI & MISI + TOMBOL PER NOMOR & PER DIVISI -->
+    <!-- SIDEBAR KIRI: VISI & MISI + TOMBOL NOMOR & DIVISI -->
     <aside class="side">
       <div class="side-head">
         <h3>BUILDING MANAGEMENT KPDJP</h3>
@@ -668,10 +668,10 @@
           <div class="k-val" id="kpiPerempuan">0</div>
           <div class="k-hint">Klik untuk filter Perempuan</div>
         </div>
-        <div class="kpi">
-          <div class="k-label">Jumlah Divisi</div>
-          <div class="k-val" id="kpiDivisi">0</div>
-          <div class="k-hint">Divisi aktif</div>
+        <div class="kpi klik" id="kpiCardTotalPersonel" onclick="tampilkanSemuaPersonelPer50()">
+          <div class="k-label">Total Personel</div>
+          <div class="k-val" id="kpiTotalPersonel">0</div>
+          <div class="k-hint">Klik tampilkan semua (per 50 data)</div>
         </div>
       </div>
 
@@ -1098,7 +1098,7 @@
       var listDiv = urutDiv(Object.keys(hitung));
       var divAktif = document.getElementById("filterDivisi").value;
 
-      document.getElementById("kpiDivisi").textContent = listDiv.length;
+      document.getElementById("kpiTotalPersonel").textContent = semuaData.length;
 
       document.getElementById("filterDivisi").innerHTML = '<option value="">Semua Divisi</option>' +
         listDiv.map(function(d) { return '<option value="' + d + '">' + d + ' (' + hitung[d] + ')</option>'; }).join("");
@@ -1121,6 +1121,18 @@
       tampil();
     }
 
+    function tampilkanSemuaPersonelPer50() {
+      filterGenderAktif = "";
+      document.getElementById("filterGender").value = "";
+      document.getElementById("filterDivisi").value = "";
+      document.getElementById("cari").value = "";
+      document.querySelectorAll("#kartuDivisi .card").forEach(function(c) {
+        c.classList.remove("aktif");
+      });
+      batasTampil = BATAS_AWAL;
+      tampil();
+    }
+
     function pilihGender(g) {
       filterGenderAktif = g || "";
       document.getElementById("filterGender").value = filterGenderAktif;
@@ -1137,6 +1149,9 @@
       document.getElementById("kpiCardLaki").classList.toggle("aktif", filterGenderAktif === "laki");
       document.getElementById("kpiCardPerempuan").classList.toggle("aktif", filterGenderAktif === "perempuan");
       document.getElementById("kpiCardSemua").classList.toggle("aktif", filterGenderAktif === "");
+
+      var tanpaFilterLain = !filterGenderAktif && !document.getElementById("filterDivisi").value && !document.getElementById("cari").value.trim();
+      document.getElementById("kpiCardTotalPersonel").classList.toggle("aktif", tanpaFilterLain);
 
       if (filterGenderAktif === "laki") {
         document.getElementById("judulTabel").textContent = "Daftar Personel • Laki - Laki";
@@ -1253,6 +1268,7 @@
       document.getElementById("kpiTampil").textContent = saringRaw.length;
       document.getElementById("kpiLaki").textContent = jmlLaki;
       document.getElementById("kpiPerempuan").textContent = jmlPerempuan;
+      document.getElementById("kpiTotalPersonel").textContent = semuaData.length;
       document.getElementById("infoBarisTabel").textContent = "Baris tampil: " + barisPotongan.length + " dari " + saringRaw.length;
 
       var lebihDari50 = saringRaw.length > BATAS_AWAL;
