@@ -250,7 +250,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
       gap: 10px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
     .kpi {
       background: var(--card);
@@ -268,23 +268,98 @@
     .kpi .k-val { font-size: 20px; font-weight: 800; margin-top: 4px; color: var(--text); }
     .kpi .k-hint { font-size: 11px; color: var(--muted); margin-top: 3px; }
 
-    /* Kartu Divisi */
+    /* Tombol / Kartu Divisi (Ukuran Ringkas & Warna Berkarakter) */
     .cards {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+      gap: 8px;
       margin-bottom: 16px;
     }
     .card {
-      background: var(--card);
-      padding: 12px 14px;
-      border-radius: 12px;
+      --div-accent: #2563eb;
+      --div-tint: linear-gradient(135deg, #eff6ff 0%, #ffffff 72%);
+      --div-badge-bg: #dbeafe;
+      --div-badge-text: #1d4ed8;
+      background: var(--div-tint);
+      padding: 8px 11px;
+      border-radius: 10px;
       border: 1px solid var(--border);
+      border-left: 3.5px solid var(--div-accent);
       cursor: pointer;
+      transition: transform 0.14s ease, box-shadow 0.14s ease, border-color 0.14s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 3px;
     }
-    .card:hover { border-color: var(--primary); }
-    .card.aktif { border-color: var(--primary); background: var(--primary-soft); }
-    .card-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    body.mode-malam .card {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.85) 0%, var(--card) 75%);
+    }
+    .card:hover {
+      transform: translateY(-1px);
+      border-color: var(--div-accent);
+      box-shadow: 0 6px 14px -4px rgba(15, 23, 42, 0.12);
+    }
+    .card.aktif {
+      border-color: var(--div-accent);
+      box-shadow: 0 0 0 1.5px var(--div-accent), 0 8px 16px -4px rgba(37, 99, 235, 0.2);
+    }
+    .card b {
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.25;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .card-sub {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--div-badge-text);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    body.mode-malam .card-sub {
+      color: #cbd5e1;
+    }
+
+    .card[data-div="Management Office"] {
+      --div-accent: #2563eb;
+      --div-tint: linear-gradient(135deg, #eff6ff 0%, #ffffff 75%);
+      --div-badge-text: #1d4ed8;
+    }
+    .card[data-div="Engineering"] {
+      --div-accent: #0284c7;
+      --div-tint: linear-gradient(135deg, #f0f9ff 0%, #ffffff 75%);
+      --div-badge-text: #0369a1;
+    }
+    .card[data-div="Security"] {
+      --div-accent: #4f46e5;
+      --div-tint: linear-gradient(135deg, #eef2ff 0%, #ffffff 75%);
+      --div-badge-text: #4338ca;
+    }
+    .card[data-div="Housekeeping"] {
+      --div-accent: #0d9488;
+      --div-tint: linear-gradient(135deg, #f0fdfa 0%, #ffffff 75%);
+      --div-badge-text: #0f766e;
+    }
+    .card[data-div="Banquet"] {
+      --div-accent: #d97706;
+      --div-tint: linear-gradient(135deg, #fffbeb 0%, #ffffff 75%);
+      --div-badge-text: #b45309;
+    }
+    .card[data-div="Driver"] {
+      --div-accent: #059669;
+      --div-tint: linear-gradient(135deg, #ecfdf5 0%, #ffffff 75%);
+      --div-badge-text: #047857;
+    }
+    .card[data-div="Receptionist"] {
+      --div-accent: #7c3aed;
+      --div-tint: linear-gradient(135deg, #f5f3ff 0%, #ffffff 75%);
+      --div-badge-text: #6d28d9;
+    }
 
     /* Toolbar Tabel & Tabel */
     .table-top {
@@ -1031,7 +1106,8 @@
 
       document.getElementById("kartuDivisi").innerHTML = listDiv.map(function(d) {
         var aktifClass = divAktif === d ? " aktif" : "";
-        return '<div class="card' + aktifClass + '" onclick="pilihDivisi(\'' + d.replace(/'/g, "\\'") + '\')"><b>' + d + '</b><div class="card-sub">' + hitung[d] + ' personel</div></div>';
+        var amanAttr = d.replace(/"/g, "&quot;");
+        return '<div class="card' + aktifClass + '" data-div="' + amanAttr + '" onclick="pilihDivisi(\'' + d.replace(/'/g, "\\'") + '\')"><b>' + d + '</b><div class="card-sub">' + hitung[d] + ' personel</div></div>';
       }).join("");
     }
 
