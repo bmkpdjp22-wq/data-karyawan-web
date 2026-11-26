@@ -189,12 +189,17 @@
       width: 260px;
       background: var(--sidebar);
       color: #fff;
-      padding: 16px 14px;
+      padding: 14px 14px;
       flex-shrink: 0;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
       border-right: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      align-self: flex-start;
+      max-height: 100vh;
+      overflow-y: auto;
     }
     .side-head h3 {
       margin: 0 0 4px;
@@ -261,12 +266,14 @@
     }
 
     .side-foot {
-      margin-top: auto;
+      margin-top: 10px;
       font-size: 11px;
-      color: #94a3b8;
+      color: #cbd5e1;
       line-height: 1.45;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      padding-top: 9px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 9px 10px;
     }
 
     .main { flex: 1; padding: 18px 20px 32px; min-width: 0; }
@@ -746,7 +753,7 @@
     }
     @media (max-width: 768px) {
       .wrap { flex-direction: column; }
-      .side { width: 100%; border-right: 0; border-bottom: 1px solid var(--border); }
+      .side { width: 100%; position: static; max-height: none; border-right: 0; border-bottom: 1px solid var(--border); }
       .main { padding: 14px; }
       .bar { flex-wrap: wrap; }
     }
@@ -791,11 +798,11 @@
           <span>Poin Pelanggaran</span>
         </button>
       </div>
-
       <div class="side-foot">
         <b>Helpdesk BM:</b> Ext. 50000 • WA 081188093005<br>
         <b>Email:</b> bmkpdjp22@gmail.com
       </div>
+
     </aside>
 
     <main class="main">
@@ -891,7 +898,7 @@
             <span class="jam-pill" id="infoWaktuWIBPelanggaran">WIB: --:--:-- • Mode Otomatis</span>
           </div>
           <div class="bar">
-            <input id="cariPelanggaran" type="text" placeholder="Cari nama, NIP, jabatan, divisi, tanggal, atau jenis pelanggaran..." oninput="renderTabelPelanggaran()" />
+            <input id="cariPelanggaran" type="text" placeholder="Cari nama, NIP, jabatan, divisi, tanggal, atau jenis pelanggaran..." oninput="batasPelanggaranTampil = BATAS_PELANGGARAN_AWAL; renderTabelPelanggaran()" />
             <select id="filterDivisiPelanggaran" onchange="pilihDivisiPelanggaran(this.value)">
               <option value="">Semua Divisi</option>
             </select>
@@ -951,6 +958,11 @@
         <div class="footer-bar">
           <span id="infoBarisPelanggaran">Baris tampil: 0</span>
           <div class="footer-nav">
+            <div id="navigasiPelanggaranBawah" style="display:none; gap:8px; flex-wrap:wrap; align-items:center;">
+              <button class="btn-mini utama" id="btnPelTambah" onclick="muatLebihBanyakPelanggaran()">+50 Baris Lagi</button>
+              <button class="btn-mini" id="btnPelSemua" onclick="tampilkanSemuaBarisPelanggaran()">Tampilkan Semua</button>
+              <button class="btn-mini" id="btnPelRingkas" onclick="ringkasKeAwalPelanggaran()">Ringkas (50 Baris)</button>
+            </div>
             <button class="btn-mini" onclick="pindahHalaman('personel')">Kembali ke Data Personel</button>
           </div>
         </div>
@@ -1150,6 +1162,8 @@
     let filterGenderAktif = "";
     let halamanAktif = "personel";
 
+    const BATAS_PELANGGARAN_AWAL = 50;
+    let batasPelanggaranTampil = BATAS_PELANGGARAN_AWAL;
     let semuaPelanggaran = [];
     let pelanggaranIndeks = [];
     let hasilPelanggaranTerakhir = [];
@@ -1330,7 +1344,7 @@
       document.getElementById("kartuDivisiPelanggaran").innerHTML = listDiv.map(function(d) {
         var isAktif = aktif === d ? " aktif" : "";
         var dataDivAttr = URUTAN_DIVISI.indexOf(d) !== -1 ? ' data-div="' + escapeHtml(d) + '"' : "";
-        return '<div class="card' + isAktif + '"' + dataDivAttr + ' onclick="pilihDivisiPelanggaran(\'' + d.replace(/'/g, "\\'") + '\')">' +
+        return '<div class="card' + isAktif + '"' + dataDivAttr + ' onclick="pilihDivisiPelanggaran('' + d.replace(/'/g, "\'") + '')">' +
           '<b>' + escapeHtml(d) + '</b>' +
           '<div class="card-sub">' + hitung[d] + ' catatan</div>' +
           '</div>';
@@ -1338,6 +1352,7 @@
     }
 
     function pilihDivisiPelanggaran(d) {
+      batasPelanggaranTampil = BATAS_PELANGGARAN_AWAL;
       document.getElementById("filterDivisiPelanggaran").value = d || "";
       document.querySelectorAll("#kartuDivisiPelanggaran .card").forEach(function(c) {
         var judul = c.querySelector("b") ? c.querySelector("b").textContent.trim() : "";
@@ -1347,8 +1362,24 @@
     }
 
     function resetFilterPelanggaran() {
+      batasPelanggaranTampil = BATAS_PELANGGARAN_AWAL;
       document.getElementById("cariPelanggaran").value = "";
       pilihDivisiPelanggaran("");
+    }
+
+    function muatLebihBanyakPelanggaran() {
+      batasPelanggaranTampil += 50;
+      renderTabelPelanggaran();
+    }
+
+    function tampilkanSemuaBarisPelanggaran() {
+      batasPelanggaranTampil = hasilPelanggaranTerakhir.length || semuaPelanggaran.length;
+      renderTabelPelanggaran();
+    }
+
+    function ringkasKeAwalPelanggaran() {
+      batasPelanggaranTampil = BATAS_PELANGGARAN_AWAL;
+      renderTabelPelanggaran();
     }
 
     function prosesDataPelanggaran(raw, labelTambahan) {
@@ -1419,30 +1450,43 @@
         }
       }
 
+      var potonganPel = tersaring.slice(0, batasPelanggaranTampil);
+
       var judul = "Daftar Poin Pelanggaran (Sheet ALL)";
       if (div) judul += " • " + div;
       document.getElementById("judulTabelPelanggaran").textContent = judul;
 
       var suffix = labelTambahan ? " " + labelTambahan : "";
       document.getElementById("infoPelanggaran").textContent =
-        "Menampilkan seluruh " + tersaring.length + " dari " + semuaPelanggaran.length + " catatan pelanggaran" + suffix;
+        "Menampilkan " + potonganPel.length + " dari " + tersaring.length + " catatan pelanggaran cocok (" + semuaPelanggaran.length + " total di sheet ALL)" + suffix;
 
       document.getElementById("valPelTampil").textContent = tersaring.length;
       document.getElementById("valPelTotalPoin").textContent = totalPoin;
       document.getElementById("valPelKaryawan").textContent = Object.keys(setKaryawan).length;
       document.getElementById("valPelSemua").textContent = semuaPelanggaran.length;
       document.getElementById("infoBarisPelanggaran").textContent =
-        "Baris tampil: " + tersaring.length + " dari " + semuaPelanggaran.length + " (tampil semua)";
+        "Baris tampil: " + potonganPel.length + " dari " + tersaring.length;
 
-      if (!tersaring.length) {
+      var lebihDari50Pel = tersaring.length > BATAS_PELANGGARAN_AWAL;
+      var masihAdaPel = potonganPel.length < tersaring.length;
+      var sudahDiperluasPel = potonganPel.length > BATAS_PELANGGARAN_AWAL;
+      var navPel = document.getElementById("navigasiPelanggaranBawah");
+      if (navPel) {
+        navPel.style.display = lebihDari50Pel ? "flex" : "none";
+        document.getElementById("btnPelTambah").style.display = masihAdaPel ? "inline-block" : "none";
+        document.getElementById("btnPelSemua").style.display = masihAdaPel ? "inline-block" : "none";
+        document.getElementById("btnPelRingkas").style.display = sudahDiperluasPel ? "inline-block" : "none";
+      }
+
+      if (!potonganPel.length) {
         document.getElementById("isiTabelPelanggaran").innerHTML =
           "<tr><td colspan='" + KOLOM_PELANGGARAN.length + "' style='text-align:center; padding:18px; color:var(--muted);'>Tidak ada data pelanggaran yang cocok pada sheet ALL.</td></tr>";
         return;
       }
 
       var html = "";
-      for (var j = 0; j < tersaring.length; j++) {
-        var row = tersaring[j];
+      for (var j = 0; j < potonganPel.length; j++) {
+        var row = potonganPel[j];
         var idRow = kunciIdentitasOrang(row);
         var jmlMuncul = idRow ? (hitungKemunculan[idRow] || 1) : 1;
         var warnaRow = idRow ? petaWarnaOrang[idRow] : null;
@@ -1604,7 +1648,8 @@
         }).join(sep);
         barisCsv.push(rowCsv);
       });
-      var blob = new Blob(["\uFEFF" + barisCsv.join("\n")], { type: "text/csv;charset=utf-8;" });
+      var blob = new Blob(["﻿" + barisCsv.join("
+")], { type: "text/csv;charset=utf-8;" });
       var link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
       link.download = "poin-pelanggaran-sheet-all-bm-kpdjp.csv";
@@ -1714,7 +1759,7 @@
       document.getElementById("kartuDivisi").innerHTML = listDiv.map(function(d) {
         var aktifClass = divAktif === d ? " aktif" : "";
         var amanAttr = d.replace(/"/g, "&quot;");
-        return '<div class="card' + aktifClass + '" data-div="' + amanAttr + '" onclick="pilihDivisi(\'' + d.replace(/'/g, "\\'") + '\')"><b>' + d + '</b><div class="card-sub">' + hitung[d] + ' personel</div></div>';
+        return '<div class="card' + aktifClass + '" data-div="' + amanAttr + '" onclick="pilihDivisi('' + d.replace(/'/g, "\'") + '')"><b>' + d + '</b><div class="card-sub">' + hitung[d] + ' personel</div></div>';
       }).join("");
     }
 
@@ -1920,7 +1965,8 @@
         barisCsv.push(rowCsv);
       });
       var bom = "\uFEFF";
-      var blob = new Blob([bom + barisCsv.join("\n")], { type: "text/csv;charset=utf-8;" });
+      var blob = new Blob([bom + barisCsv.join("
+")], { type: "text/csv;charset=utf-8;" });
       var link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
       link.download = "data-personel-bm-kpdjp.csv";
