@@ -344,7 +344,7 @@
     .kpi .k-val { font-size: 20px; font-weight: 800; margin-top: 4px; color: var(--text); }
     .kpi .k-hint { font-size: 11px; color: var(--muted); margin-top: 3px; }
 
-    /* Tombol / Kartu Divisi (Ukuran Ringkas & Warna Berkarakter) */
+    /* Tombol / Kartu Divisi */
     .cards {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
@@ -399,42 +399,6 @@
     }
     body.mode-malam .card-sub {
       color: #cbd5e1;
-    }
-
-    .card[data-div="Management Office"] {
-      --div-accent: #2563eb;
-      --div-tint: linear-gradient(135deg, #eff6ff 0%, #ffffff 75%);
-      --div-badge-text: #1d4ed8;
-    }
-    .card[data-div="Engineering"] {
-      --div-accent: #0284c7;
-      --div-tint: linear-gradient(135deg, #f0f9ff 0%, #ffffff 75%);
-      --div-badge-text: #0369a1;
-    }
-    .card[data-div="Security"] {
-      --div-accent: #4f46e5;
-      --div-tint: linear-gradient(135deg, #eef2ff 0%, #ffffff 75%);
-      --div-badge-text: #4338ca;
-    }
-    .card[data-div="Housekeeping"] {
-      --div-accent: #0d9488;
-      --div-tint: linear-gradient(135deg, #f0fdfa 0%, #ffffff 75%);
-      --div-badge-text: #0f766e;
-    }
-    .card[data-div="Banquet"] {
-      --div-accent: #d97706;
-      --div-tint: linear-gradient(135deg, #fffbeb 0%, #ffffff 75%);
-      --div-badge-text: #b45309;
-    }
-    .card[data-div="Driver"] {
-      --div-accent: #059669;
-      --div-tint: linear-gradient(135deg, #ecfdf5 0%, #ffffff 75%);
-      --div-badge-text: #047857;
-    }
-    .card[data-div="Receptionist"] {
-      --div-accent: #7c3aed;
-      --div-tint: linear-gradient(135deg, #f5f3ff 0%, #ffffff 75%);
-      --div-badge-text: #6d28d9;
     }
 
     /* Toolbar Tabel & Tabel */
@@ -504,15 +468,6 @@
       font-weight: 700;
       margin-right: 7px;
       vertical-align: middle;
-    }
-    .pill {
-      display: inline-block;
-      background: var(--pill-bg);
-      color: var(--pill-text);
-      padding: 2px 9px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 600;
     }
 
     .footer-bar {
@@ -729,7 +684,7 @@
           <span class="jam-pill" id="infoWaktuWIB">WIB: --:--:-- • Mode Otomatis</span>
         </div>
         <div class="bar">
-          <input id="cari" type="text" placeholder="Cari nama, NIP, NIK, jabatan, divisi, atau kata kunci..." />
+          <input id="cari" type="text" placeholder="Cari nama, NIP, NIK, jabatan, atau kata kunci..." />
           <select id="filterDivisi"><option value="">Semua Divisi</option></select>
           <select id="filterGender" onchange="pilihGender(this.value)">
             <option value="">Semua Gender</option>
@@ -1006,7 +961,7 @@
       }
     }
 
-    // Urutan kolom baku sesuai daftar personel
+    // Urutan kolom berakhir tepat di "Ukuran Sepatu" (tanpa "Divisi")
     const KOLOM_UTAMA = [
       "Nomor",
       "NIP",
@@ -1047,38 +1002,12 @@
       "Nama Sekolah Pendidikan Terakhir",
       "Ukuran Baju",
       "Ukuran Celana",
-      "Ukuran Sepatu",
-      "Divisi"
+      "Ukuran Sepatu"
     ];
 
     const URL_DATA = "https://script.google.com/macros/s/AKfycbzKrn6vwNSM5hJGywoYmEXzKwA_rjFKeu9YRQq3lcNdYyO6Z0wIgNC2PYU1DmKNtm7l/exec";
-    const CACHE_KEY = "cachePersonelKpdjp2026_v2";
+    const CACHE_KEY = "cachePersonelKpdjp2026_v3";
     const DURASI_CACHE_MS = 24 * 60 * 60 * 1000;
-    const ABAIKAN = ["data karyawan november 2026", "data personel november 2026", "data personil november 2026"];
-
-    const MAP_DIVISI_INGGRIS = {
-      "manajemen office": "Management Office",
-      "management office": "Management Office",
-      "engineering": "Engineering",
-      "engieering": "Engineering",
-      "security": "Security",
-      "housekeeping": "Housekeeping",
-      "banquet": "Banquet",
-      "sopir": "Driver",
-      "driver": "Driver",
-      "resepsionis": "Receptionist",
-      "receptionist": "Receptionist"
-    };
-
-    const URUTAN_DIVISI = [
-      "Management Office",
-      "Engineering",
-      "Security",
-      "Housekeeping",
-      "Banquet",
-      "Driver",
-      "Receptionist"
-    ];
 
     const BATAS_AWAL = 50;
     let batasTampil = BATAS_AWAL;
@@ -1161,21 +1090,6 @@
     let kolomList = KOLOM_UTAMA.slice();
     let dataModalAktif = null;
 
-    function formatDivisiInggris(rawDiv) {
-      var bersih = String(rawDiv || "").trim();
-      if (!bersih) return "";
-      var kunci = bersih.toLowerCase();
-      return MAP_DIVISI_INGGRIS[kunci] || bersih;
-    }
-
-    function getDivAsli(row) {
-      return String(row.Divisi || row.DIvisi || row.divisi || "").trim();
-    }
-
-    function getDiv(row) {
-      return formatDivisiInggris(getDivAsli(row));
-    }
-
     function getGender(row) {
       return String(row["Jenis Kelamin"] || row["jenis kelamin"] || "").trim().toLowerCase();
     }
@@ -1188,22 +1102,6 @@
       return String(row["Alamat Email"] || row.Email || row.email || "").trim();
     }
 
-    function diabaikan(nama) {
-      var k = String(nama || "").trim().toLowerCase();
-      return ABAIKAN.indexOf(k) !== -1 || k.indexOf("november 2026") !== -1;
-    }
-
-    function urutDiv(arr) {
-      return arr.slice().sort(function(a, b) {
-        var ia = URUTAN_DIVISI.indexOf(a);
-        var ib = URUTAN_DIVISI.indexOf(b);
-        if (ia !== -1 && ib !== -1) return ia - ib;
-        if (ia !== -1) return -1;
-        if (ib !== -1) return 1;
-        return a.localeCompare(b, "en");
-      });
-    }
-
     function inisial(teks) {
       var kata = String(teks || "PR").trim().split(/\s+/).filter(Boolean);
       if (!kata.length) return "PR";
@@ -1211,40 +1109,21 @@
       return ((kata[0][0] || "") + (kata[1][0] || "")).toUpperCase();
     }
 
-    function susunDaftarKolom(rows) {
-      var daftar = KOLOM_UTAMA.slice();
-      var setSudahAda = {};
-      daftar.forEach(function(k) { setSudahAda[k.toLowerCase()] = 1; });
-
-      for (var i = 0; i < rows.length; i++) {
-        var r = rows[i];
-        if (!r || typeof r !== "object") continue;
-        Object.keys(r).forEach(function(k) {
-          var kl = String(k || "").trim();
-          if (kl && !setSudahAda[kl.toLowerCase()]) {
-            setSudahAda[kl.toLowerCase()] = 1;
-            daftar.push(kl);
-          }
-        });
-      }
-      return daftar;
+    function susunDaftarKolom() {
+      return KOLOM_UTAMA.slice();
     }
 
     function prosesDataArray(raw, labelTambahan) {
-      semuaData = raw.filter(function(r) {
-        return !diabaikan(getDivAsli(r)) && !diabaikan(getDiv(r));
-      });
-
-      kolomList = susunDaftarKolom(semuaData);
+      semuaData = Array.isArray(raw) ? raw : [];
+      kolomList = susunDaftarKolom();
       document.getElementById("kepalaTabel").innerHTML = kolomList.map(function(k) { return "<th>" + k + "</th>"; }).join("");
 
       dataIndeks = semuaData.map(function(r) {
-        var divNorm = getDiv(r);
         var genderNorm = getGender(r);
         var isLaki = genderNorm.indexOf("laki") !== -1;
         var isPerempuan = !isLaki && genderNorm.indexOf("perempuan") !== -1;
 
-        var gabungan = [divNorm];
+        var gabungan = [];
         for (var k = 0; k < kolomList.length; k++) {
           var v = r[kolomList[k]];
           if (v !== undefined && v !== null && v !== "") {
@@ -1254,14 +1133,13 @@
 
         return {
           raw: r,
-          div: divNorm,
+          div: String(r.Jabatan || "").trim(),
           isLaki: isLaki,
           isPerempuan: isPerempuan,
           teksCari: gabungan.join(" ").toLowerCase()
         };
       });
 
-      bangunDivisi();
       tampil(labelTambahan);
     }
 
@@ -1317,46 +1195,11 @@
       }
     }
 
-    function bangunDivisi() {
-      var hitung = {};
-      for (var i = 0; i < dataIndeks.length; i++) {
-        var d = dataIndeks[i].div;
-        if (d && !diabaikan(d)) hitung[d] = (hitung[d] || 0) + 1;
-      }
-      var listDiv = urutDiv(Object.keys(hitung));
-      var divAktif = document.getElementById("filterDivisi").value;
-
-      document.getElementById("kpiTotalPersonel").textContent = semuaData.length;
-
-      document.getElementById("filterDivisi").innerHTML = '<option value="">Semua Divisi</option>' +
-        listDiv.map(function(d) { return '<option value="' + d + '">' + d + ' (' + hitung[d] + ')</option>'; }).join("");
-      document.getElementById("filterDivisi").value = divAktif;
-
-      document.getElementById("kartuDivisi").innerHTML = listDiv.map(function(d) {
-        var aktifClass = divAktif === d ? " aktif" : "";
-        var amanAttr = d.replace(/"/g, "&quot;");
-        return '<div class="card' + aktifClass + '" data-div="' + amanAttr + '" onclick="pilihDivisi(\'' + d.replace(/'/g, "\\'") + '\')"><b>' + d + '</b><div class="card-sub">' + hitung[d] + ' personel</div></div>';
-      }).join("");
-    }
-
-    function pilihDivisi(d) {
-      batasTampil = BATAS_AWAL;
-      document.getElementById("filterDivisi").value = d;
-      document.querySelectorAll("#kartuDivisi .card").forEach(function(c) {
-        var judul = c.querySelector("b") ? c.querySelector("b").textContent.trim() : "";
-        c.classList.toggle("aktif", Boolean(d) && judul === d);
-      });
-      tampil();
-    }
-
     function tampilkanSemuaPersonelPer50() {
       filterGenderAktif = "";
       document.getElementById("filterGender").value = "";
       document.getElementById("filterDivisi").value = "";
       document.getElementById("cari").value = "";
-      document.querySelectorAll("#kartuDivisi .card").forEach(function(c) {
-        c.classList.remove("aktif");
-      });
       batasTampil = BATAS_AWAL;
       tampil();
     }
@@ -1378,7 +1221,7 @@
       document.getElementById("kpiCardPerempuan").classList.toggle("aktif", filterGenderAktif === "perempuan");
       document.getElementById("kpiCardSemua").classList.toggle("aktif", filterGenderAktif === "");
 
-      var tanpaFilterLain = !filterGenderAktif && !document.getElementById("filterDivisi").value && !document.getElementById("cari").value.trim();
+      var tanpaFilterLain = !filterGenderAktif && !document.getElementById("cari").value.trim();
       document.getElementById("kpiCardTotalPersonel").classList.toggle("aktif", tanpaFilterLain);
 
       if (filterGenderAktif === "laki") {
@@ -1424,10 +1267,6 @@
 
     function formatSel(kolom, nilai) {
       var kl = kolom.toLowerCase();
-      if (kl === "divisi") {
-        var divTampil = formatDivisiInggris(nilai);
-        return divTampil ? '<span class="pill">' + divTampil + '</span>' : "";
-      }
       var teks = String(nilai || "");
       if (kl.indexOf("nama") !== -1 && teks) {
         return '<span class="avatar">' + inisial(teks) + '</span><span>' + teks + '</span>';
@@ -1444,7 +1283,7 @@
       var barisCsv = [kolomList.map(function(k) { return '"' + String(k).replace(/"/g, '""') + '"'; }).join(sep)];
       hasilTerakhir.forEach(function(r) {
         var rowCsv = kolomList.map(function(k) {
-          var val = k.toLowerCase() === "divisi" ? formatDivisiInggris(r[k]) : (r[k] || "");
+          var val = r[k] || "";
           return '"' + String(val).replace(/[\r\n]+/g, " ").replace(/"/g, '""') + '"';
         }).join(sep);
         barisCsv.push(rowCsv);
@@ -1459,7 +1298,6 @@
 
     function tampil(labelTambahan) {
       var kata = document.getElementById("cari").value.toLowerCase().trim();
-      var div = document.getElementById("filterDivisi").value;
 
       var saringTanpaGender = [];
       var jmlLaki = 0;
@@ -1467,9 +1305,8 @@
 
       for (var i = 0; i < dataIndeks.length; i++) {
         var item = dataIndeks[i];
-        var okD = !div || item.div === div;
         var okK = !kata || item.teksCari.indexOf(kata) !== -1;
-        if (okD && okK) {
+        if (okK) {
           saringTanpaGender.push(item);
           if (item.isLaki) jmlLaki++;
           else if (item.isPerempuan) jmlPerempuan++;
@@ -1532,8 +1369,7 @@
       var nama = r["Nama Lengkap (Sesuai KTP)"] || r.Nama || "Detail Personel";
       document.getElementById("modalJudul").textContent = nama;
       document.getElementById("detailIsi").innerHTML = kolomList.map(function(k) {
-        var valTampil = k.toLowerCase() === "divisi" ? formatDivisiInggris(r[k]) : r[k];
-        return "<p style='margin:6px 0;'><b>" + k + ":</b> " + (valTampil || "-") + "</p>";
+        return "<p style='margin:6px 0;'><b>" + k + ":</b> " + (r[k] || "-") + "</p>";
       }).join("");
       document.getElementById("modal").classList.add("aktif");
     });
@@ -1543,7 +1379,6 @@
       clearTimeout(timerKetik);
       timerKetik = setTimeout(tampil, 120);
     });
-    document.getElementById("filterDivisi").addEventListener("change", function(e) { pilihDivisi(e.target.value); });
 
     muat(false);
   </script>
