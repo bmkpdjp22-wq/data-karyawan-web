@@ -270,13 +270,25 @@
       border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 10px;
       padding: 8px 10px;
-      min-height: 44px;
+      min-height: 46px;
       display: flex;
       flex-direction: column;
       justify-content: center;
     }
 
-    .main { flex: 1; padding: 14px 18px 16px; min-width: 0; display: flex; flex-direction: column; justify-content: flex-start; }
+    .main {
+      flex: 1;
+      padding: 14px 18px 16px;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .main > section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
 
     .hero {
       background: var(--hero);
@@ -510,7 +522,9 @@
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
       overflow: auto;
-      max-height: 440px;
+      flex: 1 1 auto;
+      min-height: 260px;
+      max-height: 465px;
     }
 
     table {
@@ -683,9 +697,9 @@
       align-items: center;
       gap: 12px;
       flex-wrap: wrap;
-      margin-top: 8px;
+      margin-top: auto;
       padding: 8px 14px;
-      min-height: 44px;
+      min-height: 46px;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 10px;
@@ -1229,8 +1243,8 @@
       document.getElementById("btnMenuDataPersonel").classList.toggle("aktif", halamanAktif === "personel");
       document.getElementById("btnMenuPoinPelanggaran").classList.toggle("aktif", halamanAktif === "pelanggaran");
 
-      document.getElementById("halamanPersonel").style.display = halamanAktif === "personel" ? "block" : "none";
-      document.getElementById("halamanPelanggaran").style.display = halamanAktif === "pelanggaran" ? "block" : "none";
+      document.getElementById("halamanPersonel").style.display = halamanAktif === "personel" ? "flex" : "none";
+      document.getElementById("halamanPelanggaran").style.display = halamanAktif === "pelanggaran" ? "flex" : "none";
 
       if (halamanAktif === "pelanggaran") {
         if (!semuaPelanggaran.length) muatPelanggaran(false);
