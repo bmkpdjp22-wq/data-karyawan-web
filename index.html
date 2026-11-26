@@ -311,7 +311,7 @@
       color: #fff;
       padding: 20px 22px;
       border-radius: 16px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       box-shadow: var(--shadow);
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
@@ -373,19 +373,23 @@
       border: 1px solid rgba(255, 255, 255, 0.25);
     }
 
-    /* KPI Ringkasan */
+    /* KPI Ringkasan Ringkas & Sejajar */
     .kpi-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(120px, 1fr));
-      gap: 8px;
-      margin-bottom: 12px;
+      gap: 6px;
+      margin-bottom: 10px;
     }
     .kpi {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 8px 11px;
-      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+      border-radius: 8px;
+      padding: 6px 9px;
+      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.03);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
     }
     .kpi.klik {
       cursor: pointer;
@@ -401,23 +405,30 @@
       box-shadow: 0 0 0 1px var(--primary);
     }
     .kpi .k-label {
-      font-size: 10px;
+      font-size: 9.5px;
       color: var(--muted);
       font-weight: 700;
       letter-spacing: 0.04em;
       text-transform: uppercase;
+      line-height: 1.15;
+    }
+    .kpi .k-row {
+      display: flex;
+      align-items: baseline;
+      gap: 7px;
+      min-width: 0;
     }
     .kpi .k-val {
-      font-size: 16px;
+      font-size: 14.5px;
       font-weight: 800;
-      margin-top: 2px;
-      line-height: 1.2;
+      line-height: 1.15;
       color: var(--text);
+      flex-shrink: 0;
     }
     .kpi .k-hint {
       font-size: 10px;
       color: var(--muted);
-      margin-top: 2px;
+      line-height: 1.2;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -898,27 +909,35 @@
         </div>
       </div>
 
-      <!-- KARTU RINGKASAN -->
+      <!-- KARTU RINGKASAN RINGKAS -->
       <div class="kpi-grid">
         <div class="kpi klik" id="kpiCardSemua" onclick="pilihGender('')">
           <div class="k-label">Hasil Filter Aktif</div>
-          <div class="k-val" id="kpiTampil">0</div>
-          <div class="k-hint">Klik reset gender ke semua data</div>
+          <div class="k-row">
+            <span class="k-val" id="kpiTampil">0</span>
+            <span class="k-hint" title="Klik reset gender ke semua data">Klik reset gender</span>
+          </div>
         </div>
         <div class="kpi klik" id="kpiCardLaki" onclick="toggleGender('laki')">
           <div class="k-label">Laki - Laki</div>
-          <div class="k-val" id="kpiLaki">0</div>
-          <div class="k-hint">Klik untuk filter Laki - Laki</div>
+          <div class="k-row">
+            <span class="k-val" id="kpiLaki">0</span>
+            <span class="k-hint" title="Klik untuk filter Laki - Laki">Klik filter Laki - Laki</span>
+          </div>
         </div>
         <div class="kpi klik" id="kpiCardPerempuan" onclick="toggleGender('perempuan')">
           <div class="k-label">Perempuan</div>
-          <div class="k-val" id="kpiPerempuan">0</div>
-          <div class="k-hint">Klik untuk filter Perempuan</div>
+          <div class="k-row">
+            <span class="k-val" id="kpiPerempuan">0</span>
+            <span class="k-hint" title="Klik untuk filter Perempuan">Klik filter Perempuan</span>
+          </div>
         </div>
         <div class="kpi klik" id="kpiCardTotalPersonel" onclick="tampilkanSemuaPersonelPer50()">
           <div class="k-label">Total Personel</div>
-          <div class="k-val" id="kpiTotalPersonel">0</div>
-          <div class="k-hint">Klik tampilkan semua (per 50 data)</div>
+          <div class="k-row">
+            <span class="k-val" id="kpiTotalPersonel">0</span>
+            <span class="k-hint" title="Klik tampilkan semua (per 50 data)">Klik semua (50/hal)</span>
+          </div>
         </div>
       </div>
 
@@ -1215,7 +1234,7 @@
     ];
 
     const URL_DATA = "https://script.google.com/macros/s/AKfycbzKrn6vwNSM5hJGywoYmEXzKwA_rjFKeu9YRQq3lcNdYyO6Z0wIgNC2PYU1DmKNtm7l/exec";
-    const CACHE_KEY = "cachePersonelKpdjp2026_v8";
+    const CACHE_KEY = "cachePersonelKpdjp2026_v9";
     const DURASI_CACHE_MS = 24 * 60 * 60 * 1000;
 
     const BATAS_AWAL = 50;
