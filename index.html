@@ -303,31 +303,36 @@
       font-weight: 600;
     }
 
-    .bar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    /* Bar kontrol seragam seperti Data Personel */
+    .bar {
+      display: flex;
+      gap: 7px;
+      flex-wrap: nowrap;
+      align-items: center;
+    }
     input, select, button.act {
       padding: 8px 11px;
       border-radius: 8px;
       border: 1px solid var(--border);
       font-size: 12.5px;
+      height: 36px;
     }
     input {
-      flex: 1;
-      min-width: 200px;
+      flex: 1 1 auto;
+      min-width: 180px;
       background: var(--card);
       color: var(--text);
       outline: none;
     }
     select {
+      flex: 0 0 auto;
       background: var(--card);
       color: var(--text);
       cursor: pointer;
     }
-    #filterDivisiPelanggaran {
-      flex: 0 0 auto;
-      min-width: 195px;
-      margin-right: 4px;
-    }
     button.act {
+      flex: 0 0 auto;
+      white-space: nowrap;
       background: #e2e8f0;
       color: #0f172a;
       border-color: transparent;
@@ -345,8 +350,8 @@
 
     .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(120px, 1fr));
-      gap: 6px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
       margin-bottom: 10px;
     }
     .kpi {
@@ -403,13 +408,17 @@
       text-overflow: ellipsis;
     }
 
+    /* Baris kartu divisi rata kiri-kanan dengan baris KPI di atasnya & spasi proporsional */
     .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(144px, 1fr));
-      gap: 7px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 8px;
       margin-bottom: 14px;
     }
     .card {
+      flex: 1 1 0;
+      min-width: 118px;
       --div-accent: #2563eb;
       --div-tint: linear-gradient(135deg, #eff6ff 0%, #ffffff 72%);
       --div-badge-text: #1d4ed8;
@@ -450,6 +459,7 @@
       font-size: 10.5px;
       font-weight: 600;
       color: var(--div-badge-text);
+      white-space: nowrap;
     }
     body.mode-malam .card-sub { color: #cbd5e1; }
 
@@ -727,6 +737,10 @@
       cursor: pointer;
     }
 
+    @media (max-width: 1100px) {
+      .bar { flex-wrap: wrap; }
+      input { min-width: 220px; }
+    }
     @media (max-width: 960px) {
       .kpi-grid { grid-template-columns: repeat(2, minmax(130px, 1fr)); }
     }
@@ -734,6 +748,7 @@
       .wrap { flex-direction: column; }
       .side { width: 100%; border-right: 0; border-bottom: 1px solid var(--border); }
       .main { padding: 14px; }
+      .bar { flex-wrap: wrap; }
     }
   </style>
 </head>
@@ -1013,7 +1028,6 @@
       document.getElementById("layarLogin").style.display = "none";
       document.getElementById("kontenDashboard").style.display = "flex";
       aktifkanPantauanAktivitas();
-      selaraskanFilterDivisiPelanggaran();
     }
 
     function cekLoginDashboard() {
@@ -1099,7 +1113,7 @@
     const SPREADSHEET_PELANGGARAN_ID = "1nVDFew5Ug96BN0j_w7aZ_gA6DiF43IMBwZIzFEWP7Pk";
     const GID_PELANGGARAN = "642420235";
     const CACHE_KEY = "cachePersonelKpdjp2026_v10";
-    const CACHE_PELANGGARAN_KEY = "cachePelanggaranKpdjp2026_v8";
+    const CACHE_PELANGGARAN_KEY = "cachePelanggaranKpdjp2026_v9";
     const DURASI_CACHE_MS = 24 * 60 * 60 * 1000;
 
     const KOLOM_PELANGGARAN = [
@@ -1139,24 +1153,6 @@
     let semuaPelanggaran = [];
     let pelanggaranIndeks = [];
     let hasilPelanggaranTerakhir = [];
-
-    function selaraskanFilterDivisiPelanggaran() {
-      var sel = document.getElementById("filterDivisiPelanggaran");
-      var kpiTotal = document.getElementById("kpiPelTotalSemua");
-      if (!sel || !kpiTotal) return;
-      if (window.innerWidth <= 820) {
-        sel.style.width = "";
-        return;
-      }
-      var selRect = sel.getBoundingClientRect();
-      var kpiRect = kpiTotal.getBoundingClientRect();
-      if (kpiRect.right > selRect.left + 80) {
-        var lebarPas = Math.round(kpiRect.right - selRect.left);
-        sel.style.width = lebarPas + "px";
-      }
-    }
-
-    window.addEventListener("resize", selaraskanFilterDivisiPelanggaran);
 
     function ambilJamWIB() {
       var bagian = new Intl.DateTimeFormat("id-ID", {
@@ -1226,7 +1222,6 @@
       if (halamanAktif === "pelanggaran") {
         if (!semuaPelanggaran.length) muatPelanggaran(false);
         else renderTabelPelanggaran();
-        setTimeout(selaraskanFilterDivisiPelanggaran, 20);
       }
     }
 
@@ -1340,8 +1335,6 @@
           '<div class="card-sub">' + hitung[d] + ' catatan</div>' +
           '</div>';
       }).join("");
-
-      selaraskanFilterDivisiPelanggaran();
     }
 
     function pilihDivisiPelanggaran(d) {
@@ -1481,7 +1474,6 @@
         html += '<tr class="data-row" data-pel-idx="' + j + '"' + dupAttr + trStyle + '>' + cells + "</tr>";
       }
       document.getElementById("isiTabelPelanggaran").innerHTML = html;
-      selaraskanFilterDivisiPelanggaran();
     }
 
     function parseCsvBaris(teks) {
@@ -1573,8 +1565,7 @@
       var sumber = "(data terbaru)";
 
       try {
-        var sep = URL_PELANGGARAN.indexOf("?") === -1 ? "?" : "&";
-        var res = await fetch(URL_PELANGGARAN + sep + "t=" + Date.now(), { method: "GET", redirect: "follow" });
+        var res = await fetchDenganBatasWaktu(URL_PELANGGARAN, 8000);
         if (res.ok) {
           var json = await res.json();
           if (json && !json.error) raw = ekstrakArrayPelanggaran(json);
@@ -1613,14 +1604,17 @@
         }).join(sep);
         barisCsv.push(rowCsv);
       });
-      var blob = new Blob(["\uFEFF" + barisCsv.join("\r\n")], { type: "text/csv;charset=utf-8;" });
+      var blob = new Blob(["\uFEFF" + barisCsv.join("\n")], { type: "text/csv;charset=utf-8;" });
       var link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
       link.download = "poin-pelanggaran-sheet-all-bm-kpdjp.csv";
       link.click();
     }
 
-    // BAGIAN DATA PERSONEL (TIDAK DIUBAH)
+    // BAGIAN DATA PERSONEL
+    const BATAS_AWAL = 50;
+    let batasTampil = BATAS_AWAL;
+    let timerKetik = null;
     let semuaData = [];
     let dataIndeks = [];
     let hasilTerakhir = [];
@@ -1742,17 +1736,33 @@
         if (parsed && Array.isArray(parsed.data) && parsed.data.length) {
           var umur = Date.now() - (parsed.ts || 0);
           var masihSegar = umur < DURASI_CACHE_MS;
-          prosesDataArray(parsed.data, masihSegar ? "(dari cache)" : "(menyegarkan...)");
+          prosesDataArray(parsed.data, masihSegar ? "(dari cache)" : "(menyegarkan di latar belakang...)");
           return { ada: true, segar: masihSegar };
         }
       } catch (e) {}
       return { ada: false, segar: false };
     }
 
+    function fetchDenganBatasWaktu(url, ms) {
+      var controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+      var timer = controller ? setTimeout(function() { controller.abort(); }, ms) : null;
+      var sep = url.indexOf("?") === -1 ? "?" : "&";
+      return fetch(url + sep + "t=" + Date.now(), {
+        method: "GET",
+        redirect: "follow",
+        signal: controller ? controller.signal : undefined
+      }).finally(function() {
+        if (timer) clearTimeout(timer);
+      });
+    }
+
     async function muat(paksaSegar) {
       var btnRefresh = document.getElementById("btnRefresh");
+      var adaCacheAwal = false;
+
       if (!paksaSegar) {
         var statusCache = bacaCache();
+        adaCacheAwal = statusCache.ada;
         if (statusCache.ada && statusCache.segar) {
           return;
         }
@@ -1762,24 +1772,21 @@
 
       if (btnRefresh) btnRefresh.disabled = true;
 
-      var controller = typeof AbortController !== "undefined" ? new AbortController() : null;
-      var timeoutId = controller ? setTimeout(function() { controller.abort(); }, 20000) : null;
-
       try {
-        var res = await fetch(URL_DATA, controller ? { signal: controller.signal } : {});
-        if (timeoutId) clearTimeout(timeoutId);
+        var res = await fetchDenganBatasWaktu(URL_DATA, 9000);
+        if (!res.ok) throw new Error("HTTP " + res.status);
         var json = await res.json();
         var raw = Array.isArray(json) ? json : (Array.isArray(json && json.data) ? json.data : []);
+        if (!raw.length) throw new Error("Data kosong");
         try {
           localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: raw }));
         } catch (e) {}
         prosesDataArray(raw, "(data terbaru)");
       } catch (e) {
-        if (timeoutId) clearTimeout(timeoutId);
-        if (!semuaData.length) {
-          document.getElementById("infoStats").textContent = "Gagal memuat data (server lambat/timeout). Coba klik Refresh Data lagi.";
-        } else {
+        if (adaCacheAwal || semuaData.length) {
           tampil("(pakai cache)");
+        } else {
+          document.getElementById("infoStats").textContent = "Server sedang lambat merespons. Klik Refresh Data untuk mencoba lagi.";
         }
       } finally {
         if (btnRefresh) btnRefresh.disabled = false;
@@ -1913,7 +1920,7 @@
         barisCsv.push(rowCsv);
       });
       var bom = "\uFEFF";
-      var blob = new Blob([bom + barisCsv.join("\r\n")], { type: "text/csv;charset=utf-8;" });
+      var blob = new Blob([bom + barisCsv.join("\n")], { type: "text/csv;charset=utf-8;" });
       var link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
       link.download = "data-personel-bm-kpdjp.csv";
@@ -1971,16 +1978,17 @@
       document.getElementById("btnBawahSemua").style.display = masihAda ? "inline-block" : "none";
       document.getElementById("btnBawahRingkas").style.display = sudahDiperluas ? "inline-block" : "none";
 
-      var htmlRows = "";
+      var listTr = new Array(barisPotongan.length);
       for (var p = 0; p < barisPotongan.length; p++) {
         var r = barisPotongan[p];
-        var cells = "";
+        var listTd = new Array(kolomList.length);
         for (var c = 0; c < kolomList.length; c++) {
           var k = kolomList[c];
-          cells += "<td>" + formatSel(k, r[k], p + 1) + "</td>";
+          listTd[c] = "<td>" + formatSel(k, r[k], p + 1) + "</td>";
         }
-        htmlRows += '<tr class="data-row" data-idx="' + p + '">' + cells + "</tr>";
+        listTr[p] = '<tr class="data-row" data-idx="' + p + '">' + listTd.join("") + "</tr>";
       }
+      var htmlRows = listTr.join("");
 
       document.getElementById("isiTabel").innerHTML = htmlRows;
     }
