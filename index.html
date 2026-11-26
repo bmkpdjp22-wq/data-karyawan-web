@@ -278,6 +278,16 @@
       border-color: rgba(96, 165, 250, 0.6);
       color: #fff;
     }
+    .side-div-btn.pelanggaran-btn {
+      background: rgba(220, 38, 38, 0.18);
+      border-color: rgba(248, 113, 113, 0.45);
+      color: #fecaca;
+    }
+    .side-div-btn.pelanggaran-btn:hover {
+      background: rgba(220, 38, 38, 0.36);
+      border-color: rgba(248, 113, 113, 0.8);
+      color: #fff;
+    }
     .num-chip {
       display: inline-grid;
       place-items: center;
@@ -293,6 +303,7 @@
     }
     .num-chip.alt { background: #0f766e; }
     .num-chip.warn { background: #b45309; }
+    .num-chip.danger { background: #dc2626; }
 
     .side-foot {
       margin-top: auto;
@@ -600,7 +611,6 @@
       border-bottom-right-radius: 8px;
     }
 
-    /* Perapian lebar sel agar teks panjang tidak melar ke kanan */
     .cell-nowrap { white-space: nowrap; }
     .cell-nama {
       white-space: nowrap;
@@ -715,6 +725,7 @@
       overflow: auto;
     }
     .modal-isi.lebar { max-width: 820px; }
+    .modal-isi.extra-lebar { max-width: 1040px; }
     .modal-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
     .btn-dark {
       background: var(--primary);
@@ -735,6 +746,35 @@
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
+    }
+
+    .pel-toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin: 12px 0;
+    }
+    .pel-box {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 8px;
+      background: var(--row-alt);
+      overflow: auto;
+      max-height: 55vh;
+    }
+    .pel-poin-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+    body.mode-malam .pel-poin-badge {
+      background: rgba(239, 68, 68, 0.22);
+      color: #fca5a5;
     }
 
     .kat-tabs {
@@ -876,6 +916,7 @@
           <button class="side-div-btn" onclick="bukaModalOps('7')"><span class="num-chip">7</span>Sopir / Driver</button>
           <button class="side-div-btn" onclick="bukaModalOps('k3')"><span class="num-chip alt">K3</span>K3 & APD</button>
           <button class="side-div-btn" onclick="bukaModalOps('darurat')"><span class="num-chip warn">!</span>Alur & Darurat</button>
+          <button class="side-div-btn pelanggaran-btn" onclick="bukaModalPelanggaran()"><span class="num-chip danger">P</span>Poin Pelanggaran</button>
         </div>
       </div>
 
@@ -967,6 +1008,31 @@
         </div>
       </div>
     </main>
+  </div>
+
+  <!-- MODAL DATA POIN PELANGGARAN (SHEET TERPISAH) -->
+  <div id="modalPelanggaran" class="modal-backdrop" onclick="if(event.target.id==='modalPelanggaran') tutupModalPelanggaran()">
+    <div class="modal-isi extra-lebar">
+      <h3 style="margin:0 0 4px;">Data Poin Pelanggaran BM KPDJP</h3>
+      <div id="infoPelanggaran" style="font-size:12px; color:var(--muted);">Sumber: Google Sheet Poin Pelanggaran</div>
+
+      <div class="pel-toolbar">
+        <input id="cariPelanggaran" type="text" placeholder="Cari nama, NIP, devisi, tanggal, atau jenis pelanggaran..." oninput="renderTabelPelanggaran()" />
+        <button class="btn-sec" id="btnRefreshPelanggaran" onclick="muatPelanggaran(true)">Refresh Data</button>
+        <button class="btn-sec" onclick="unduhCSVPelanggaran()">Unduh CSV</button>
+      </div>
+
+      <div class="pel-box">
+        <table>
+          <thead><tr id="kepalaTabelPelanggaran"></tr></thead>
+          <tbody id="isiTabelPelanggaran"></tbody>
+        </table>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-dark" onclick="tutupModalPelanggaran()">Tutup</button>
+      </div>
+    </div>
   </div>
 
   <!-- MODAL DETAIL PERSONEL -->
@@ -1234,14 +1300,32 @@
     ];
 
     const URL_DATA = "https://script.google.com/macros/s/AKfycbzKrn6vwNSM5hJGywoYmEXzKwA_rjFKeu9YRQq3lcNdYyO6Z0wIgNC2PYU1DmKNtm7l/exec";
-    const CACHE_KEY = "cachePersonelKpdjp2026_v9";
+    const URL_PELANGGARAN = "https://script.google.com/macros/s/AKfycbxsnb6ZUzIpdbmdiGeNaJiasl9nCqAdGcCRO_n5XtDZpReCZ2SZJw-4ZusstYiNB5EX/exec";
+    const CACHE_KEY = "cachePersonelKpdjp2026_v10";
+    const CACHE_PELANGGARAN_KEY = "cachePelanggaranKpdjp2026_v1";
     const DURASI_CACHE_MS = 24 * 60 * 60 * 1000;
+
+    const KOLOM_PELANGGARAN = [
+      "No",
+      "NIP",
+      "Nama",
+      "Jabatan",
+      "Devisi",
+      "Tanggal Pelanggaran",
+      "Jenis Pelanggaran",
+      "Poin Pelanggaran",
+      "Total Poin",
+      "Keterangan"
+    ];
 
     const BATAS_AWAL = 50;
     let batasTampil = BATAS_AWAL;
     let timerKetik = null;
     let modeTema = localStorage.getItem("modeTemaKpdjp") || "auto";
     let filterGenderAktif = "";
+
+    let semuaPelanggaran = [];
+    let hasilPelanggaranTerakhir = [];
 
     function ambilJamWIB() {
       var bagian = new Intl.DateTimeFormat("id-ID", {
@@ -1290,6 +1374,154 @@
 
     terapkanTema();
     setInterval(terapkanTema, 1000);
+
+    function ambilFieldPelanggaran(row, namaKolom) {
+      if (row[namaKolom] !== undefined && row[namaKolom] !== null) return row[namaKolom];
+      var target = namaKolom.toLowerCase().replace(/[^a-z0-9]/g, "");
+      var keys = Object.keys(row || {});
+      for (var i = 0; i < keys.length; i++) {
+        var norm = keys[i].toLowerCase().replace(/[^a-z0-9]/g, "");
+        if (norm === target) return row[keys[i]];
+        if (namaKolom === "Tanggal Pelanggaran" && norm.indexOf("tanggalpelanggaran") !== -1) return row[keys[i]];
+      }
+      return "";
+    }
+
+    function normalisasiBarisPelanggaran(rawList) {
+      if (!Array.isArray(rawList)) return [];
+      var bersih = [];
+      for (var i = 0; i < rawList.length; i++) {
+        var r = rawList[i] || {};
+        var obj = {};
+        var adaIsi = false;
+        for (var k = 0; k < KOLOM_PELANGGARAN.length; k++) {
+          var col = KOLOM_PELANGGARAN[k];
+          var val = ambilFieldPelanggaran(r, col);
+          obj[col] = val === undefined || val === null ? "" : String(val).trim();
+          if (col !== "No" && obj[col] !== "") adaIsi = true;
+        }
+        if (adaIsi) {
+          if (!obj["No"]) obj["No"] = String(bersih.length + 1);
+          bersih.push(obj);
+        }
+      }
+      return bersih;
+    }
+
+    function renderTabelPelanggaran() {
+      var kata = (document.getElementById("cariPelanggaran").value || "").toLowerCase().trim();
+      document.getElementById("kepalaTabelPelanggaran").innerHTML = KOLOM_PELANGGARAN.map(function(k) {
+        return "<th>" + escapeHtml(k) + "</th>";
+      }).join("");
+
+      var tersaring = semuaPelanggaran.filter(function(r) {
+        if (!kata) return true;
+        var gab = KOLOM_PELANGGARAN.map(function(k) { return r[k] || ""; }).join(" ").toLowerCase();
+        return gab.indexOf(kata) !== -1;
+      });
+
+      hasilPelanggaranTerakhir = tersaring;
+      document.getElementById("infoPelanggaran").textContent =
+        "Menampilkan " + tersaring.length + " dari " + semuaPelanggaran.length + " catatan poin pelanggaran";
+
+      if (!tersaring.length) {
+        document.getElementById("isiTabelPelanggaran").innerHTML =
+          "<tr><td colspan='" + KOLOM_PELANGGARAN.length + "' style='text-align:center; padding:16px; color:var(--muted);'>Tidak ada data pelanggaran yang cocok.</td></tr>";
+        return;
+      }
+
+      var html = "";
+      for (var i = 0; i < tersaring.length; i++) {
+        var row = tersaring[i];
+        var cells = "";
+        for (var c = 0; c < KOLOM_PELANGGARAN.length; c++) {
+          var col = KOLOM_PELANGGARAN[c];
+          var val = row[col] || "-";
+          var aman = escapeHtml(val);
+          if (col === "Poin Pelanggaran" || col === "Total Poin") {
+            cells += "<td>" + (val !== "-" ? '<span class="pel-poin-badge">' + aman + "</span>" : "-") + "</td>";
+          } else if (col === "Jenis Pelanggaran" || col === "Keterangan") {
+            cells += "<td><div class='cell-pendek' title='" + aman + "'>" + aman + "</div></td>";
+          } else {
+            cells += "<td><span class='cell-nowrap' title='" + aman + "'>" + aman + "</span></td>";
+          }
+        }
+        html += "<tr class='data-row'>" + cells + "</tr>";
+      }
+      document.getElementById("isiTabelPelanggaran").innerHTML = html;
+    }
+
+    async function muatPelanggaran(paksaSegar) {
+      var btn = document.getElementById("btnRefreshPelanggaran");
+      if (!paksaSegar) {
+        try {
+          var rawCache = localStorage.getItem(CACHE_PELANGGARAN_KEY);
+          if (rawCache) {
+            var parsed = JSON.parse(rawCache);
+            if (parsed && Array.isArray(parsed.data) && parsed.data.length && (Date.now() - (parsed.ts || 0)) < DURASI_CACHE_MS) {
+              semuaPelanggaran = parsed.data;
+              renderTabelPelanggaran();
+              return;
+            }
+          }
+        } catch (e) {}
+      }
+
+      if (btn) btn.disabled = true;
+      document.getElementById("infoPelanggaran").textContent = "Memuat data poin pelanggaran dari Google Sheet...";
+
+      try {
+        var res = await fetch(URL_PELANGGARAN);
+        var json = await res.json();
+        var raw = Array.isArray(json)
+          ? json
+          : (Array.isArray(json && json.data) ? json.data : (Array.isArray(json && json.ALL) ? json.ALL : []));
+        semuaPelanggaran = normalisasiBarisPelanggaran(raw);
+        try {
+          localStorage.setItem(CACHE_PELANGGARAN_KEY, JSON.stringify({ ts: Date.now(), data: semuaPelanggaran }));
+        } catch (e) {}
+        renderTabelPelanggaran();
+      } catch (e) {
+        document.getElementById("infoPelanggaran").textContent = "Gagal memuat data pelanggaran. Klik Refresh Data untuk mencoba lagi.";
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    function bukaModalPelanggaran() {
+      document.getElementById("modalPelanggaran").classList.add("aktif");
+      if (!semuaPelanggaran.length) {
+        muatPelanggaran(false);
+      } else {
+        renderTabelPelanggaran();
+      }
+    }
+
+    function tutupModalPelanggaran() {
+      document.getElementById("modalPelanggaran").classList.remove("aktif");
+    }
+
+    function unduhCSVPelanggaran() {
+      if (!hasilPelanggaranTerakhir.length) {
+        alert("Tidak ada data pelanggaran untuk diunduh.");
+        return;
+      }
+      var sep = ";";
+      var barisCsv = [KOLOM_PELANGGARAN.map(function(k) { return '"' + String(k).replace(/"/g, '""') + '"'; }).join(sep)];
+      hasilPelanggaranTerakhir.forEach(function(r) {
+        var rowCsv = KOLOM_PELANGGARAN.map(function(k) {
+          var val = r[k] || "";
+          return '"' + String(val).replace(/[\r\n]+/g, " ").replace(/"/g, '""') + '"';
+        }).join(sep);
+        barisCsv.push(rowCsv);
+      });
+      var bom = "\uFEFF";
+      var blob = new Blob([bom + barisCsv.join("\r\n")], { type: "text/csv;charset=utf-8;" });
+      var link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "poin-pelanggaran-bm-kpdjp.csv";
+      link.click();
+    }
 
     function pilihKategoriOps(kat) {
       var targetKat = kat || "all";
