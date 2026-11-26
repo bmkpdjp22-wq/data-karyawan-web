@@ -923,14 +923,58 @@
 
   <script>
     // ============================================================
-    // PENGATURAN KATA SANDI LOGIN (UBAH DI SINI)
+    // PENGATURAN KATA SANDI LOGIN & BATAS WAKTU TIDAK AKTIF (MENIT)
     // ============================================================
     const KATA_SANDI_LOGIN = "KapalApi";
+    const BATAS_MENIT_TIDAK_AKTIF = 15; // Ubah angka sesuai kebutuhan (misal: 5, 10, 15, 30)
     // ============================================================
+
+    const BATAS_MS = BATAS_MENIT_TIDAK_AKTIF * 60 * 1000;
+    const KEY_LOGIN = "bm_kpdjp_sudah_login";
+    const KEY_AKTIVITAS_TERAKHIR = "bm_kpdjp_aktivitas_terakhir";
+    let timerAutoKeluar = null;
+
+    function sudahMelewatiBatasWaktu() {
+      var terakhir = parseInt(sessionStorage.getItem(KEY_AKTIVITAS_TERAKHIR) || "0", 10);
+      if (!terakhir) return false;
+      return (Date.now() - terakhir) >= BATAS_MS;
+    }
+
+    function catatAktivitasDanResetTimer() {
+      if (sessionStorage.getItem(KEY_LOGIN) !== "ya") return;
+
+      if (sudahMelewatiBatasWaktu()) {
+        logoutDashboard();
+        return;
+      }
+
+      sessionStorage.setItem(KEY_AKTIVITAS_TERAKHIR, String(Date.now()));
+      clearTimeout(timerAutoKeluar);
+      timerAutoKeluar = setTimeout(function() {
+        logoutDashboard();
+      }, BATAS_MS);
+    }
+
+    function aktifkanPantauanAktivitas() {
+      ["mousemove", "mousedown", "keydown", "scroll", "touchstart", "click"].forEach(function(evt) {
+        window.addEventListener(evt, catatAktivitasDanResetTimer, { passive: true });
+      });
+      document.addEventListener("visibilitychange", function() {
+        if (!document.hidden && sessionStorage.getItem(KEY_LOGIN) === "ya") {
+          if (sudahMelewatiBatasWaktu()) {
+            logoutDashboard();
+          } else {
+            catatAktivitasDanResetTimer();
+          }
+        }
+      });
+      catatAktivitasDanResetTimer();
+    }
 
     function bukaDashboardSesudahLogin() {
       document.getElementById("layarLogin").style.display = "none";
       document.getElementById("kontenDashboard").style.display = "flex";
+      aktifkanPantauanAktivitas();
     }
 
     function cekLoginDashboard() {
@@ -938,7 +982,8 @@
       var pesanSalah = document.getElementById("pesanSalahLogin");
 
       if (inputSandi === KATA_SANDI_LOGIN) {
-        sessionStorage.setItem("bm_kpdjp_sudah_login", "ya");
+        sessionStorage.setItem(KEY_LOGIN, "ya");
+        sessionStorage.setItem(KEY_AKTIVITAS_TERAKHIR, String(Date.now()));
         pesanSalah.style.display = "none";
         bukaDashboardSesudahLogin();
       } else {
@@ -947,12 +992,18 @@
     }
 
     function logoutDashboard() {
-      sessionStorage.removeItem("bm_kpdjp_sudah_login");
+      clearTimeout(timerAutoKeluar);
+      sessionStorage.removeItem(KEY_LOGIN);
+      sessionStorage.removeItem(KEY_AKTIVITAS_TERAKHIR);
       location.reload();
     }
 
-    if (sessionStorage.getItem("bm_kpdjp_sudah_login") === "ya") {
-      bukaDashboardSesudahLogin();
+    if (sessionStorage.getItem(KEY_LOGIN) === "ya") {
+      if (sudahMelewatiBatasWaktu()) {
+        logoutDashboard();
+      } else {
+        bukaDashboardSesudahLogin();
+      }
     }
 
     const URL_DATA = "https://script.google.com/macros/s/AKfycbzKrn6vwNSM5hJGywoYmEXzKwA_rjFKeu9YRQq3lcNdYyO6Z0wIgNC2PYU1DmKNtm7l/exec";
@@ -1189,261 +1240,4 @@
       if (btnRefresh) btnRefresh.disabled = true;
 
       var controller = typeof AbortController !== "undefined" ? new AbortController() : null;
-      var timeoutId = controller ? setTimeout(function() { controller.abort(); }, 20000) : null;
-
-      try {
-        var res = await fetch(URL_DATA, controller ? { signal: controller.signal } : {});
-        if (timeoutId) clearTimeout(timeoutId);
-        var json = await res.json();
-        var raw = Array.isArray(json) ? json : (Array.isArray(json && json.data) ? json.data : []);
-        try {
-          localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: raw }));
-        } catch (e) {}
-        prosesDataArray(raw, "(data terbaru)");
-      } catch (e) {
-        if (timeoutId) clearTimeout(timeoutId);
-        if (!semuaData.length) {
-          document.getElementById("infoStats").textContent = "Gagal memuat data (server lambat/timeout). Coba klik Refresh Data lagi.";
-        } else {
-          tampil("(pakai cache)");
-        }
-      } finally {
-        if (btnRefresh) btnRefresh.disabled = false;
-      }
-    }
-
-    function bangunDivisi() {
-      var hitung = {};
-      for (var i = 0; i < dataIndeks.length; i++) {
-        var d = dataIndeks[i].div;
-        if (d && !diabaikan(d)) hitung[d] = (hitung[d] || 0) + 1;
-      }
-      var listDiv = urutDiv(Object.keys(hitung));
-      var divAktif = document.getElementById("filterDivisi").value;
-
-      document.getElementById("kpiTotalPersonel").textContent = semuaData.length;
-
-      document.getElementById("filterDivisi").innerHTML = '<option value="">Semua Divisi</option>' +
-        listDiv.map(function(d) { return '<option value="' + d + '">' + d + ' (' + hitung[d] + ')</option>'; }).join("");
-      document.getElementById("filterDivisi").value = divAktif;
-
-      document.getElementById("kartuDivisi").innerHTML = listDiv.map(function(d) {
-        var aktifClass = divAktif === d ? " aktif" : "";
-        var amanAttr = d.replace(/"/g, "&quot;");
-        return '<div class="card' + aktifClass + '" data-div="' + amanAttr + '" onclick="pilihDivisi(\'' + d.replace(/'/g, "\\'") + '\')"><b>' + d + '</b><div class="card-sub">' + hitung[d] + ' personel</div></div>';
-      }).join("");
-    }
-
-    function pilihDivisi(d) {
-      batasTampil = BATAS_AWAL;
-      document.getElementById("filterDivisi").value = d;
-      document.querySelectorAll("#kartuDivisi .card").forEach(function(c) {
-        var judul = c.querySelector("b") ? c.querySelector("b").textContent.trim() : "";
-        c.classList.toggle("aktif", Boolean(d) && judul === d);
-      });
-      tampil();
-    }
-
-    function tampilkanSemuaPersonelPer50() {
-      filterGenderAktif = "";
-      document.getElementById("filterGender").value = "";
-      document.getElementById("filterDivisi").value = "";
-      document.getElementById("cari").value = "";
-      document.querySelectorAll("#kartuDivisi .card").forEach(function(c) {
-        c.classList.remove("aktif");
-      });
-      batasTampil = BATAS_AWAL;
-      tampil();
-    }
-
-    function pilihGender(g) {
-      filterGenderAktif = g || "";
-      document.getElementById("filterGender").value = filterGenderAktif;
-      batasTampil = BATAS_AWAL;
-      tampil();
-    }
-
-    function toggleGender(g) {
-      if (filterGenderAktif === g) pilihGender("");
-      else pilihGender(g);
-    }
-
-    function perbaruiStatusGenderUI() {
-      document.getElementById("kpiCardLaki").classList.toggle("aktif", filterGenderAktif === "laki");
-      document.getElementById("kpiCardPerempuan").classList.toggle("aktif", filterGenderAktif === "perempuan");
-      document.getElementById("kpiCardSemua").classList.toggle("aktif", filterGenderAktif === "");
-
-      var tanpaFilterLain = !filterGenderAktif && !document.getElementById("filterDivisi").value && !document.getElementById("cari").value.trim();
-      document.getElementById("kpiCardTotalPersonel").classList.toggle("aktif", tanpaFilterLain);
-
-      if (filterGenderAktif === "laki") {
-        document.getElementById("judulTabel").textContent = "Daftar Personel • Laki - Laki";
-      } else if (filterGenderAktif === "perempuan") {
-        document.getElementById("judulTabel").textContent = "Daftar Personel • Perempuan";
-      } else {
-        document.getElementById("judulTabel").textContent = "Daftar Personel";
-      }
-    }
-
-    function muatLebihBanyak() {
-      batasTampil += 50;
-      tampil();
-    }
-
-    function tampilkanSemuaBaris() {
-      batasTampil = hasilTerakhir.length || semuaData.length;
-      tampil();
-    }
-
-    function ringkasKeAwal() {
-      batasTampil = BATAS_AWAL;
-      tampil();
-    }
-
-    function tutupModal() {
-      document.getElementById("modal").classList.remove("aktif");
-      dataModalAktif = null;
-    }
-
-    function salinNilai(jenis) {
-      if (!dataModalAktif) return;
-      var nilai = jenis === "nip" ? getNip(dataModalAktif) : getEmail(dataModalAktif);
-      if (!nilai) {
-        alert(jenis === "nip" ? "NIP kosong." : "Email kosong.");
-        return;
-      }
-      navigator.clipboard.writeText(nilai).then(function() {
-        alert((jenis === "nip" ? "NIP " : "Email ") + nilai + " berhasil disalin.");
-      });
-    }
-
-    function formatSel(kolom, nilai) {
-      var kl = kolom.toLowerCase();
-      if (kl === "divisi") {
-        var divTampil = formatDivisiInggris(nilai);
-        return divTampil ? '<span class="pill">' + divTampil + '</span>' : "";
-      }
-      var teks = String(nilai || "");
-      if (kl.indexOf("nama") !== -1 && teks) {
-        return '<span class="avatar">' + inisial(teks) + '</span><span>' + teks + '</span>';
-      }
-      return teks;
-    }
-
-    function unduhCSV() {
-      if (!hasilTerakhir.length) {
-        alert("Tidak ada data personel untuk diunduh.");
-        return;
-      }
-      var sep = ";";
-      var barisCsv = [kolomList.map(function(k) { return '"' + String(k).replace(/"/g, '""') + '"'; }).join(sep)];
-      hasilTerakhir.forEach(function(r) {
-        var rowCsv = kolomList.map(function(k) {
-          var val = k.toLowerCase() === "divisi" ? formatDivisiInggris(r[k]) : (r[k] || "");
-          return '"' + String(val).replace(/[\r\n]+/g, " ").replace(/"/g, '""') + '"';
-        }).join(sep);
-        barisCsv.push(rowCsv);
-      });
-      var bom = "\uFEFF";
-      var blob = new Blob([bom + barisCsv.join("\r\n")], { type: "text/csv;charset=utf-8;" });
-      var link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "data-personel-bm-kpdjp-2026.csv";
-      link.click();
-    }
-
-    function tampil(labelTambahan) {
-      var kata = document.getElementById("cari").value.toLowerCase().trim();
-      var div = document.getElementById("filterDivisi").value;
-
-      var saringTanpaGender = [];
-      var jmlLaki = 0;
-      var jmlPerempuan = 0;
-
-      for (var i = 0; i < dataIndeks.length; i++) {
-        var item = dataIndeks[i];
-        var okD = !div || item.div === div;
-        var okK = !kata || item.teksCari.indexOf(kata) !== -1;
-        if (okD && okK) {
-          saringTanpaGender.push(item);
-          if (item.isLaki) jmlLaki++;
-          else if (item.isPerempuan) jmlPerempuan++;
-        }
-      }
-
-      var saringRaw = [];
-      for (var j = 0; j < saringTanpaGender.length; j++) {
-        var it = saringTanpaGender[j];
-        if (filterGenderAktif === "laki" && !it.isLaki) continue;
-        if (filterGenderAktif === "perempuan" && !it.isPerempuan) continue;
-        saringRaw.push(it.raw);
-      }
-
-      hasilTerakhir = saringRaw;
-      perbaruiStatusGenderUI();
-
-      var barisPotongan = saringRaw.slice(0, batasTampil);
-      barisDitampilkan = barisPotongan;
-      var suffix = labelTambahan ? " " + labelTambahan : "";
-      var labelGender = filterGenderAktif === "laki" ? " [Laki - Laki]" : (filterGenderAktif === "perempuan" ? " [Perempuan]" : "");
-
-      document.getElementById("infoStats").textContent = "Menampilkan " + barisPotongan.length + " dari " + saringRaw.length + " data cocok" + labelGender + " (" + semuaData.length + " total personel)" + suffix;
-      document.getElementById("kpiTampil").textContent = saringRaw.length;
-      document.getElementById("kpiLaki").textContent = jmlLaki;
-      document.getElementById("kpiPerempuan").textContent = jmlPerempuan;
-      document.getElementById("kpiTotalPersonel").textContent = semuaData.length;
-      document.getElementById("infoBarisTabel").textContent = "Baris tampil: " + barisPotongan.length + " dari " + saringRaw.length;
-
-      var lebihDari50 = saringRaw.length > BATAS_AWAL;
-      var masihAda = barisPotongan.length < saringRaw.length;
-      var sudahDiperluas = barisPotongan.length > BATAS_AWAL;
-
-      document.getElementById("navigasiBawah").style.display = lebihDari50 ? "flex" : "none";
-      document.getElementById("btnBawahTambah").style.display = masihAda ? "inline-block" : "none";
-      document.getElementById("btnBawahSemua").style.display = masihAda ? "inline-block" : "none";
-      document.getElementById("btnBawahRingkas").style.display = sudahDiperluas ? "inline-block" : "none";
-
-      var htmlRows = "";
-      for (var p = 0; p < barisPotongan.length; p++) {
-        var r = barisPotongan[p];
-        var cells = "";
-        for (var c = 0; c < kolomList.length; c++) {
-          var k = kolomList[c];
-          cells += "<td>" + formatSel(k, r[k]) + "</td>";
-        }
-        htmlRows += '<tr data-idx="' + p + '">' + cells + "</tr>";
-      }
-
-      document.getElementById("isiTabel").innerHTML = htmlRows;
-    }
-
-    document.getElementById("isiTabel").addEventListener("click", function(e) {
-      var tr = e.target.closest("tr[data-idx]");
-      if (!tr) return;
-      var idx = parseInt(tr.getAttribute("data-idx"), 10);
-      var r = barisDitampilkan[idx];
-      if (!r) return;
-      dataModalAktif = r;
-      var nama = r["Nama Lengkap (Sesuai KTP)"] || r.Nama || "Detail Personel";
-      document.getElementById("modalJudul").textContent = nama;
-      document.getElementById("detailIsi").innerHTML = kolomList.map(function(k) {
-        var valTampil = k.toLowerCase() === "divisi" ? formatDivisiInggris(r[k]) : r[k];
-        return "<p style='margin:6px 0;'><b>" + k + ":</b> " + (valTampil || "-") + "</p>";
-      }).join("");
-      document.getElementById("modal").classList.add("aktif");
-    });
-
-    document.getElementById("cari").addEventListener("input", function() {
-      batasTampil = BATAS_AWAL;
-      clearTimeout(timerKetik);
-      timerKetik = setTimeout(tampil, 120);
-    });
-    document.getElementById("filterDivisi").addEventListener("change", function(e) { pilihDivisi(e.target.value); });
-
-    muat(false);
-  </script>
-</body>
-</html>
-```[cite: 1]
-
----
+      var timeoutId = controller ? setTimeout(function() { controller.abort(); }, 20000) :
