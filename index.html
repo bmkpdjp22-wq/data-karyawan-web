@@ -270,25 +270,13 @@
       border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 10px;
       padding: 8px 10px;
-      min-height: 46px;
+      min-height: 44px;
       display: flex;
       flex-direction: column;
       justify-content: center;
     }
 
-    .main {
-      flex: 1;
-      padding: 14px 18px 16px;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-    }
-    .main > section {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
-    }
+    .main { flex: 1; padding: 14px 18px 16px; min-width: 0; display: flex; flex-direction: column; justify-content: flex-start; }
 
     .hero {
       background: var(--hero);
@@ -322,6 +310,7 @@
       font-weight: 600;
     }
 
+    /* Bar kontrol seragam seperti Data Personel */
     .bar {
       display: flex;
       gap: 7px;
@@ -370,7 +359,7 @@
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 8px;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
     .kpi {
       background: var(--card);
@@ -426,6 +415,7 @@
       text-overflow: ellipsis;
     }
 
+    /* Baris kartu divisi rata kiri-kanan dengan baris KPI di atasnya & spasi proporsional */
     .cards {
       display: flex;
       flex-wrap: wrap;
@@ -515,17 +505,25 @@
     }
     .btn-mini.utama:hover { opacity: 0.92; color: #fff; }
 
+      #halamanPersonel, #halamanPelanggaran {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+        min-height: 0;
+      }
+
     .box {
       background: var(--card);
       padding: 8px 10px;
-      margin-bottom: 12px;
       border-radius: 14px;
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
       overflow: auto;
       flex: 1 1 auto;
-      min-height: 290px;
-      max-height: 515px;
+      min-height: 460px;
+      max-height: 590px;
+      display: flex;
+      flex-direction: column;
     }
 
     table {
@@ -698,9 +696,9 @@
       align-items: center;
       gap: 12px;
       flex-wrap: wrap;
-      margin-top: auto;
+      margin-top: 8px;
       padding: 8px 14px;
-      min-height: 46px;
+      min-height: 44px;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 10px;
@@ -813,7 +811,7 @@
         </button>
       </div>
 
-      <div class="side-foot">
+          <div class="side-foot">
         <b>Helpdesk BM:</b> Ext. 50000 • WA 081188093005<br>
         <b>Email:</b> bmkpdjp22@gmail.com
       </div>
@@ -821,7 +819,7 @@
 
     <main class="main">
       <!-- HALAMAN DATA PERSONEL -->
-      <section id="halamanPersonel">
+      <section id="halamanPersonel" style="display:flex;">
         <div class="hero">
           <div class="hero-top">
             <div>
@@ -901,7 +899,7 @@
         </div>
       </section>
 
-      <!-- HALAMAN POIN PELANGGARAN -->
+      <!-- HALAMAN POIN PELANGGARAN (HANYA DATA TERKENA PELANGGARAN DI SHEET ALL, TAMPIL SEMUA) -->
       <section id="halamanPelanggaran" style="display:none;">
         <div class="hero">
           <div class="hero-top">
@@ -1138,7 +1136,7 @@
     const URL_PELANGGARAN = "https://script.google.com/macros/s/AKfycbxsnb6ZUzIpdbmdiGeNaJiasl9nCqAdGcCRO_n5XtDZpReCZ2SZJw-4ZusstYiNB5EX/exec";
     const SPREADSHEET_PELANGGARAN_ID = "1nVDFew5Ug96BN0j_w7aZ_gA6DiF43IMBwZIzFEWP7Pk";
     const GID_PELANGGARAN = "642420235";
-    const CACHE_KEY = "cachePersonelKpdjp2026_v10";
+    const CACHE_KEY = "cachePersonelKpdjp2026_v11";
     const CACHE_PELANGGARAN_KEY = "cachePelanggaranKpdjp2026_v9";
     const DURASI_CACHE_MS = 24 * 60 * 60 * 1000;
 
@@ -1358,7 +1356,7 @@
       document.getElementById("kartuDivisiPelanggaran").innerHTML = listDiv.map(function(d) {
         var isAktif = aktif === d ? " aktif" : "";
         var dataDivAttr = URUTAN_DIVISI.indexOf(d) !== -1 ? ' data-div="' + escapeHtml(d) + '"' : "";
-        return '<div class="card' + isAktif + '"' + dataDivAttr + ' onclick="pilihDivisiPelanggaran(\'' + d.replace(/'/g, "\\'") + '\')">' +
+        return '<div class="card' + isAktif + '"' + dataDivAttr + ' onclick="pilihDivisiPelanggaran('' + d.replace(/'/g, "\'") + '')">' +
           '<b>' + escapeHtml(d) + '</b>' +
           '<div class="card-sub">' + hitung[d] + ' catatan</div>' +
           '</div>';
@@ -1680,18 +1678,75 @@
     let kolomList = KOLOM_UTAMA.slice();
     let dataModalAktif = null;
 
-    function deteksiDivisiDariJabatan(jabatan) {
-      var j = String(jabatan || "").trim();
-      var kl = j.toLowerCase();
-      if (!kl) return "";
-      if (kl.indexOf("sec") !== -1 || kl.indexOf("satpam") !== -1 || kl.indexOf("guard") !== -1 || kl.indexOf("chief sec") !== -1) return "Security";
-      if (kl.indexOf("eng") !== -1 || kl.indexOf("teknisi") !== -1 || kl.indexOf("mep") !== -1 || kl.indexOf("hvac") !== -1 || kl.indexOf("bas") !== -1) return "Engineering";
-      if (kl.indexOf("house") !== -1 || kl.indexOf("clean") !== -1 || kl.indexOf("kebersihan") !== -1 || kl.indexOf("gondola") !== -1) return "Housekeeping";
-      if (kl.indexOf("banquet") !== -1 || kl.indexOf("meeting") !== -1 || kl.indexOf("rapat") !== -1) return "Banquet";
-      if (kl.indexOf("driver") !== -1 || kl.indexOf("sopir") !== -1 || kl.indexOf("pengemudi") !== -1) return "Driver";
-      if (kl.indexOf("resep") !== -1 || kl.indexOf("reception") !== -1) return "Receptionist";
-      if (kl.indexOf("building manager") !== -1 || kl.indexOf("assistant building") !== -1 || kl.indexOf("office") !== -1 || kl.indexOf("admin") !== -1 || kl.indexOf("tr") !== -1 || kl.indexOf("sdm") !== -1 || kl.indexOf("finance") !== -1 || kl.indexOf("akuntansi") !== -1 || kl.indexOf("facility") !== -1) return "Management Office";
+    function deteksiDivisiDariRow(r) {
+      if (!r || typeof r !== "object") return "";
+      var kolomDivisi = String(
+        r["Divisi"] || r["divisi"] || r["Devisi"] || r["devisi"] ||
+        r["Departemen"] || r["departemen"] || r["Unit"] || r["Bagian"] || ""
+      ).trim();
+      var jabatan = String(r.Jabatan || r.jabatan || "").trim();
+      var gabung = (" " + kolomDivisi + " " + jabatan + " ").toLowerCase();
+      if (!gabung.trim()) return "";
+
+      if (
+        gabung.indexOf("sec") !== -1 || gabung.indexOf("satpam") !== -1 ||
+        gabung.indexOf("guard") !== -1 || gabung.indexOf("pengamanan") !== -1 ||
+        gabung.indexOf("keamanan") !== -1 || gabung.indexOf("danru") !== -1 ||
+        gabung.indexOf("komandan regu") !== -1 || gabung.indexOf("waka") !== -1 ||
+        gabung.indexOf("patroli") !== -1 || gabung.indexOf("posko") !== -1 ||
+        gabung.indexOf("cctv") !== -1 || gabung.indexOf("k9") !== -1 ||
+        gabung.indexOf("pkd") !== -1 || gabung.indexOf("pamdal") !== -1 ||
+        gabung.indexOf("sekuriti") !== -1
+      ) return "Security";
+
+      if (
+        gabung.indexOf("eng") !== -1 || gabung.indexOf("teknisi") !== -1 ||
+        gabung.indexOf("mep") !== -1 || gabung.indexOf("hvac") !== -1 ||
+        gabung.indexOf("bas") !== -1 || gabung.indexOf("listrik") !== -1 ||
+        gabung.indexOf("mekanikal") !== -1 || gabung.indexOf("elektrikal") !== -1 ||
+        gabung.indexOf("plumbing") !== -1 || gabung.indexOf("genset") !== -1 ||
+        gabung.indexOf("lift") !== -1 || gabung.indexOf("sipil") !== -1
+      ) return "Engineering";
+
+      if (
+        gabung.indexOf("house") !== -1 || gabung.indexOf("clean") !== -1 ||
+        gabung.indexOf("kebersihan") !== -1 || gabung.indexOf("gondola") !== -1 ||
+        gabung.indexOf("gardener") !== -1 || gabung.indexOf("taman") !== -1 ||
+        gabung.indexOf("pest") !== -1 || gabung.indexOf(" hk ") !== -1 || gabung.indexOf(" cs ") !== -1
+      ) return "Housekeeping";
+
+      if (
+        gabung.indexOf("banquet") !== -1 || gabung.indexOf("meeting") !== -1 ||
+        gabung.indexOf("rapat") !== -1 || gabung.indexOf("pramusaji") !== -1 ||
+        gabung.indexOf("pantry") !== -1 || gabung.indexOf("waiter") !== -1
+      ) return "Banquet";
+
+      if (
+        gabung.indexOf("driver") !== -1 || gabung.indexOf("sopir") !== -1 ||
+        gabung.indexOf("pengemudi") !== -1
+      ) return "Driver";
+
+      if (
+        gabung.indexOf("resep") !== -1 || gabung.indexOf("reception") !== -1 ||
+        gabung.indexOf("front office") !== -1 || gabung.indexOf("operator") !== -1
+      ) return "Receptionist";
+
+      if (
+        gabung.indexOf("building manager") !== -1 || gabung.indexOf("assistant building") !== -1 ||
+        gabung.indexOf("management") !== -1 || gabung.indexOf("office") !== -1 ||
+        gabung.indexOf("admin") !== -1 || gabung.indexOf(" tr ") !== -1 ||
+        gabung.indexOf("sdm") !== -1 || gabung.indexOf("finance") !== -1 ||
+        gabung.indexOf("akuntansi") !== -1 || gabung.indexOf("facility") !== -1 ||
+        gabung.indexOf("hse") !== -1 || gabung.indexOf("k3") !== -1 ||
+        gabung.indexOf("logistik") !== -1 || gabung.indexOf("gudang") !== -1 ||
+        gabung.indexOf(" mo ") !== -1
+      ) return "Management Office";
+
       return "";
+    }
+
+    function deteksiDivisiDariJabatan(jabatan) {
+      return deteksiDivisiDariRow({ Jabatan: jabatan });
     }
 
     function getGender(row) {
@@ -1723,7 +1778,7 @@
       document.getElementById("kepalaTabel").innerHTML = kolomList.map(function(k) { return "<th>" + k + "</th>"; }).join("");
 
       dataIndeks = semuaData.map(function(r) {
-        var divKat = deteksiDivisiDariJabatan(r.Jabatan);
+        var divKat = deteksiDivisiDariRow(r);
         var genderNorm = getGender(r);
         var isLaki = genderNorm.indexOf("laki") !== -1;
         var isPerempuan = !isLaki && genderNorm.indexOf("perempuan") !== -1;
