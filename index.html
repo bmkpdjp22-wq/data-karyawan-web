@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DATA PERSONEL BM KPDJP 2026</title>
+  <title>DATA PERSONEL BM KPDJP</title>
   <style>
     :root {
       --sidebar: #0f172a;
@@ -74,7 +74,7 @@
       border-radius: 16px;
       padding: 28px 24px;
       width: 100%;
-      max-width: 350px;
+      max-width: 360px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
       text-align: center;
     }
@@ -92,22 +92,44 @@
       font-weight: 800;
     }
     .login-card p {
-      margin: 0 0 16px;
+      margin: 0 0 14px;
       font-size: 12.5px;
       color: var(--muted);
+      line-height: 1.45;
+    }
+    .sandi-box {
+      position: relative;
+      margin-bottom: 10px;
     }
     .login-input {
       width: 100%;
-      padding: 10px 12px;
+      padding: 10px 68px 10px 12px;
       border-radius: 9px;
       border: 1px solid var(--border);
       background: var(--bg);
       color: var(--text);
       font-size: 13.5px;
-      margin-bottom: 10px;
       outline: none;
     }
     .login-input:focus { border-color: var(--primary); }
+    .btn-intip {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .btn-intip:hover {
+      color: var(--primary);
+      border-color: var(--primary);
+    }
     .login-btn {
       width: 100%;
       padding: 10px 14px;
@@ -120,6 +142,16 @@
       cursor: pointer;
     }
     .login-btn:hover { opacity: 0.94; }
+    .login-hint {
+      margin-top: 12px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: var(--pill-bg);
+      border: 1px solid var(--border);
+      font-size: 11.5px;
+      color: var(--muted);
+    }
+    .login-hint b { color: var(--text); }
     .login-err {
       display: none;
       margin-top: 10px;
@@ -314,7 +346,7 @@
       border: 1px solid rgba(255, 255, 255, 0.25);
     }
 
-    /* KPI Ringkasan (Diperkecil & Ringkas) */
+    /* KPI Ringkasan */
     .kpi-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(120px, 1fr));
@@ -755,10 +787,14 @@
     <div class="login-card">
       <div class="login-tag">BUILDING MANAGEMENT KPDJP</div>
       <h2>Login Portal Personel</h2>
-      <p>Masukkan kata sandi untuk membuka dashboard personel 2026</p>
-      <input type="password" id="inputSandiLogin" class="login-input" placeholder="Masukkan kata sandi..."
-             onkeypress="if(event.key === 'Enter') cekLoginDashboard()" />
+      <p>Masukkan kata sandi untuk membuka dashboard personel</p>
+      <div class="sandi-box">
+        <input type="password" id="inputSandiLogin" class="login-input" placeholder="Masukkan kata sandi..."
+               onkeypress="if(event.key === 'Enter') cekLoginDashboard()" />
+        <button type="button" class="btn-intip" id="btnIntipSandi" onclick="toggleLihatSandi()">Lihat</button>
+      </div>
       <button type="button" class="login-btn" onclick="cekLoginDashboard()">Masuk</button>
+      <div class="login-hint">Kata sandi: <b>KapalApi</b></div>
       <div id="pesanSalahLogin" class="login-err">Kata sandi salah. Silakan coba lagi.</div>
     </div>
   </div>
@@ -811,7 +847,7 @@
       <div class="hero">
         <div class="hero-top">
           <div>
-            <h1>DATA PERSONEL BM KPDJP 2026</h1>
+            <h1>DATA PERSONEL BM KPDJP</h1>
             <p id="infoStats">Memuat data...</p>
           </div>
           <span class="jam-pill" id="infoWaktuWIB">WIB: --:--:-- • Mode Otomatis</span>
@@ -830,7 +866,7 @@
         </div>
       </div>
 
-      <!-- KARTU RINGKASAN DIPERKECIL -->
+      <!-- KARTU RINGKASAN -->
       <div class="kpi-grid">
         <div class="kpi klik" id="kpiCardSemua" onclick="pilihGender('')">
           <div class="k-label">Hasil Filter Aktif</div>
@@ -1020,6 +1056,18 @@
     const KEY_AKTIVITAS_TERAKHIR = "bm_kpdjp_aktivitas_terakhir";
     let timerAutoKeluar = null;
 
+    function toggleLihatSandi() {
+      var inp = document.getElementById("inputSandiLogin");
+      var btn = document.getElementById("btnIntipSandi");
+      if (inp.type === "password") {
+        inp.type = "text";
+        btn.textContent = "Tutup";
+      } else {
+        inp.type = "password";
+        btn.textContent = "Lihat";
+      }
+    }
+
     function sudahMelewatiBatasWaktu() {
       var terakhir = parseInt(sessionStorage.getItem(KEY_AKTIVITAS_TERAKHIR) || "0", 10);
       if (!terakhir) return false;
@@ -1081,7 +1129,6 @@
       else bukaDashboardSesudahLogin();
     }
 
-    // Kolom tabel berhenti tepat di "Ukuran Sepatu"
     const KOLOM_UTAMA = [
       "Nomor",
       "NIP",
@@ -1136,7 +1183,7 @@
     ];
 
     const URL_DATA = "https://script.google.com/macros/s/AKfycbzKrn6vwNSM5hJGywoYmEXzKwA_rjFKeu9YRQq3lcNdYyO6Z0wIgNC2PYU1DmKNtm7l/exec";
-    const CACHE_KEY = "cachePersonelKpdjp2026_v5";
+    const CACHE_KEY = "cachePersonelKpdjp2026_v7";
     const DURASI_CACHE_MS = 24 * 60 * 60 * 1000;
 
     const BATAS_AWAL = 50;
@@ -1223,7 +1270,7 @@
     function deteksiDivisiDariJabatan(jabatan) {
       var j = String(jabatan || "").trim();
       var kl = j.toLowerCase();
-      if (!kl) return "Lainnya";
+      if (!kl) return "";
       if (kl.indexOf("sec") !== -1 || kl.indexOf("satpam") !== -1 || kl.indexOf("guard") !== -1 || kl.indexOf("chief sec") !== -1) return "Security";
       if (kl.indexOf("eng") !== -1 || kl.indexOf("teknisi") !== -1 || kl.indexOf("mep") !== -1 || kl.indexOf("hvac") !== -1 || kl.indexOf("bas") !== -1) return "Engineering";
       if (kl.indexOf("house") !== -1 || kl.indexOf("clean") !== -1 || kl.indexOf("kebersihan") !== -1 || kl.indexOf("gondola") !== -1) return "Housekeeping";
@@ -1231,7 +1278,7 @@
       if (kl.indexOf("driver") !== -1 || kl.indexOf("sopir") !== -1 || kl.indexOf("pengemudi") !== -1) return "Driver";
       if (kl.indexOf("resep") !== -1 || kl.indexOf("reception") !== -1) return "Receptionist";
       if (kl.indexOf("building manager") !== -1 || kl.indexOf("assistant building") !== -1 || kl.indexOf("office") !== -1 || kl.indexOf("admin") !== -1 || kl.indexOf("tr") !== -1 || kl.indexOf("sdm") !== -1 || kl.indexOf("finance") !== -1 || kl.indexOf("akuntansi") !== -1 || kl.indexOf("facility") !== -1) return "Management Office";
-      return j;
+      return "";
     }
 
     function getGender(row) {
@@ -1244,17 +1291,6 @@
 
     function getEmail(row) {
       return String(row["Alamat Email"] || row.Email || row.email || "").trim();
-    }
-
-    function urutDiv(arr) {
-      return arr.slice().sort(function(a, b) {
-        var ia = URUTAN_DIVISI.indexOf(a);
-        var ib = URUTAN_DIVISI.indexOf(b);
-        if (ia !== -1 && ib !== -1) return ia - ib;
-        if (ia !== -1) return -1;
-        if (ib !== -1) return 1;
-        return a.localeCompare(b, "en");
-      });
     }
 
     function inisial(teks) {
@@ -1304,10 +1340,15 @@
       var hitung = {};
       for (var i = 0; i < dataIndeks.length; i++) {
         var d = dataIndeks[i].div;
-        if (d) hitung[d] = (hitung[d] || 0) + 1;
+        if (d && URUTAN_DIVISI.indexOf(d) !== -1) {
+          hitung[d] = (hitung[d] || 0) + 1;
+        }
       }
-      var listDiv = urutDiv(Object.keys(hitung));
+      var listDiv = URUTAN_DIVISI.filter(function(d) { return hitung[d] > 0; });
       var divAktif = document.getElementById("filterDivisi").value;
+      if (divAktif && URUTAN_DIVISI.indexOf(divAktif) === -1) {
+        divAktif = "";
+      }
 
       document.getElementById("kpiTotalPersonel").textContent = semuaData.length;
 
@@ -1513,7 +1554,7 @@
       var blob = new Blob([bom + barisCsv.join("\r\n")], { type: "text/csv;charset=utf-8;" });
       var link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.download = "data-personel-bm-kpdjp-2026.csv";
+      link.download = "data-personel-bm-kpdjp.csv";
       link.click();
     }
 
