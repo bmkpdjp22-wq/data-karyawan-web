@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DASHBOARD BM KPDJP</title>
+  <title>POIN PELANGGARAN BM KPDJP</title>
   <style>
     :root {
       --sidebar: #0f172a;
@@ -19,7 +19,6 @@
       --th-bg: #eef2ff;
       --th-text: #1e293b;
       --pill-bg: #f1f5f9;
-      --pill-text: #334155;
       --primary: #2563eb;
       --primary-soft: #eff6ff;
       --hero: linear-gradient(135deg, #0f172a 0%, #1d4ed8 58%, #4338ca 100%);
@@ -40,7 +39,6 @@
       --th-bg: #131c31;
       --th-text: #e2e8f0;
       --pill-bg: #1e293b;
-      --pill-text: #e2e8f0;
       --primary: #3b82f6;
       --primary-soft: #172554;
       --hero: linear-gradient(135deg, #05070c 0%, #111c3a 58%, #1e1b4b 100%);
@@ -56,7 +54,7 @@
       transition: background 0.2s ease, color 0.2s ease;
     }
 
-    /* Layar Login Modern */
+    /* Layar Login */
     .login-overlay {
       position: fixed;
       inset: 0;
@@ -106,7 +104,6 @@
       font-size: 21px;
       font-weight: 800;
       color: #0f172a;
-      letter-spacing: -0.01em;
     }
     .login-card p {
       margin: 0 0 20px;
@@ -114,10 +111,7 @@
       color: #64748b;
       line-height: 1.5;
     }
-    .sandi-box {
-      position: relative;
-      margin-bottom: 12px;
-    }
+    .sandi-box { position: relative; margin-bottom: 12px; }
     .login-input {
       width: 100%;
       padding: 12px 68px 12px 14px;
@@ -126,7 +120,6 @@
       background: #f8fafc;
       color: #0f172a;
       font-size: 13.5px;
-      transition: all 0.16s ease;
       outline: none;
     }
     .login-input:focus {
@@ -147,12 +140,6 @@
       padding: 5px 9px;
       border-radius: 8px;
       cursor: pointer;
-      transition: all 0.14s ease;
-    }
-    .btn-intip:hover {
-      color: #2563eb;
-      border-color: #2563eb;
-      background: #eff6ff;
     }
     .login-btn {
       width: 100%;
@@ -165,15 +152,6 @@
       font-weight: 700;
       cursor: pointer;
       box-shadow: 0 10px 20px -6px rgba(37, 99, 235, 0.5);
-      transition: transform 0.12s ease, box-shadow 0.15s ease, opacity 0.15s ease;
-    }
-    .login-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 14px 24px -6px rgba(37, 99, 235, 0.6);
-      opacity: 0.98;
-    }
-    .login-btn:active {
-      transform: translateY(0);
     }
     .login-err {
       display: none;
@@ -201,11 +179,7 @@
       gap: 10px;
       border-right: 1px solid var(--border);
     }
-    .side-head h3 {
-      margin: 0 0 4px;
-      font-size: 14.5px;
-      line-height: 1.35;
-    }
+    .side-head h3 { margin: 0 0 4px; font-size: 14.5px; line-height: 1.35; }
     .side-loc {
       font-size: 11px;
       color: #93c5fd;
@@ -213,58 +187,35 @@
       padding-bottom: 10px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     }
-    .side-menu {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-top: 2px;
-    }
+    .side-menu { display: flex; flex-direction: column; gap: 6px; margin-top: 2px; }
     .side-menu-btn {
       width: 100%;
       display: flex;
       align-items: center;
       gap: 9px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #f1f5f9;
+      background: var(--sidebar-active);
+      border: 1px solid rgba(147, 197, 253, 0.65);
+      color: #fff;
       padding: 8px 10px;
       border-radius: 9px;
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       text-align: left;
-      transition: all 0.14s ease;
     }
-    .side-menu-btn:hover {
-      background: var(--sidebar-hover);
-      border-color: rgba(96, 165, 250, 0.55);
-      color: #fff;
-    }
-    .side-menu-btn.aktif {
-      background: var(--sidebar-active);
-      border-color: rgba(147, 197, 253, 0.65);
-      color: #fff;
-    }
-    .num-chip {
+    .num-chip.danger {
       display: inline-grid;
       place-items: center;
       min-width: 20px;
       height: 20px;
       padding: 0 5px;
       border-radius: 6px;
-      background: #2563eb;
+      background: #dc2626;
       color: #fff;
       font-size: 10.5px;
       font-weight: 800;
       flex-shrink: 0;
     }
-    .side-menu-btn.aktif .num-chip {
-      background: rgba(255, 255, 255, 0.22);
-    }
-    .num-chip.danger {
-      background: #dc2626;
-    }
-
     .side-foot {
       margin-top: auto;
       font-size: 11px;
@@ -276,7 +227,6 @@
 
     /* Main Content */
     .main { flex: 1; padding: 18px 20px 32px; min-width: 0; }
-
     .hero {
       background: var(--hero);
       color: #fff;
@@ -323,11 +273,7 @@
       color: var(--text);
       outline: none;
     }
-    select {
-      background: var(--card);
-      color: var(--text);
-      cursor: pointer;
-    }
+    select { background: var(--card); color: var(--text); cursor: pointer; }
     button.act {
       background: #e2e8f0;
       color: #0f172a;
@@ -335,7 +281,6 @@
       font-weight: 700;
       cursor: pointer;
     }
-    button.act:hover { background: #cbd5e1; }
     button.act.primary { background: #38bdf8; color: #082f49; }
     button.act.primary:hover { background: #7dd3fc; }
     button.act.tema {
@@ -344,7 +289,7 @@
       border: 1px solid rgba(255, 255, 255, 0.25);
     }
 
-    /* KPI Ringkasan Ringkas & Sejajar */
+    /* KPI Ringkasan */
     .kpi-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(120px, 1fr));
@@ -362,14 +307,8 @@
       gap: 2px;
       min-width: 0;
     }
-    .kpi.klik {
-      cursor: pointer;
-      transition: transform 0.12s ease, border-color 0.15s ease, background 0.15s ease;
-    }
-    .kpi.klik:hover {
-      border-color: var(--primary);
-      transform: translateY(-1px);
-    }
+    .kpi.klik { cursor: pointer; transition: transform 0.12s ease, border-color 0.15s ease; }
+    .kpi.klik:hover { border-color: var(--primary); transform: translateY(-1px); }
     .kpi.klik.aktif {
       border-color: var(--primary);
       background: var(--primary-soft);
@@ -381,31 +320,18 @@
       font-weight: 700;
       letter-spacing: 0.04em;
       text-transform: uppercase;
-      line-height: 1.15;
     }
-    .kpi .k-row {
-      display: flex;
-      align-items: baseline;
-      gap: 7px;
-      min-width: 0;
-    }
-    .kpi .k-val {
-      font-size: 14.5px;
-      font-weight: 800;
-      line-height: 1.15;
-      color: var(--text);
-      flex-shrink: 0;
-    }
+    .kpi .k-row { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
+    .kpi .k-val { font-size: 14.5px; font-weight: 800; color: var(--text); flex-shrink: 0; }
     .kpi .k-hint {
       font-size: 10px;
       color: var(--muted);
-      line-height: 1.2;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    /* Kartu / Tombol Filter Divisi */
+    /* Kartu Filter Divisi */
     .cards {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(144px, 1fr));
@@ -422,49 +348,28 @@
       border: 1px solid var(--border);
       border-left: 3px solid var(--div-accent);
       cursor: pointer;
-      transition: transform 0.14s ease, box-shadow 0.14s ease, border-color 0.14s ease;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
       gap: 2px;
     }
     body.mode-malam .card {
       background: linear-gradient(135deg, rgba(30, 41, 59, 0.85) 0%, var(--card) 75%);
     }
-    .card:hover {
-      transform: translateY(-1px);
-      border-color: var(--div-accent);
-      box-shadow: 0 6px 14px -4px rgba(15, 23, 42, 0.12);
-    }
     .card.aktif {
       border-color: var(--div-accent);
-      box-shadow: 0 0 0 1.5px var(--div-accent), 0 8px 16px -4px rgba(37, 99, 235, 0.2);
+      box-shadow: 0 0 0 1.5px var(--div-accent);
     }
     .card b {
       font-size: 11.5px;
       font-weight: 700;
-      line-height: 1.25;
       color: var(--text);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .card-sub {
-      font-size: 10.5px;
-      font-weight: 600;
-      color: var(--div-badge-text);
-    }
+    .card-sub { font-size: 10.5px; font-weight: 600; color: var(--div-badge-text); }
     body.mode-malam .card-sub { color: #cbd5e1; }
 
-    .card[data-div="Management Office"] { --div-accent: #2563eb; --div-tint: linear-gradient(135deg, #eff6ff 0%, #ffffff 75%); --div-badge-text: #1d4ed8; }
-    .card[data-div="Engineering"] { --div-accent: #0284c7; --div-tint: linear-gradient(135deg, #f0f9ff 0%, #ffffff 75%); --div-badge-text: #0369a1; }
-    .card[data-div="Security"] { --div-accent: #4f46e5; --div-tint: linear-gradient(135deg, #eef2ff 0%, #ffffff 75%); --div-badge-text: #4338ca; }
-    .card[data-div="Housekeeping"] { --div-accent: #0d9488; --div-tint: linear-gradient(135deg, #f0fdfa 0%, #ffffff 75%); --div-badge-text: #0f766e; }
-    .card[data-div="Banquet"] { --div-accent: #d97706; --div-tint: linear-gradient(135deg, #fffbeb 0%, #ffffff 75%); --div-badge-text: #b45309; }
-    .card[data-div="Driver"] { --div-accent: #059669; --div-tint: linear-gradient(135deg, #ecfdf5 0%, #ffffff 75%); --div-badge-text: #047857; }
-    .card[data-div="Receptionist"] { --div-accent: #7c3aed; --div-tint: linear-gradient(135deg, #f5f3ff 0%, #ffffff 75%); --div-badge-text: #6d28d9; }
-
-    /* Toolbar Tabel & Tabel Keren */
     .table-top {
       display: flex;
       justify-content: space-between;
@@ -473,7 +378,6 @@
       flex-wrap: wrap;
       margin-bottom: 8px;
     }
-    .table-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
     .btn-mini {
       background: var(--card);
       border: 1px solid var(--border);
@@ -485,12 +389,6 @@
       cursor: pointer;
     }
     .btn-mini:hover { border-color: var(--primary); color: var(--primary); }
-    .btn-mini.utama {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: #fff;
-    }
-    .btn-mini.utama:hover { opacity: 0.92; color: #fff; }
 
     .box {
       background: var(--card);
@@ -499,7 +397,7 @@
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
       overflow: auto;
-      max-height: 550px;
+      max-height: 620px;
     }
 
     table {
@@ -518,7 +416,6 @@
       text-align: left;
       font-size: 11px;
       font-weight: 700;
-      letter-spacing: 0.02em;
       border-top: 1px solid var(--border);
       border-bottom: 1.5px solid var(--border);
       white-space: nowrap;
@@ -536,18 +433,9 @@
       border-bottom-right-radius: 8px;
     }
 
-    tbody tr.data-row {
-      background: var(--card);
-      transition: transform 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
-    }
-    tbody tr.data-row:nth-child(even) {
-      background: var(--row-alt);
-    }
-    tbody tr.data-row:hover {
-      background: var(--row-hover);
-      cursor: pointer;
-      box-shadow: 0 3px 10px rgba(37, 99, 235, 0.1);
-    }
+    tbody tr.data-row { background: var(--card); }
+    tbody tr.data-row:nth-child(even) { background: var(--row-alt); }
+    tbody tr.data-row:hover { background: var(--row-hover); cursor: pointer; }
     tbody tr.data-row td {
       padding: 8px 11px;
       border-top: 1px solid var(--border);
@@ -572,33 +460,8 @@
     }
 
     .cell-nowrap { white-space: nowrap; }
-    .cell-nama {
-      white-space: nowrap;
-      font-weight: 700;
-      max-width: 220px;
-    }
-    .nama-teks {
-      display: inline-block;
-      vertical-align: middle;
-      max-width: 175px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .cell-wrap {
-      white-space: normal;
-      word-break: break-word;
-      min-width: 170px;
-      max-width: 250px;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-    .cell-pendek {
-      white-space: normal;
-      max-width: 190px;
-    }
-
+    .cell-nama { white-space: nowrap; font-weight: 700; }
+    .cell-pendek { white-space: normal; max-width: 240px; }
     .avatar {
       display: inline-grid;
       place-items: center;
@@ -612,34 +475,7 @@
       font-weight: 800;
       margin-right: 6px;
       vertical-align: middle;
-      flex-shrink: 0;
     }
-
-    .badge-gender {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-size: 10.5px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-    .badge-laki {
-      background: #dbeafe;
-      color: #1d4ed8;
-    }
-    .badge-perempuan {
-      background: #fce7f3;
-      color: #be185d;
-    }
-    body.mode-malam .badge-laki {
-      background: rgba(59, 130, 246, 0.22);
-      color: #93c5fd;
-    }
-    body.mode-malam .badge-perempuan {
-      background: rgba(236, 72, 153, 0.22);
-      color: #f9a8d4;
-    }
-
     .pel-poin-badge {
       display: inline-block;
       padding: 2px 8px;
@@ -668,14 +504,7 @@
       font-size: 11.5px;
       color: var(--muted);
     }
-    .footer-nav {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
 
-    /* Modal Detail */
     .modal-backdrop {
       display: none;
       position: fixed;
@@ -698,7 +527,6 @@
       max-height: 86vh;
       overflow: auto;
     }
-    .modal-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
     .btn-dark {
       background: var(--primary);
       color: #fff;
@@ -708,16 +536,7 @@
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
-    }
-    .btn-sec {
-      background: var(--pill-bg);
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
+      margin-top: 10px;
     }
 
     @media (max-width: 960px) {
@@ -731,7 +550,6 @@
   </style>
 </head>
 <body>
-  <!-- LAYAR LOGIN -->
   <div id="layarLogin" class="login-overlay">
     <div class="login-card">
       <div class="login-badge-icon" aria-hidden="true">
@@ -742,7 +560,7 @@
       </div>
       <div class="login-tag">BUILDING MANAGEMENT KPDJP</div>
       <h2>Login Portal</h2>
-      <p>Masukkan kata sandi untuk membuka dashboard</p>
+      <p>Masukkan kata sandi untuk membuka data pelanggaran (Sheet ALL)</p>
       <div class="sandi-box">
         <input type="password" id="inputSandiLogin" class="login-input" placeholder="Masukkan kata sandi..."
                onkeypress="if(event.key === 'Enter') cekLoginDashboard()" />
@@ -754,7 +572,6 @@
   </div>
 
   <div class="wrap" id="kontenDashboard" style="display:none;">
-    <!-- SIDEBAR KIRI -->
     <aside class="side">
       <div class="side-head">
         <h3>BUILDING MANAGEMENT KPDJP</h3>
@@ -762,112 +579,26 @@
       </div>
 
       <div class="side-menu">
-        <button class="side-menu-btn aktif" id="btnMenuDataPersonel" onclick="pindahHalaman('personel')">
-          <span class="num-chip">1</span>
-          <span>Data Personel</span>
-        </button>
-        <button class="side-menu-btn" id="btnMenuPoinPelanggaran" onclick="pindahHalaman('pelanggaran')">
-          <span class="num-chip danger">2</span>
-          <span>Poin Pelanggaran</span>
+        <button class="side-menu-btn" onclick="resetFilterPelanggaran()">
+          <span class="num-chip danger">ALL</span>
+          <span>Poin Pelanggaran (Sheet ALL)</span>
         </button>
       </div>
 
       <div class="side-foot">
+        <b>Sumber Data:</b> Sheet ALL (Pelanggaran)<br>
         <b>Helpdesk BM:</b> Ext. 50000 • WA 081188093005<br>
         <b>Email:</b> bmkpdjp22@gmail.com
       </div>
     </aside>
 
-    <!-- KONTEN UTAMA -->
     <main class="main">
-      <!-- ==================== HALAMAN DATA PERSONEL ==================== -->
-      <section id="halamanPersonel">
-        <div class="hero">
-          <div class="hero-top">
-            <div>
-              <h1>DATA PERSONEL BM KPDJP</h1>
-              <p id="infoStats">Memuat data...</p>
-            </div>
-            <span class="jam-pill" id="infoWaktuWIBPersonel">WIB: --:--:-- • Mode Otomatis</span>
-          </div>
-          <div class="bar">
-            <input id="cari" type="text" placeholder="Cari nama, NIP, NIK, jabatan, atau kata kunci..." />
-            <select id="filterDivisi"><option value="">Semua Divisi</option></select>
-            <select id="filterGender" onchange="pilihGender(this.value)">
-              <option value="">Semua Gender</option>
-              <option value="laki">Laki - Laki</option>
-              <option value="perempuan">Perempuan</option>
-            </select>
-            <button class="act primary" id="btnRefresh" onclick="muat(true)">Refresh Data</button>
-            <button class="act tema" id="btnTemaPersonel" onclick="gantiModeTema()">Tema: Otomatis WIB</button>
-            <button class="act tema" onclick="logoutDashboard()">Keluar</button>
-          </div>
-        </div>
-
-        <div class="kpi-grid">
-          <div class="kpi klik" id="kpiCardSemua" onclick="pilihGender('')">
-            <div class="k-label">Hasil Filter Aktif</div>
-            <div class="k-row">
-              <span class="k-val" id="kpiTampil">0</span>
-              <span class="k-hint" title="Klik reset gender ke semua data">Klik reset gender</span>
-            </div>
-          </div>
-          <div class="kpi klik" id="kpiCardLaki" onclick="toggleGender('laki')">
-            <div class="k-label">Laki - Laki</div>
-            <div class="k-row">
-              <span class="k-val" id="kpiLaki">0</span>
-              <span class="k-hint" title="Klik untuk filter Laki - Laki">Klik filter Laki - Laki</span>
-            </div>
-          </div>
-          <div class="kpi klik" id="kpiCardPerempuan" onclick="toggleGender('perempuan')">
-            <div class="k-label">Perempuan</div>
-            <div class="k-row">
-              <span class="k-val" id="kpiPerempuan">0</span>
-              <span class="k-hint" title="Klik untuk filter Perempuan">Klik filter Perempuan</span>
-            </div>
-          </div>
-          <div class="kpi klik" id="kpiCardTotalPersonel" onclick="tampilkanSemuaPersonelPer50()">
-            <div class="k-label">Total Personel</div>
-            <div class="k-row">
-              <span class="k-val" id="kpiTotalPersonel">0</span>
-              <span class="k-hint" title="Klik tampilkan semua (per 50 data)">Klik semua (50/hal)</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="cards" id="kartuDivisi"></div>
-
-        <div class="table-top">
-          <span style="font-weight:700; font-size:13.5px;" id="judulTabel">Daftar Personel</span>
-          <div class="table-actions">
-            <button class="btn-mini" onclick="unduhCSV()">Unduh CSV Hasil Filter</button>
-          </div>
-        </div>
-
-        <div class="box">
-          <table>
-            <thead><tr id="kepalaTabel"></tr></thead>
-            <tbody id="isiTabel"></tbody>
-          </table>
-        </div>
-
-        <div class="footer-bar">
-          <span id="infoBarisTabel">Baris tampil: 0</span>
-          <div class="footer-nav" id="navigasiBawah">
-            <button class="btn-mini utama" id="btnBawahTambah" onclick="muatLebihBanyak()">+50 Baris Lagi</button>
-            <button class="btn-mini" id="btnBawahSemua" onclick="tampilkanSemuaBaris()">Tampilkan Semua</button>
-            <button class="btn-mini" id="btnBawahRingkas" onclick="ringkasKeAwal()">Ringkas (50 Baris)</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== HALAMAN POIN PELANGGARAN ==================== -->
-      <section id="halamanPelanggaran" style="display:none;">
+      <section id="halamanPelanggaran">
         <div class="hero">
           <div class="hero-top">
             <div>
               <h1>POIN PELANGGARAN BM KPDJP</h1>
-              <p id="infoPelanggaran">Memuat data poin pelanggaran...</p>
+              <p id="infoPelanggaran">Memuat seluruh data pelanggaran dari sheet ALL...</p>
             </div>
             <span class="jam-pill" id="infoWaktuWIBPelanggaran">WIB: --:--:-- • Mode Otomatis</span>
           </div>
@@ -908,7 +639,7 @@
             <div class="k-label">Total Semua Data</div>
             <div class="k-row">
               <span class="k-val" id="valPelSemua">0</span>
-              <span class="k-hint">Seluruh tab ALL</span>
+              <span class="k-hint">Seluruh sheet ALL</span>
             </div>
           </div>
         </div>
@@ -916,10 +647,8 @@
         <div class="cards" id="kartuDivisiPelanggaran"></div>
 
         <div class="table-top">
-          <span style="font-weight:700; font-size:13.5px;" id="judulTabelPelanggaran">Daftar Poin Pelanggaran</span>
-          <div class="table-actions">
-            <button class="btn-mini" onclick="unduhCSVPelanggaran()">Unduh CSV Hasil Filter</button>
-          </div>
+          <span style="font-weight:700; font-size:13.5px;" id="judulTabelPelanggaran">Daftar Poin Pelanggaran (Sheet ALL)</span>
+          <button class="btn-mini" onclick="unduhCSVPelanggaran()">Unduh CSV Hasil Filter</button>
         </div>
 
         <div class="box">
@@ -931,38 +660,51 @@
 
         <div class="footer-bar">
           <span id="infoBarisPelanggaran">Baris tampil: 0</span>
-          <div class="footer-nav">
-            <button class="btn-mini" onclick="pindahHalaman('personel')">Kembali ke Data Personel</button>
-          </div>
+          <span>Menampilkan seluruh baris data dari sheet ALL</span>
         </div>
       </section>
     </main>
   </div>
 
-  <!-- MODAL DETAIL (PERSONEL / PELANGGARAN) -->
   <div id="modal" class="modal-backdrop" onclick="if(event.target.id==='modal') tutupModal()">
     <div class="modal-isi">
-      <h3 style="margin-top:0;" id="modalJudul">Detail Data</h3>
+      <h3 style="margin-top:0;" id="modalJudul">Detail Pelanggaran</h3>
       <div id="detailIsi"></div>
-      <div class="modal-actions" id="modalAksiPersonel">
-        <button class="btn-sec" id="btnSalinNip" onclick="salinNilai('nip')">Salin NIP</button>
-        <button class="btn-sec" id="btnSalinEmail" onclick="salinNilai('email')">Salin Email</button>
-        <button class="btn-dark" onclick="tutupModal()">Tutup</button>
-      </div>
-      <div class="modal-actions" id="modalAksiUmum" style="display:none;">
-        <button class="btn-dark" onclick="tutupModal()">Tutup</button>
-      </div>
+      <button class="btn-dark" onclick="tutupModal()">Tutup</button>
     </div>
   </div>
 
   <script>
     const KATA_SANDI_LOGIN = "KapalApi";
     const BATAS_MENIT_TIDAK_AKTIF = 15;
-
     const BATAS_MS = BATAS_MENIT_TIDAK_AKTIF * 60 * 1000;
     const KEY_LOGIN = "bm_kpdjp_sudah_login";
     const KEY_AKTIVITAS_TERAKHIR = "bm_kpdjp_aktivitas_terakhir";
     let timerAutoKeluar = null;
+
+    const URL_PELANGGARAN = "https://script.google.com/macros/s/AKfycbxsnb6ZUzIpdbmdiGeNaJiasl9nCqAdGcCRO_n5XtDZpReCZ2SZJw-4ZusstYiNB5EX/exec";
+    const SPREADSHEET_PELANGGARAN_ID = "1nVDFew5Ug96BN0j_w7aZ_gA6DiF43IMBwZIzFEWP7Pk";
+    const GID_PELANGGARAN = "642420235";
+    const CACHE_PELANGGARAN_KEY = "cachePelanggaranAllOnly_v1";
+    const DURASI_CACHE_MS = 24 * 60 * 60 * 1000;
+
+    const KOLOM_PELANGGARAN = [
+      "No",
+      "NIP",
+      "Nama",
+      "Jabatan",
+      "Devisi",
+      "Tanggal Pelanggaran",
+      "Jenis Pelanggaran",
+      "Poin Pelanggaran",
+      "Total Poin",
+      "Keterangan"
+    ];
+
+    let modeTema = localStorage.getItem("modeTemaKpdjp") || "auto";
+    let semuaPelanggaran = [];
+    let pelanggaranIndeks = [];
+    let hasilPelanggaranTerakhir = [];
 
     function toggleLihatSandi() {
       var inp = document.getElementById("inputSandiLogin");
@@ -978,16 +720,12 @@
 
     function sudahMelewatiBatasWaktu() {
       var terakhir = parseInt(sessionStorage.getItem(KEY_AKTIVITAS_TERAKHIR) || "0", 10);
-      if (!terakhir) return false;
-      return (Date.now() - terakhir) >= BATAS_MS;
+      return terakhir ? (Date.now() - terakhir) >= BATAS_MS : false;
     }
 
     function catatAktivitasDanResetTimer() {
       if (sessionStorage.getItem(KEY_LOGIN) !== "ya") return;
-      if (sudahMelewatiBatasWaktu()) {
-        logoutDashboard();
-        return;
-      }
+      if (sudahMelewatiBatasWaktu()) { logoutDashboard(); return; }
       sessionStorage.setItem(KEY_AKTIVITAS_TERAKHIR, String(Date.now()));
       clearTimeout(timerAutoKeluar);
       timerAutoKeluar = setTimeout(logoutDashboard, BATAS_MS);
@@ -997,12 +735,6 @@
       ["mousemove", "mousedown", "keydown", "scroll", "touchstart", "click"].forEach(function(evt) {
         window.addEventListener(evt, catatAktivitasDanResetTimer, { passive: true });
       });
-      document.addEventListener("visibilitychange", function() {
-        if (!document.hidden && sessionStorage.getItem(KEY_LOGIN) === "ya") {
-          if (sudahMelewatiBatasWaktu()) logoutDashboard();
-          else catatAktivitasDanResetTimer();
-        }
-      });
       catatAktivitasDanResetTimer();
     }
 
@@ -1010,6 +742,7 @@
       document.getElementById("layarLogin").style.display = "none";
       document.getElementById("kontenDashboard").style.display = "flex";
       aktifkanPantauanAktivitas();
+      if (!semuaPelanggaran.length) muatPelanggaran(false);
     }
 
     function cekLoginDashboard() {
@@ -1037,91 +770,6 @@
       else bukaDashboardSesudahLogin();
     }
 
-    const KOLOM_UTAMA = [
-      "Nomor",
-      "NIP",
-      "Nama Lengkap (Sesuai KTP)",
-      "Jabatan",
-      "Jenis Kelamin",
-      "Tempat Lahir",
-      "Tanggal Lahir",
-      "Usia",
-      "Alamat KTP",
-      "RT",
-      "RW",
-      "Kelurahan / Desa",
-      "Kecamatan",
-      "Kota / Kabupaten",
-      "Provinsi",
-      "Alamat Tempat Tinggal Selama Bekerja",
-      "Nomor KK (Kartu Keluarga)",
-      "NIK KTP (Nomor Induk Kependudukan)",
-      "NPWP",
-      "Nomor Handphone (Whatsapp Aktif)",
-      "Golongan Darah",
-      "Tinggi Badan",
-      "Berat Badan",
-      "Nomor BPJS Kesehatan",
-      "Nomor BPJS Ketenagakerjaan",
-      "Alamat Email",
-      "Nomor Rekening Mandiri",
-      "Nomor Rekening Bank Lain",
-      "Tempat Tinggal Selama Bekerja",
-      "Status Perkawinan",
-      "Jumlah Tanggungan Anak",
-      "Kontak Darurat",
-      "Nama Kontak Darurat",
-      "Hubungan Dengan Kontak Darurat",
-      "Pendidikan Terakhir",
-      "Jurusan Pendidikan Terakhir",
-      "Nama Sekolah Pendidikan Terakhir",
-      "Ukuran Baju",
-      "Ukuran Celana",
-      "Ukuran Sepatu"
-    ];
-
-    const URUTAN_DIVISI = [
-      "Management Office",
-      "Engineering",
-      "Security",
-      "Housekeeping",
-      "Banquet",
-      "Driver",
-      "Receptionist"
-    ];
-
-    const URL_DATA = "https://script.google.com/macros/s/AKfycbzKrn6vwNSM5hJGywoYmEXzKwA_rjFKeu9YRQq3lcNdYyO6Z0wIgNC2PYU1DmKNtm7l/exec";
-    const URL_PELANGGARAN = "https://script.google.com/macros/s/AKfycbxsnb6ZUzIpdbmdiGeNaJiasl9nCqAdGcCRO_n5XtDZpReCZ2SZJw-4ZusstYiNB5EX/exec";
-    const SPREADSHEET_PELANGGARAN_ID = "1nVDFew5Ug96BN0j_w7aZ_gA6DiF43IMBwZIzFEWP7Pk";
-    const GID_PELANGGARAN = "642420235";
-    const CACHE_KEY = "cachePersonelKpdjp2026_v10";
-    const CACHE_PELANGGARAN_KEY = "cachePelanggaranKpdjp2026_v5";
-    const DURASI_CACHE_MS = 24 * 60 * 60 * 1000;
-
-    const KOLOM_PELANGGARAN = [
-      "No",
-      "NIP",
-      "Nama",
-      "Jabatan",
-      "Devisi",
-      "Tanggal Pelanggaran",
-      "Jenis Pelanggaran",
-      "Poin Pelanggaran",
-      "Total Poin",
-      "Keterangan"
-    ];
-
-    const BATAS_AWAL = 50;
-    let batasTampil = BATAS_AWAL;
-    let timerKetik = null;
-    let modeTema = localStorage.getItem("modeTemaKpdjp") || "auto";
-    let filterGenderAktif = "";
-    let halamanAktif = "personel";
-
-    let semuaPelanggaran = [];
-    let pelanggaranIndeks = [];
-    let hasilPelanggaranTerakhir = [];
-
     function ambilJamWIB() {
       var bagian = new Intl.DateTimeFormat("id-ID", {
         timeZone: "Asia/Jakarta",
@@ -1130,38 +778,24 @@
         second: "2-digit",
         hour12: false
       }).formatToParts(new Date());
-
-      var jam = 0;
-      var teksJam = "";
+      var jam = 0, teksJam = "";
       bagian.forEach(function(p) {
-        if (p.type === "hour") {
-          jam = parseInt(p.value, 10);
-          teksJam += p.value;
-        } else if (p.type === "minute" || p.type === "second") {
-          teksJam += ":" + p.value;
-        }
+        if (p.type === "hour") { jam = parseInt(p.value, 10); teksJam += p.value; }
+        else if (p.type === "minute" || p.type === "second") { teksJam += ":" + p.value; }
       });
-
-      var adalahMalam = (jam >= 18 || jam < 6);
-      return { jam: jam, teksJam: teksJam, adalahMalam: adalahMalam };
+      return { jam: jam, teksJam: teksJam, adalahMalam: (jam >= 18 || jam < 6) };
     }
 
     function terapkanTema() {
       var info = ambilJamWIB();
       var pakaiGelap = modeTema === "dark" || (modeTema === "auto" && info.adalahMalam);
       document.body.classList.toggle("mode-malam", pakaiGelap);
-
       var labelMode = modeTema === "auto"
         ? (info.adalahMalam ? "Otomatis WIB (Malam)" : "Otomatis WIB (Siang)")
         : (modeTema === "dark" ? "Hitam" : "Terang");
-
-      var teksJam = "WIB: " + info.teksJam + " • " + labelMode;
-      var teksTombol = "Tema: " + (modeTema === "auto" ? "Otomatis WIB" : (modeTema === "dark" ? "Hitam" : "Terang"));
-
-      document.getElementById("infoWaktuWIBPersonel").textContent = teksJam;
-      document.getElementById("infoWaktuWIBPelanggaran").textContent = teksJam;
-      document.getElementById("btnTemaPersonel").textContent = teksTombol;
-      document.getElementById("btnTemaPelanggaran").textContent = teksTombol;
+      document.getElementById("infoWaktuWIBPelanggaran").textContent = "WIB: " + info.teksJam + " • " + labelMode;
+      document.getElementById("btnTemaPelanggaran").textContent =
+        "Tema: " + (modeTema === "auto" ? "Otomatis WIB" : (modeTema === "dark" ? "Hitam" : "Terang"));
     }
 
     function gantiModeTema() {
@@ -1175,35 +809,24 @@
     terapkanTema();
     setInterval(terapkanTema, 1000);
 
-    function pindahHalaman(namaHal) {
-      halamanAktif = namaHal === "pelanggaran" ? "pelanggaran" : "personel";
-      document.getElementById("btnMenuDataPersonel").classList.toggle("aktif", halamanAktif === "personel");
-      document.getElementById("btnMenuPoinPelanggaran").classList.toggle("aktif", halamanAktif === "pelanggaran");
-
-      document.getElementById("halamanPersonel").style.display = halamanAktif === "personel" ? "block" : "none";
-      document.getElementById("halamanPelanggaran").style.display = halamanAktif === "pelanggaran" ? "block" : "none";
-
-      if (halamanAktif === "pelanggaran") {
-        if (!semuaPelanggaran.length) muatPelanggaran(false);
-        else renderTabelPelanggaran();
-      }
+    function escapeHtml(teks) {
+      return String(teks || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
     }
 
-    function normalisasiNamaDivisi(teksDivisi, jabatan) {
-      var s = String(teksDivisi || "").trim();
-      var kl = s.toLowerCase();
+    function inisial(teks) {
+      var kata = String(teks || "PL").trim().split(/\s+/).filter(Boolean);
+      if (!kata.length) return "PL";
+      if (kata.length === 1) return kata[0].slice(0, 2).toUpperCase();
+      return ((kata[0][0] || "") + (kata[1][0] || "")).toUpperCase();
+    }
 
-      if (kl) {
-        if (kl.indexOf("management") !== -1 || kl.indexOf("office") !== -1 || kl === "mo" || kl.indexOf("tr&sdm") !== -1 || kl.indexOf("sdm") !== -1) return "Management Office";
-        if (kl.indexOf("eng") !== -1 || kl.indexOf("mep") !== -1 || kl.indexOf("teknisi") !== -1) return "Engineering";
-        if (kl.indexOf("sec") !== -1 || kl.indexOf("satpam") !== -1 || kl.indexOf("guard") !== -1) return "Security";
-        if (kl.indexOf("house") !== -1 || kl.indexOf("clean") !== -1 || kl.indexOf("kebersihan") !== -1 || kl === "hk") return "Housekeeping";
-        if (kl.indexOf("banquet") !== -1 || kl.indexOf("meeting") !== -1) return "Banquet";
-        if (kl.indexOf("driver") !== -1 || kl.indexOf("sopir") !== -1 || kl.indexOf("pengemudi") !== -1) return "Driver";
-        if (kl.indexOf("resep") !== -1 || kl.indexOf("reception") !== -1) return "Receptionist";
-        return s;
-      }
-      return deteksiDivisiDariJabatan(jabatan) || "Lainnya";
+    function parseAngka(val) {
+      var m = String(val || "").replace(",", ".").match(/-?\d+(\.\d+)?/);
+      return m ? parseFloat(m[0]) : 0;
     }
 
     function ekstrakArrayPelanggaran(json) {
@@ -1211,7 +834,6 @@
       if (json && Array.isArray(json.data)) return json.data;
       if (json && Array.isArray(json.rows)) return json.rows;
       if (json && Array.isArray(json.records)) return json.records;
-      if (json && Array.isArray(json.ALL)) return json.ALL;
       return [];
     }
 
@@ -1230,11 +852,6 @@
         if (namaKolom === "Total Poin" && norm === "totalpoin") return row[keys[i]];
       }
       return "";
-    }
-
-    function parseAngka(val) {
-      var m = String(val || "").replace(",", ".").match(/-?\d+(\.\d+)?/);
-      return m ? parseFloat(m[0]) : 0;
     }
 
     function normalisasiBarisPelanggaran(rawList) {
@@ -1262,31 +879,26 @@
 
     function bangunDivisiPelanggaran() {
       var hitung = {};
-      var ekstraDiv = [];
+      var daftarDiv = [];
       for (var i = 0; i < pelanggaranIndeks.length; i++) {
         var d = pelanggaranIndeks[i].div;
         hitung[d] = (hitung[d] || 0) + 1;
-        if (URUTAN_DIVISI.indexOf(d) === -1 && d !== "Lainnya" && ekstraDiv.indexOf(d) === -1) {
-          ekstraDiv.push(d);
-        }
+        if (daftarDiv.indexOf(d) === -1) daftarDiv.push(d);
       }
-      if (hitung["Lainnya"]) ekstraDiv.push("Lainnya");
 
-      var listDiv = URUTAN_DIVISI.filter(function(d) { return hitung[d] > 0; }).concat(ekstraDiv);
       var sel = document.getElementById("filterDivisiPelanggaran");
       var aktif = sel.value;
-      if (aktif && listDiv.indexOf(aktif) === -1) aktif = "";
+      if (aktif && daftarDiv.indexOf(aktif) === -1) aktif = "";
 
       sel.innerHTML = '<option value="">Semua Divisi</option>' +
-        listDiv.map(function(d) {
+        daftarDiv.map(function(d) {
           return '<option value="' + escapeHtml(d) + '">' + escapeHtml(d) + ' (' + hitung[d] + ')</option>';
         }).join("");
       sel.value = aktif;
 
-      document.getElementById("kartuDivisiPelanggaran").innerHTML = listDiv.map(function(d) {
+      document.getElementById("kartuDivisiPelanggaran").innerHTML = daftarDiv.map(function(d) {
         var isAktif = aktif === d ? " aktif" : "";
-        var dataDivAttr = URUTAN_DIVISI.indexOf(d) !== -1 ? ' data-div="' + escapeHtml(d) + '"' : "";
-        return '<div class="card' + isAktif + '"' + dataDivAttr + ' onclick="pilihDivisiPelanggaran(\'' + d.replace(/'/g, "\\'") + '\')">' +
+        return '<div class="card' + isAktif + '" onclick="pilihDivisiPelanggaran(\'' + d.replace(/'/g, "\\'") + '\')">' +
           '<b>' + escapeHtml(d) + '</b>' +
           '<div class="card-sub">' + hitung[d] + ' catatan</div>' +
           '</div>';
@@ -1310,7 +922,7 @@
     function prosesDataPelanggaran(raw, labelTambahan) {
       semuaPelanggaran = normalisasiBarisPelanggaran(raw);
       pelanggaranIndeks = semuaPelanggaran.map(function(r) {
-        var divNorm = normalisasiNamaDivisi(r["Devisi"], r["Jabatan"]);
+        var divNorm = String(r["Devisi"] || "").trim() || "Lainnya";
         var gabungan = [divNorm];
         for (var k = 0; k < KOLOM_PELANGGARAN.length; k++) {
           var v = r[KOLOM_PELANGGARAN[k]];
@@ -1354,13 +966,13 @@
 
       hasilPelanggaranTerakhir = tersaring;
 
-      var judul = "Daftar Poin Pelanggaran";
+      var judul = "Daftar Poin Pelanggaran (Sheet ALL)";
       if (div) judul += " • " + div;
       document.getElementById("judulTabelPelanggaran").textContent = judul;
 
       var suffix = labelTambahan ? " " + labelTambahan : "";
       document.getElementById("infoPelanggaran").textContent =
-        "Menampilkan " + tersaring.length + " dari " + semuaPelanggaran.length + " catatan pelanggaran" + suffix;
+        "Menampilkan seluruh " + tersaring.length + " dari " + semuaPelanggaran.length + " catatan pelanggaran" + suffix;
 
       document.getElementById("valPelTampil").textContent = tersaring.length;
       document.getElementById("valPelTotalPoin").textContent = totalPoin;
@@ -1371,7 +983,7 @@
 
       if (!tersaring.length) {
         document.getElementById("isiTabelPelanggaran").innerHTML =
-          "<tr><td colspan='" + KOLOM_PELANGGARAN.length + "' style='text-align:center; padding:18px; color:var(--muted);'>Tidak ada data pelanggaran yang cocok atau tab ALL belum memiliki isian data.</td></tr>";
+          "<tr><td colspan='" + KOLOM_PELANGGARAN.length + "' style='text-align:center; padding:18px; color:var(--muted);'>Tidak ada data pelanggaran yang cocok pada sheet ALL.</td></tr>";
         return;
       }
 
@@ -1386,7 +998,7 @@
           if (col === "No") {
             cells += "<td><span class='cell-nowrap'>" + escapeHtml(row["No"] || String(j + 1)) + "</span></td>";
           } else if (col === "Nama") {
-            cells += "<td><span class='cell-nama' title='" + aman + "'><span class='avatar'>" + inisial(val) + "</span><span class='nama-teks'>" + aman + "</span></span></td>";
+            cells += "<td><span class='cell-nama' title='" + aman + "'><span class='avatar'>" + inisial(val) + "</span>" + aman + "</span></td>";
           } else if (col === "Poin Pelanggaran" || col === "Total Poin") {
             cells += "<td>" + (val !== "-" ? '<span class="pel-poin-badge">' + aman + "</span>" : "-") + "</td>";
           } else if (col === "Jenis Pelanggaran" || col === "Keterangan" || col === "Jabatan") {
@@ -1401,44 +1013,24 @@
     }
 
     function parseCsvBaris(teks) {
-      var hasil = [];
-      var baris = [];
-      var sel = "";
-      var dalamKutipan = false;
-
+      var hasil = [], baris = [], sel = "", dalamKutipan = false;
       for (var i = 0; i < teks.length; i++) {
-        var ch = teks[i];
-        var next = teks[i + 1];
-
+        var ch = teks[i], next = teks[i + 1];
         if (ch === '"') {
-          if (dalamKutipan && next === '"') {
-            sel += '"';
-            i++;
-          } else {
-            dalamKutipan = !dalamKutipan;
-          }
+          if (dalamKutipan && next === '"') { sel += '"'; i++; }
+          else { dalamKutipan = !dalamKutipan; }
         } else if (ch === "," && !dalamKutipan) {
-          baris.push(sel.trim());
-          sel = "";
+          baris.push(sel.trim()); sel = "";
         } else if ((ch === "\n" || (ch === "\r" && next === "\n")) && !dalamKutipan) {
           if (ch === "\r") i++;
-          baris.push(sel.trim());
-          hasil.push(baris);
-          baris = [];
-          sel = "";
+          baris.push(sel.trim()); hasil.push(baris); baris = []; sel = "";
         } else if (ch === "\r" && !dalamKutipan) {
-          baris.push(sel.trim());
-          hasil.push(baris);
-          baris = [];
-          sel = "";
+          baris.push(sel.trim()); hasil.push(baris); baris = []; sel = "";
         } else {
           sel += ch;
         }
       }
-      if (sel.length > 0 || baris.length > 0) {
-        baris.push(sel.trim());
-        hasil.push(baris);
-      }
+      if (sel.length > 0 || baris.length > 0) { baris.push(sel.trim()); hasil.push(baris); }
       return hasil;
     }
 
@@ -1458,45 +1050,31 @@
         })
         .then(function(csvText) {
           if (!csvText || csvText.trim().indexOf("<!DOCTYPE") === 0 || csvText.trim().indexOf("<html") === 0) {
-            throw new Error("Spreadsheet belum dapat dibaca publik via gviz.");
+            throw new Error("Spreadsheet belum dapat dibaca publik.");
           }
-
           var matriks = parseCsvBaris(csvText);
           var idxHeader = -1;
-
           for (var r = 0; r < matriks.length; r++) {
-            var rowLower = matriks[r].map(function(c) {
-              return String(c || "").trim().toLowerCase();
-            });
-            var adaNo = rowLower.indexOf("no") !== -1 || rowLower.indexOf("nomor") !== -1;
-            var adaNama = rowLower.indexOf("nama") !== -1 || rowLower.some(function(x) { return x.indexOf("nama") === 0; });
-            var adaNip = rowLower.indexOf("nip") !== -1;
-            if (adaNo && (adaNama || adaNip)) {
+            var rowLower = matriks[r].map(function(c) { return String(c || "").trim().toLowerCase(); });
+            if (rowLower.indexOf("no") !== -1 && (rowLower.indexOf("nama") !== -1 || rowLower.indexOf("nip") !== -1)) {
               idxHeader = r;
               break;
             }
           }
-
           if (idxHeader === -1) return [];
-
           var headers = matriks[idxHeader].map(function(h) { return String(h || "").trim(); });
           var listObj = [];
-
           for (var i = idxHeader + 1; i < matriks.length; i++) {
-            var row = matriks[i];
-            var obj = {};
+            var row = matriks[i], obj = {};
             for (var c = 0; c < headers.length; c++) {
               if (headers[c]) obj[headers[c]] = String(row[c] ?? "").trim();
             }
             var namaCek = String(obj["Nama"] || "").trim();
             var namaLower = namaCek.toLowerCase();
-            if (!namaCek || namaLower === "total" || namaLower === "jumlah" || namaLower.indexOf("grand total") === 0) {
-              continue;
-            }
+            if (!namaCek || namaLower === "total" || namaLower === "jumlah" || namaLower.indexOf("grand total") === 0) continue;
             if (!obj["No"]) obj["No"] = String(listObj.length + 1);
             listObj.push(obj);
           }
-
           return listObj;
         });
     }
@@ -1517,44 +1095,33 @@
       }
 
       if (btn) btn.disabled = true;
-      document.getElementById("infoPelanggaran").textContent = "Memuat data poin pelanggaran...";
+      document.getElementById("infoPelanggaran").textContent = "Memuat seluruh data pelanggaran dari sheet ALL...";
 
       var raw = [];
       var sumber = "(data terbaru)";
 
       try {
         var sep = URL_PELANGGARAN.indexOf("?") === -1 ? "?" : "&";
-        var res = await fetch(URL_PELANGGARAN + sep + "t=" + Date.now(), {
-          method: "GET",
-          redirect: "follow"
-        });
+        var res = await fetch(URL_PELANGGARAN + sep + "t=" + Date.now(), { method: "GET", redirect: "follow" });
         if (res.ok) {
           var json = await res.json();
-          if (json && !json.error) {
-            raw = ekstrakArrayPelanggaran(json);
-          }
+          if (json && !json.error) raw = ekstrakArrayPelanggaran(json);
         }
-      } catch (errAppsScript) {
-        raw = [];
-      }
+      } catch (e) { raw = []; }
 
       if (!raw.length) {
         try {
           raw = await ambilPelanggaranViaGviz();
           sumber = "(via sheet ALL)";
-        } catch (errGviz) {
-          raw = [];
-        }
+        } catch (e) { raw = []; }
       }
 
       if (raw.length) {
-        try {
-          localStorage.setItem(CACHE_PELANGGARAN_KEY, JSON.stringify({ ts: Date.now(), data: raw }));
-        } catch (e) {}
+        try { localStorage.setItem(CACHE_PELANGGARAN_KEY, JSON.stringify({ ts: Date.now(), data: raw })); } catch (e) {}
         prosesDataPelanggaran(raw, sumber);
       } else {
         document.getElementById("infoPelanggaran").textContent =
-          "Data pelanggaran belum terbaca. Pastikan file spreadsheet diizinkan 'Anyone with the link can view' dan Web App Apps Script sudah di-deploy.";
+          "Data pelanggaran belum terbaca. Pastikan spreadsheet diizinkan 'Anyone with the link can view'.";
         prosesDataPelanggaran([], "");
       }
 
@@ -1570,399 +1137,20 @@
       var barisCsv = [KOLOM_PELANGGARAN.map(function(k) { return '"' + String(k).replace(/"/g, '""') + '"'; }).join(sep)];
       hasilPelanggaranTerakhir.forEach(function(r) {
         var rowCsv = KOLOM_PELANGGARAN.map(function(k) {
-          var val = r[k] || "";
-          return '"' + String(val).replace(/[\r\n]+/g, " ").replace(/"/g, '""') + '"';
+          return '"' + String(r[k] || "").replace(/[\r\n]+/g, " ").replace(/"/g, '""') + '"';
         }).join(sep);
         barisCsv.push(rowCsv);
       });
-      var bom = "\uFEFF";
-      var blob = new Blob([bom + barisCsv.join("\r\n")], { type: "text/csv;charset=utf-8;" });
+      var blob = new Blob(["\uFEFF" + barisCsv.join("\r\n")], { type: "text/csv;charset=utf-8;" });
       var link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.download = "poin-pelanggaran-bm-kpdjp.csv";
+      link.download = "poin-pelanggaran-sheet-all-bm-kpdjp.csv";
       link.click();
-    }
-
-    let semuaData = [];
-    let dataIndeks = [];
-    let hasilTerakhir = [];
-    let barisDitampilkan = [];
-    let kolomList = KOLOM_UTAMA.slice();
-    let dataModalAktif = null;
-
-    function deteksiDivisiDariJabatan(jabatan) {
-      var j = String(jabatan || "").trim();
-      var kl = j.toLowerCase();
-      if (!kl) return "";
-      if (kl.indexOf("sec") !== -1 || kl.indexOf("satpam") !== -1 || kl.indexOf("guard") !== -1 || kl.indexOf("chief sec") !== -1) return "Security";
-      if (kl.indexOf("eng") !== -1 || kl.indexOf("teknisi") !== -1 || kl.indexOf("mep") !== -1 || kl.indexOf("hvac") !== -1 || kl.indexOf("bas") !== -1) return "Engineering";
-      if (kl.indexOf("house") !== -1 || kl.indexOf("clean") !== -1 || kl.indexOf("kebersihan") !== -1 || kl.indexOf("gondola") !== -1) return "Housekeeping";
-      if (kl.indexOf("banquet") !== -1 || kl.indexOf("meeting") !== -1 || kl.indexOf("rapat") !== -1) return "Banquet";
-      if (kl.indexOf("driver") !== -1 || kl.indexOf("sopir") !== -1 || kl.indexOf("pengemudi") !== -1) return "Driver";
-      if (kl.indexOf("resep") !== -1 || kl.indexOf("reception") !== -1) return "Receptionist";
-      if (kl.indexOf("building manager") !== -1 || kl.indexOf("assistant building") !== -1 || kl.indexOf("office") !== -1 || kl.indexOf("admin") !== -1 || kl.indexOf("tr") !== -1 || kl.indexOf("sdm") !== -1 || kl.indexOf("finance") !== -1 || kl.indexOf("akuntansi") !== -1 || kl.indexOf("facility") !== -1) return "Management Office";
-      return "";
-    }
-
-    function getGender(row) {
-      return String(row["Jenis Kelamin"] || row["jenis kelamin"] || "").trim().toLowerCase();
-    }
-
-    function getNip(row) {
-      return String(row.NIP || row.nip || "").trim();
-    }
-
-    function getEmail(row) {
-      return String(row["Alamat Email"] || row.Email || row.email || "").trim();
-    }
-
-    function inisial(teks) {
-      var kata = String(teks || "PR").trim().split(/\s+/).filter(Boolean);
-      if (!kata.length) return "PR";
-      if (kata.length === 1) return kata[0].slice(0, 2).toUpperCase();
-      return ((kata[0][0] || "") + (kata[1][0] || "")).toUpperCase();
-    }
-
-    function susunDaftarKolom() {
-      return KOLOM_UTAMA.slice();
-    }
-
-    function prosesDataArray(raw, labelTambahan) {
-      semuaData = Array.isArray(raw) ? raw : [];
-      kolomList = susunDaftarKolom();
-      document.getElementById("kepalaTabel").innerHTML = kolomList.map(function(k) { return "<th>" + k + "</th>"; }).join("");
-
-      dataIndeks = semuaData.map(function(r) {
-        var divKat = deteksiDivisiDariJabatan(r.Jabatan);
-        var genderNorm = getGender(r);
-        var isLaki = genderNorm.indexOf("laki") !== -1;
-        var isPerempuan = !isLaki && genderNorm.indexOf("perempuan") !== -1;
-
-        var gabungan = [divKat];
-        for (var k = 0; k < kolomList.length; k++) {
-          var v = r[kolomList[k]];
-          if (v !== undefined && v !== null && v !== "") {
-            gabungan.push(String(v));
-          }
-        }
-
-        return {
-          raw: r,
-          div: divKat,
-          isLaki: isLaki,
-          isPerempuan: isPerempuan,
-          teksCari: gabungan.join(" ").toLowerCase()
-        };
-      });
-
-      bangunDivisi();
-      tampil(labelTambahan);
-    }
-
-    function bangunDivisi() {
-      var hitung = {};
-      for (var i = 0; i < dataIndeks.length; i++) {
-        var d = dataIndeks[i].div;
-        if (d && URUTAN_DIVISI.indexOf(d) !== -1) {
-          hitung[d] = (hitung[d] || 0) + 1;
-        }
-      }
-      var listDiv = URUTAN_DIVISI.filter(function(d) { return hitung[d] > 0; });
-      var divAktif = document.getElementById("filterDivisi").value;
-      if (divAktif && URUTAN_DIVISI.indexOf(divAktif) === -1) {
-        divAktif = "";
-      }
-
-      document.getElementById("kpiTotalPersonel").textContent = semuaData.length;
-
-      document.getElementById("filterDivisi").innerHTML = '<option value="">Semua Divisi</option>' +
-        listDiv.map(function(d) { return '<option value="' + d + '">' + d + ' (' + hitung[d] + ')</option>'; }).join("");
-      document.getElementById("filterDivisi").value = divAktif;
-
-      document.getElementById("kartuDivisi").innerHTML = listDiv.map(function(d) {
-        var aktifClass = divAktif === d ? " aktif" : "";
-        var amanAttr = d.replace(/"/g, "&quot;");
-        return '<div class="card' + aktifClass + '" data-div="' + amanAttr + '" onclick="pilihDivisi(\'' + d.replace(/'/g, "\\'") + '\')"><b>' + d + '</b><div class="card-sub">' + hitung[d] + ' personel</div></div>';
-      }).join("");
-    }
-
-    function pilihDivisi(d) {
-      batasTampil = BATAS_AWAL;
-      document.getElementById("filterDivisi").value = d;
-      document.querySelectorAll("#kartuDivisi .card").forEach(function(c) {
-        var judul = c.querySelector("b") ? c.querySelector("b").textContent.trim() : "";
-        c.classList.toggle("aktif", Boolean(d) && judul === d);
-      });
-      tampil();
-    }
-
-    function bacaCache() {
-      try {
-        var rawCache = localStorage.getItem(CACHE_KEY);
-        if (!rawCache) return { ada: false, segar: false };
-        var parsed = JSON.parse(rawCache);
-        if (parsed && Array.isArray(parsed.data) && parsed.data.length) {
-          var umur = Date.now() - (parsed.ts || 0);
-          var masihSegar = umur < DURASI_CACHE_MS;
-          prosesDataArray(parsed.data, masihSegar ? "(dari cache)" : "(menyegarkan...)");
-          return { ada: true, segar: masihSegar };
-        }
-      } catch (e) {}
-      return { ada: false, segar: false };
-    }
-
-    async function muat(paksaSegar) {
-      var btnRefresh = document.getElementById("btnRefresh");
-      if (!paksaSegar) {
-        var statusCache = bacaCache();
-        if (statusCache.ada && statusCache.segar) {
-          return;
-        }
-      } else {
-        document.getElementById("infoStats").textContent = "Memuat data personel terbaru...";
-      }
-
-      if (btnRefresh) btnRefresh.disabled = true;
-
-      var controller = typeof AbortController !== "undefined" ? new AbortController() : null;
-      var timeoutId = controller ? setTimeout(function() { controller.abort(); }, 20000) : null;
-
-      try {
-        var res = await fetch(URL_DATA, controller ? { signal: controller.signal } : {});
-        if (timeoutId) clearTimeout(timeoutId);
-        var json = await res.json();
-        var raw = Array.isArray(json) ? json : (Array.isArray(json && json.data) ? json.data : []);
-        try {
-          localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: raw }));
-        } catch (e) {}
-        prosesDataArray(raw, "(data terbaru)");
-      } catch (e) {
-        if (timeoutId) clearTimeout(timeoutId);
-        if (!semuaData.length) {
-          document.getElementById("infoStats").textContent = "Gagal memuat data (server lambat/timeout). Coba klik Refresh Data lagi.";
-        } else {
-          tampil("(pakai cache)");
-        }
-      } finally {
-        if (btnRefresh) btnRefresh.disabled = false;
-      }
-    }
-
-    function tampilkanSemuaPersonelPer50() {
-      pindahHalaman("personel");
-      filterGenderAktif = "";
-      document.getElementById("filterGender").value = "";
-      document.getElementById("filterDivisi").value = "";
-      document.getElementById("cari").value = "";
-      document.querySelectorAll("#kartuDivisi .card").forEach(function(c) {
-        c.classList.remove("aktif");
-      });
-      batasTampil = BATAS_AWAL;
-      tampil();
-    }
-
-    function pilihGender(g) {
-      filterGenderAktif = g || "";
-      document.getElementById("filterGender").value = filterGenderAktif;
-      batasTampil = BATAS_AWAL;
-      tampil();
-    }
-
-    function toggleGender(g) {
-      if (filterGenderAktif === g) pilihGender("");
-      else pilihGender(g);
-    }
-
-    function perbaruiStatusGenderUI() {
-      document.getElementById("kpiCardLaki").classList.toggle("aktif", filterGenderAktif === "laki");
-      document.getElementById("kpiCardPerempuan").classList.toggle("aktif", filterGenderAktif === "perempuan");
-      document.getElementById("kpiCardSemua").classList.toggle("aktif", filterGenderAktif === "");
-
-      var divAktif = document.getElementById("filterDivisi").value;
-      var tanpaFilterLain = !filterGenderAktif && !divAktif && !document.getElementById("cari").value.trim();
-      document.getElementById("kpiCardTotalPersonel").classList.toggle("aktif", tanpaFilterLain);
-
-      var judul = "Daftar Personel";
-      if (divAktif) judul += " • " + divAktif;
-      if (filterGenderAktif === "laki") judul += " • Laki - Laki";
-      else if (filterGenderAktif === "perempuan") judul += " • Perempuan";
-      document.getElementById("judulTabel").textContent = judul;
-    }
-
-    function muatLebihBanyak() {
-      batasTampil += 50;
-      tampil();
-    }
-
-    function tampilkanSemuaBaris() {
-      batasTampil = hasilTerakhir.length || semuaData.length;
-      tampil();
-    }
-
-    function ringkasKeAwal() {
-      batasTampil = BATAS_AWAL;
-      tampil();
     }
 
     function tutupModal() {
       document.getElementById("modal").classList.remove("aktif");
-      dataModalAktif = null;
     }
-
-    function salinNilai(jenis) {
-      if (!dataModalAktif) return;
-      var nilai = jenis === "nip" ? getNip(dataModalAktif) : getEmail(dataModalAktif);
-      if (!nilai) {
-        alert(jenis === "nip" ? "NIP kosong." : "Email kosong.");
-        return;
-      }
-      navigator.clipboard.writeText(nilai).then(function() {
-        alert((jenis === "nip" ? "NIP " : "Email ") + nilai + " berhasil disalin.");
-      });
-    }
-
-    function escapeHtml(teks) {
-      return String(teks || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
-    }
-
-    function formatSel(kolom, nilai, nomorUrut) {
-      var kl = kolom.toLowerCase();
-      var teks = String(nilai || "").trim();
-      var aman = escapeHtml(teks || "-");
-
-      if (kl === "nomor") {
-        return '<span class="cell-nowrap">' + (teks ? escapeHtml(teks) : nomorUrut) + '</span>';
-      }
-      if (kl.indexOf("nama lengkap") !== -1 || kl === "nama") {
-        if (!teks) return "-";
-        return '<span class="cell-nama" title="' + aman + '"><span class="avatar">' + inisial(teks) + '</span><span class="nama-teks">' + aman + '</span></span>';
-      }
-      if (kl === "jenis kelamin") {
-        var gKecil = teks.toLowerCase();
-        if (gKecil.indexOf("laki") !== -1) {
-          return '<span class="badge-gender badge-laki">' + aman + '</span>';
-        }
-        if (gKecil.indexOf("perempuan") !== -1) {
-          return '<span class="badge-gender badge-perempuan">' + aman + '</span>';
-        }
-        return '<span class="cell-nowrap">' + aman + '</span>';
-      }
-      if (kl.indexOf("alamat") !== -1) {
-        return '<div class="cell-wrap" title="' + aman + '">' + aman + '</div>';
-      }
-      if (kl.indexOf("sekolah") !== -1 || kl.indexOf("jurusan") !== -1 || kl.indexOf("jabatan") !== -1) {
-        return '<div class="cell-pendek" title="' + aman + '">' + aman + '</div>';
-      }
-      return '<span class="cell-nowrap" title="' + aman + '">' + aman + '</span>';
-    }
-
-    function unduhCSV() {
-      if (!hasilTerakhir.length) {
-        alert("Tidak ada data personel untuk diunduh.");
-        return;
-      }
-      var sep = ";";
-      var barisCsv = [kolomList.map(function(k) { return '"' + String(k).replace(/"/g, '""') + '"'; }).join(sep)];
-      hasilTerakhir.forEach(function(r) {
-        var rowCsv = kolomList.map(function(k) {
-          var val = r[k] || "";
-          return '"' + String(val).replace(/[\r\n]+/g, " ").replace(/"/g, '""') + '"';
-        }).join(sep);
-        barisCsv.push(rowCsv);
-      });
-      var bom = "\uFEFF";
-      var blob = new Blob([bom + barisCsv.join("\r\n")], { type: "text/csv;charset=utf-8;" });
-      var link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "data-personel-bm-kpdjp.csv";
-      link.click();
-    }
-
-    function tampil(labelTambahan) {
-      var kata = document.getElementById("cari").value.toLowerCase().trim();
-      var div = document.getElementById("filterDivisi").value;
-
-      var saringTanpaGender = [];
-      var jmlLaki = 0;
-      var jmlPerempuan = 0;
-
-      for (var i = 0; i < dataIndeks.length; i++) {
-        var item = dataIndeks[i];
-        var okD = !div || item.div === div;
-        var okK = !kata || item.teksCari.indexOf(kata) !== -1;
-        if (okD && okK) {
-          saringTanpaGender.push(item);
-          if (item.isLaki) jmlLaki++;
-          else if (item.isPerempuan) jmlPerempuan++;
-        }
-      }
-
-      var saringRaw = [];
-      for (var j = 0; j < saringTanpaGender.length; j++) {
-        var it = saringTanpaGender[j];
-        if (filterGenderAktif === "laki" && !it.isLaki) continue;
-        if (filterGenderAktif === "perempuan" && !it.isPerempuan) continue;
-        saringRaw.push(it.raw);
-      }
-
-      hasilTerakhir = saringRaw;
-      perbaruiStatusGenderUI();
-
-      var barisPotongan = saringRaw.slice(0, batasTampil);
-      barisDitampilkan = barisPotongan;
-      var suffix = labelTambahan ? " " + labelTambahan : "";
-      var labelGender = filterGenderAktif === "laki" ? " [Laki - Laki]" : (filterGenderAktif === "perempuan" ? " [Perempuan]" : "");
-
-      document.getElementById("infoStats").textContent = "Menampilkan " + barisPotongan.length + " dari " + saringRaw.length + " data cocok" + labelGender + " (" + semuaData.length + " total personel)" + suffix;
-      document.getElementById("kpiTampil").textContent = saringRaw.length;
-      document.getElementById("kpiLaki").textContent = jmlLaki;
-      document.getElementById("kpiPerempuan").textContent = jmlPerempuan;
-      document.getElementById("kpiTotalPersonel").textContent = semuaData.length;
-      document.getElementById("infoBarisTabel").textContent = "Baris tampil: " + barisPotongan.length + " dari " + saringRaw.length;
-
-      var lebihDari50 = saringRaw.length > BATAS_AWAL;
-      var masihAda = barisPotongan.length < saringRaw.length;
-      var sudahDiperluas = barisPotongan.length > BATAS_AWAL;
-
-      document.getElementById("navigasiBawah").style.display = lebihDari50 ? "flex" : "none";
-      document.getElementById("btnBawahTambah").style.display = masihAda ? "inline-block" : "none";
-      document.getElementById("btnBawahSemua").style.display = masihAda ? "inline-block" : "none";
-      document.getElementById("btnBawahRingkas").style.display = sudahDiperluas ? "inline-block" : "none";
-
-      var htmlRows = "";
-      for (var p = 0; p < barisPotongan.length; p++) {
-        var r = barisPotongan[p];
-        var cells = "";
-        for (var c = 0; c < kolomList.length; c++) {
-          var k = kolomList[c];
-          cells += "<td>" + formatSel(k, r[k], p + 1) + "</td>";
-        }
-        htmlRows += '<tr class="data-row" data-idx="' + p + '">' + cells + "</tr>";
-      }
-
-      document.getElementById("isiTabel").innerHTML = htmlRows;
-    }
-
-    document.getElementById("isiTabel").addEventListener("click", function(e) {
-      var tr = e.target.closest("tr.data-row[data-idx]");
-      if (!tr) return;
-      var idx = parseInt(tr.getAttribute("data-idx"), 10);
-      var r = barisDitampilkan[idx];
-      if (!r) return;
-      dataModalAktif = r;
-      var nama = r["Nama Lengkap (Sesuai KTP)"] || r.Nama || "Detail Personel";
-      document.getElementById("modalJudul").textContent = nama;
-      document.getElementById("detailIsi").innerHTML = kolomList.map(function(k) {
-        return "<p style='margin:6px 0;'><b>" + escapeHtml(k) + ":</b> " + escapeHtml(r[k] || "-") + "</p>";
-      }).join("");
-      document.getElementById("modalAksiPersonel").style.display = "flex";
-      document.getElementById("modalAksiUmum").style.display = "none";
-      document.getElementById("modal").classList.add("aktif");
-    });
 
     document.getElementById("isiTabelPelanggaran").addEventListener("click", function(e) {
       var tr = e.target.closest("tr.data-row[data-pel-idx]");
@@ -1970,24 +1158,12 @@
       var idx = parseInt(tr.getAttribute("data-pel-idx"), 10);
       var r = hasilPelanggaranTerakhir[idx];
       if (!r) return;
-      dataModalAktif = null;
       document.getElementById("modalJudul").textContent = r["Nama"] || "Detail Pelanggaran";
       document.getElementById("detailIsi").innerHTML = KOLOM_PELANGGARAN.map(function(k) {
         return "<p style='margin:6px 0;'><b>" + escapeHtml(k) + ":</b> " + escapeHtml(r[k] || "-") + "</p>";
       }).join("");
-      document.getElementById("modalAksiPersonel").style.display = "none";
-      document.getElementById("modalAksiUmum").style.display = "flex";
       document.getElementById("modal").classList.add("aktif");
     });
-
-    document.getElementById("cari").addEventListener("input", function() {
-      batasTampil = BATAS_AWAL;
-      clearTimeout(timerKetik);
-      timerKetik = setTimeout(tampil, 120);
-    });
-    document.getElementById("filterDivisi").addEventListener("change", function(e) { pilihDivisi(e.target.value); });
-
-    muat(false);
   </script>
 </body>
 </html>
