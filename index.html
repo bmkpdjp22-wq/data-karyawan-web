@@ -554,7 +554,7 @@
       border: 1px solid var(--border);
       padding: 20px;
       border-radius: 14px;
-      max-width: 540px;
+      max-width: 560px;
       width: 100%;
       max-height: 86vh;
       overflow: auto;
@@ -729,7 +729,7 @@
           <span class="jam-pill" id="infoWaktuWIB">WIB: --:--:-- • Mode Otomatis</span>
         </div>
         <div class="bar">
-          <input id="cari" type="text" placeholder="Cari nama, NIP, jabatan, divisi, atau kata kunci..." />
+          <input id="cari" type="text" placeholder="Cari nama, NIP, NIK, jabatan, divisi, atau kata kunci..." />
           <select id="filterDivisi"><option value="">Semua Divisi</option></select>
           <select id="filterGender" onchange="pilihGender(this.value)">
             <option value="">Semua Gender</option>
@@ -926,7 +926,7 @@
     // PENGATURAN KATA SANDI LOGIN & BATAS WAKTU TIDAK AKTIF (MENIT)
     // ============================================================
     const KATA_SANDI_LOGIN = "KapalApi";
-    const BATAS_MENIT_TIDAK_AKTIF = 15; // Ubah angka sesuai kebutuhan (misal: 5, 10, 15, 30)
+    const BATAS_MENIT_TIDAK_AKTIF = 15;
     // ============================================================
 
     const BATAS_MS = BATAS_MENIT_TIDAK_AKTIF * 60 * 1000;
@@ -1006,8 +1006,53 @@
       }
     }
 
+    // Urutan kolom baku sesuai daftar personel
+    const KOLOM_UTAMA = [
+      "Nomor",
+      "NIP",
+      "Nama Lengkap (Sesuai KTP)",
+      "Jabatan",
+      "Jenis Kelamin",
+      "Tempat Lahir",
+      "Tanggal Lahir",
+      "Usia",
+      "Alamat KTP",
+      "RT",
+      "RW",
+      "Kelurahan / Desa",
+      "Kecamatan",
+      "Kota / Kabupaten",
+      "Provinsi",
+      "Alamat Tempat Tinggal Selama Bekerja",
+      "Nomor KK (Kartu Keluarga)",
+      "NIK KTP (Nomor Induk Kependudukan)",
+      "NPWP",
+      "Nomor Handphone (Whatsapp Aktif)",
+      "Golongan Darah",
+      "Tinggi Badan",
+      "Berat Badan",
+      "Nomor BPJS Kesehatan",
+      "Nomor BPJS Ketenagakerjaan",
+      "Alamat Email",
+      "Nomor Rekening Mandiri",
+      "Nomor Rekening Bank Lain",
+      "Tempat Tinggal Selama Bekerja",
+      "Status Perkawinan",
+      "Jumlah Tanggungan Anak",
+      "Kontak Darurat",
+      "Nama Kontak Darurat",
+      "Hubungan Dengan Kontak Darurat",
+      "Pendidikan Terakhir",
+      "Jurusan Pendidikan Terakhir",
+      "Nama Sekolah Pendidikan Terakhir",
+      "Ukuran Baju",
+      "Ukuran Celana",
+      "Ukuran Sepatu",
+      "Divisi"
+    ];
+
     const URL_DATA = "https://script.google.com/macros/s/AKfycbzKrn6vwNSM5hJGywoYmEXzKwA_rjFKeu9YRQq3lcNdYyO6Z0wIgNC2PYU1DmKNtm7l/exec";
-    const CACHE_KEY = "cachePersonelKpdjp2026_cepat";
+    const CACHE_KEY = "cachePersonelKpdjp2026_v2";
     const DURASI_CACHE_MS = 24 * 60 * 60 * 1000;
     const ABAIKAN = ["data karyawan november 2026", "data personel november 2026", "data personil november 2026"];
 
@@ -1113,7 +1158,7 @@
     let dataIndeks = [];
     let hasilTerakhir = [];
     let barisDitampilkan = [];
-    let kolomList = [];
+    let kolomList = KOLOM_UTAMA.slice();
     let dataModalAktif = null;
 
     function formatDivisiInggris(rawDiv) {
@@ -1166,22 +1211,31 @@
       return ((kata[0][0] || "") + (kata[1][0] || "")).toUpperCase();
     }
 
+    function susunDaftarKolom(rows) {
+      var daftar = KOLOM_UTAMA.slice();
+      var setSudahAda = {};
+      daftar.forEach(function(k) { setSudahAda[k.toLowerCase()] = 1; });
+
+      for (var i = 0; i < rows.length; i++) {
+        var r = rows[i];
+        if (!r || typeof r !== "object") continue;
+        Object.keys(r).forEach(function(k) {
+          var kl = String(k || "").trim();
+          if (kl && !setSudahAda[kl.toLowerCase()]) {
+            setSudahAda[kl.toLowerCase()] = 1;
+            daftar.push(kl);
+          }
+        });
+      }
+      return daftar;
+    }
+
     function prosesDataArray(raw, labelTambahan) {
       semuaData = raw.filter(function(r) {
         return !diabaikan(getDivAsli(r)) && !diabaikan(getDiv(r));
       });
 
-      var setK = {};
-      for (var i = 0; i < semuaData.length; i++) {
-        var r = semuaData[i];
-        if (r && typeof r === "object") {
-          var keys = Object.keys(r);
-          for (var j = 0; j < keys.length; j++) {
-            setK[keys[j]] = 1;
-          }
-        }
-      }
-      kolomList = Object.keys(setK);
+      kolomList = susunDaftarKolom(semuaData);
       document.getElementById("kepalaTabel").innerHTML = kolomList.map(function(k) { return "<th>" + k + "</th>"; }).join("");
 
       dataIndeks = semuaData.map(function(r) {
@@ -1495,4 +1549,3 @@
   </script>
 </body>
 </html>
-```[cite: 1]
