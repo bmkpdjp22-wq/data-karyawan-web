@@ -1092,8 +1092,10 @@
 
     const URL_DATA = "https://script.google.com/macros/s/AKfycbzKrn6vwNSM5hJGywoYmEXzKwA_rjFKeu9YRQq3lcNdYyO6Z0wIgNC2PYU1DmKNtm7l/exec";
     const URL_PELANGGARAN = "https://script.google.com/macros/s/AKfycbxsnb6ZUzIpdbmdiGeNaJiasl9nCqAdGcCRO_n5XtDZpReCZ2SZJw-4ZusstYiNB5EX/exec";
+    const SPREADSHEET_PELANGGARAN_ID = "1nVDFew5Ug96BN0j_w7aZ_gA6DiF43IMBwZIzFEWP7Pk";
+    const GID_PELANGGARAN = "642420235";
     const CACHE_KEY = "cachePersonelKpdjp2026_v10";
-    const CACHE_PELANGGARAN_KEY = "cachePelanggaranKpdjp2026_v4";
+    const CACHE_PELANGGARAN_KEY = "cachePelanggaranKpdjp2026_v5";
     const DURASI_CACHE_MS = 24 * 60 * 60 * 1000;
 
     const KOLOM_PELANGGARAN = [
@@ -1398,6 +1400,107 @@
       document.getElementById("isiTabelPelanggaran").innerHTML = html;
     }
 
+    function parseCsvBaris(teks) {
+      var hasil = [];
+      var baris = [];
+      var sel = "";
+      var dalamKutipan = false;
+
+      for (var i = 0; i < teks.length; i++) {
+        var ch = teks[i];
+        var next = teks[i + 1];
+
+        if (ch === '"') {
+          if (dalamKutipan && next === '"') {
+            sel += '"';
+            i++;
+          } else {
+            dalamKutipan = !dalamKutipan;
+          }
+        } else if (ch === "," && !dalamKutipan) {
+          baris.push(sel.trim());
+          sel = "";
+        } else if ((ch === "\n" || (ch === "\r" && next === "\n")) && !dalamKutipan) {
+          if (ch === "\r") i++;
+          baris.push(sel.trim());
+          hasil.push(baris);
+          baris = [];
+          sel = "";
+        } else if (ch === "\r" && !dalamKutipan) {
+          baris.push(sel.trim());
+          hasil.push(baris);
+          baris = [];
+          sel = "";
+        } else {
+          sel += ch;
+        }
+      }
+      if (sel.length > 0 || baris.length > 0) {
+        baris.push(sel.trim());
+        hasil.push(baris);
+      }
+      return hasil;
+    }
+
+    function ambilPelanggaranViaGviz() {
+      var urlCsv =
+        "https://docs.google.com/spreadsheets/d/" +
+        SPREADSHEET_PELANGGARAN_ID +
+        "/gviz/tq?tqx=out:csv&gid=" +
+        GID_PELANGGARAN +
+        "&t=" +
+        Date.now();
+
+      return fetch(urlCsv, { redirect: "follow" })
+        .then(function(res) {
+          if (!res.ok) throw new Error("GViz HTTP " + res.status);
+          return res.text();
+        })
+        .then(function(csvText) {
+          if (!csvText || csvText.trim().indexOf("<!DOCTYPE") === 0 || csvText.trim().indexOf("<html") === 0) {
+            throw new Error("Spreadsheet belum dapat dibaca publik via gviz.");
+          }
+
+          var matriks = parseCsvBaris(csvText);
+          var idxHeader = -1;
+
+          for (var r = 0; r < matriks.length; r++) {
+            var rowLower = matriks[r].map(function(c) {
+              return String(c || "").trim().toLowerCase();
+            });
+            var adaNo = rowLower.indexOf("no") !== -1 || rowLower.indexOf("nomor") !== -1;
+            var adaNama = rowLower.indexOf("nama") !== -1 || rowLower.some(function(x) { return x.indexOf("nama") === 0; });
+            var adaNip = rowLower.indexOf("nip") !== -1;
+            if (adaNo && (adaNama || adaNip)) {
+              idxHeader = r;
+              break;
+            }
+          }
+
+          if (idxHeader === -1) return [];
+
+          var headers = matriks[idxHeader].map(function(h) { return String(h || "").trim(); });
+          var listObj = [];
+
+          for (var i = idxHeader + 1; i < matriks.length; i++) {
+            var row = matriks[i];
+            var obj = {};
+            for (var c = 0; c < headers.length; c++) {
+              if (headers[c]) obj[headers[c]] = String(row[c] ?? "").trim();
+            }
+            var namaCek = String(obj["Nama"] || "").trim();
+            var namaLower = namaCek.toLowerCase();
+            if (!namaCek || namaLower === "total" || namaLower === "jumlah" || namaLower.indexOf("grand total") === 0) {
+              continue;
+            }
+            if (!obj["No"]) obj["No"] = String(listObj.length + 1);
+            listObj.push(obj);
+          }
+
+          return listObj;
+        });
+    }
+
     async function muatPelanggaran(paksaSegar) {
       var btn = document.getElementById("btnRefreshPelanggaran");
       if (!paksaSegar) {
@@ -1414,29 +1517,48 @@
       }
 
       if (btn) btn.disabled = true;
-      document.getElementById("infoPelanggaran").textContent = "Memuat data poin pelanggaran dari sheet ALL...";
+      document.getElementById("infoPelanggaran").textContent = "Memuat data poin pelanggaran...";
+
+      var raw = [];
+      var sumber = "(data terbaru)";
 
       try {
-        var res = await fetch(URL_PELANGGARAN + (URL_PELANGGARAN.indexOf("?") === -1 ? "?" : "&") + "t=" + Date.now());
-        var json = await res.json();
-        if (json && json.error) {
-          document.getElementById("infoPelanggaran").textContent = "Error Apps Script: " + json.error;
-          prosesDataPelanggaran([], "");
-          return;
+        var sep = URL_PELANGGARAN.indexOf("?") === -1 ? "?" : "&";
+        var res = await fetch(URL_PELANGGARAN + sep + "t=" + Date.now(), {
+          method: "GET",
+          redirect: "follow"
+        });
+        if (res.ok) {
+          var json = await res.json();
+          if (json && !json.error) {
+            raw = ekstrakArrayPelanggaran(json);
+          }
         }
-        var raw = ekstrakArrayPelanggaran(json);
-        if (raw.length) {
-          try {
-            localStorage.setItem(CACHE_PELANGGARAN_KEY, JSON.stringify({ ts: Date.now(), data: raw }));
-          } catch (e) {}
-        }
-        prosesDataPelanggaran(raw, "(data terbaru)");
-      } catch (e) {
-        document.getElementById("infoPelanggaran").textContent = "Gagal memuat data pelanggaran. Periksa deployment Web App Apps Script lalu klik Refresh Data.";
-        prosesDataPelanggaran([], "");
-      } finally {
-        if (btn) btn.disabled = false;
+      } catch (errAppsScript) {
+        raw = [];
       }
+
+      if (!raw.length) {
+        try {
+          raw = await ambilPelanggaranViaGviz();
+          sumber = "(via sheet ALL)";
+        } catch (errGviz) {
+          raw = [];
+        }
+      }
+
+      if (raw.length) {
+        try {
+          localStorage.setItem(CACHE_PELANGGARAN_KEY, JSON.stringify({ ts: Date.now(), data: raw }));
+        } catch (e) {}
+        prosesDataPelanggaran(raw, sumber);
+      } else {
+        document.getElementById("infoPelanggaran").textContent =
+          "Data pelanggaran belum terbaca. Pastikan file spreadsheet diizinkan 'Anyone with the link can view' dan Web App Apps Script sudah di-deploy.";
+        prosesDataPelanggaran([], "");
+      }
+
+      if (btn) btn.disabled = false;
     }
 
     function unduhCSVPelanggaran() {
