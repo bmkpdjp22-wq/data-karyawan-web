@@ -1093,7 +1093,7 @@
     const URL_DATA = "https://script.google.com/macros/s/AKfycbzKrn6vwNSM5hJGywoYmEXzKwA_rjFKeu9YRQq3lcNdYyO6Z0wIgNC2PYU1DmKNtm7l/exec";
     const URL_PELANGGARAN = "https://script.google.com/macros/s/AKfycbxsnb6ZUzIpdbmdiGeNaJiasl9nCqAdGcCRO_n5XtDZpReCZ2SZJw-4ZusstYiNB5EX/exec";
     const CACHE_KEY = "cachePersonelKpdjp2026_v10";
-    const CACHE_PELANGGARAN_KEY = "cachePelanggaranKpdjp2026_v3";
+    const CACHE_PELANGGARAN_KEY = "cachePelanggaranKpdjp2026_v4";
     const DURASI_CACHE_MS = 24 * 60 * 60 * 1000;
 
     const KOLOM_PELANGGARAN = [
@@ -1192,7 +1192,7 @@
       var kl = s.toLowerCase();
 
       if (kl) {
-        if (kl.indexOf("management") !== -1 || kl.indexOf("office") !== -1 || kl === "mo") return "Management Office";
+        if (kl.indexOf("management") !== -1 || kl.indexOf("office") !== -1 || kl === "mo" || kl.indexOf("tr&sdm") !== -1 || kl.indexOf("sdm") !== -1) return "Management Office";
         if (kl.indexOf("eng") !== -1 || kl.indexOf("mep") !== -1 || kl.indexOf("teknisi") !== -1) return "Engineering";
         if (kl.indexOf("sec") !== -1 || kl.indexOf("satpam") !== -1 || kl.indexOf("guard") !== -1) return "Security";
         if (kl.indexOf("house") !== -1 || kl.indexOf("clean") !== -1 || kl.indexOf("kebersihan") !== -1 || kl === "hk") return "Housekeeping";
@@ -1224,7 +1224,7 @@
         if (namaKolom === "Nama" && (norm === "nama" || norm.indexOf("namalengkap") !== -1)) return row[keys[i]];
         if (namaKolom === "Tanggal Pelanggaran" && norm.indexOf("tanggal") !== -1) return row[keys[i]];
         if (namaKolom === "Jenis Pelanggaran" && norm.indexOf("jenispelanggaran") !== -1) return row[keys[i]];
-        if (namaKolom === "Poin Pelanggaran" && norm === "poinpelanggaran") return row[keys[i]];
+        if (namaKolom === "Poin Pelanggaran" && (norm === "poinpelanggaran" || norm === "poin")) return row[keys[i]];
         if (namaKolom === "Total Poin" && norm === "totalpoin") return row[keys[i]];
       }
       return "";
@@ -1414,7 +1414,7 @@
       }
 
       if (btn) btn.disabled = true;
-      document.getElementById("infoPelanggaran").textContent = "Memuat data poin pelanggaran dari Google Sheet...";
+      document.getElementById("infoPelanggaran").textContent = "Memuat data poin pelanggaran dari sheet ALL...";
 
       try {
         var res = await fetch(URL_PELANGGARAN + (URL_PELANGGARAN.indexOf("?") === -1 ? "?" : "&") + "t=" + Date.now());
