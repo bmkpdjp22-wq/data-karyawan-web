@@ -310,7 +310,6 @@
       font-weight: 600;
     }
 
-    /* Bar kontrol seragam seperti Data Personel */
     .bar {
       display: flex;
       gap: 7px;
@@ -415,7 +414,6 @@
       text-overflow: ellipsis;
     }
 
-    /* Baris kartu divisi rata kiri-kanan dengan baris KPI di atasnya & spasi proporsional */
     .cards {
       display: flex;
       flex-wrap: wrap;
@@ -798,11 +796,11 @@
           <span>Poin Pelanggaran</span>
         </button>
       </div>
+
       <div class="side-foot">
         <b>Helpdesk BM:</b> Ext. 50000 • WA 081188093005<br>
         <b>Email:</b> bmkpdjp22@gmail.com
       </div>
-
     </aside>
 
     <main class="main">
@@ -887,7 +885,7 @@
         </div>
       </section>
 
-      <!-- HALAMAN POIN PELANGGARAN (HANYA DATA TERKENA PELANGGARAN DI SHEET ALL, TAMPIL SEMUA) -->
+      <!-- HALAMAN POIN PELANGGARAN -->
       <section id="halamanPelanggaran" style="display:none;">
         <div class="hero">
           <div class="hero-top">
@@ -1344,7 +1342,7 @@
       document.getElementById("kartuDivisiPelanggaran").innerHTML = listDiv.map(function(d) {
         var isAktif = aktif === d ? " aktif" : "";
         var dataDivAttr = URUTAN_DIVISI.indexOf(d) !== -1 ? ' data-div="' + escapeHtml(d) + '"' : "";
-        return '<div class="card' + isAktif + '"' + dataDivAttr + ' onclick="pilihDivisiPelanggaran('' + d.replace(/'/g, "\'") + '')">' +
+        return '<div class="card' + isAktif + '"' + dataDivAttr + ' onclick="pilihDivisiPelanggaran(\'' + d.replace(/'/g, "\\'") + '\')">' +
           '<b>' + escapeHtml(d) + '</b>' +
           '<div class="card-sub">' + hitung[d] + ' catatan</div>' +
           '</div>';
@@ -1648,8 +1646,7 @@
         }).join(sep);
         barisCsv.push(rowCsv);
       });
-      var blob = new Blob(["﻿" + barisCsv.join("
-")], { type: "text/csv;charset=utf-8;" });
+      var blob = new Blob(["\uFEFF" + barisCsv.join("\n")], { type: "text/csv;charset=utf-8;" });
       var link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
       link.download = "poin-pelanggaran-sheet-all-bm-kpdjp.csv";
@@ -1759,7 +1756,7 @@
       document.getElementById("kartuDivisi").innerHTML = listDiv.map(function(d) {
         var aktifClass = divAktif === d ? " aktif" : "";
         var amanAttr = d.replace(/"/g, "&quot;");
-        return '<div class="card' + aktifClass + '" data-div="' + amanAttr + '" onclick="pilihDivisi('' + d.replace(/'/g, "\'") + '')"><b>' + d + '</b><div class="card-sub">' + hitung[d] + ' personel</div></div>';
+        return '<div class="card' + aktifClass + '" data-div="' + amanAttr + '" onclick="pilihDivisi(\'' + d.replace(/'/g, "\\'") + '\')"><b>' + d + '</b><div class="card-sub">' + hitung[d] + ' personel</div></div>';
       }).join("");
     }
 
@@ -1965,8 +1962,7 @@
         barisCsv.push(rowCsv);
       });
       var bom = "\uFEFF";
-      var blob = new Blob([bom + barisCsv.join("
-")], { type: "text/csv;charset=utf-8;" });
+      var blob = new Blob([bom + barisCsv.join("\n")], { type: "text/csv;charset=utf-8;" });
       var link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
       link.download = "data-personel-bm-kpdjp.csv";
