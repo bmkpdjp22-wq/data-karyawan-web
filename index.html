@@ -14,8 +14,8 @@
       --text: #0f172a;
       --muted: #64748b;
       --border: #e2e8f0;
-      --row-alt: #f8fafc;
-      --row-hover: #eff6ff;
+      --row-alt: #eff6ff;
+      --row-hover: #dbeafe;
       --th-bg: #eef2ff;
       --th-text: #1e293b;
       --pill-bg: #f1f5f9;
@@ -35,8 +35,8 @@
       --text: #f1f5f9;
       --muted: #94a3b8;
       --border: #1e293b;
-      --row-alt: #0d121d;
-      --row-hover: #172554;
+      --row-alt: #132238;
+      --row-hover: #1e3a5f;
       --th-bg: #131c31;
       --th-text: #e2e8f0;
       --pill-bg: #1e293b;
@@ -303,7 +303,7 @@
       font-weight: 600;
     }
 
-    .bar { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; }
+    .bar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
     input, select, button.act {
       padding: 8px 11px;
       border-radius: 8px;
@@ -321,6 +321,11 @@
       background: var(--card);
       color: var(--text);
       cursor: pointer;
+    }
+    #filterDivisiPelanggaran {
+      flex: 0 0 auto;
+      min-width: 195px;
+      margin-right: 4px;
     }
     button.act {
       background: #e2e8f0;
@@ -562,33 +567,23 @@
       border-bottom-right-radius: 8px;
     }
 
-    /* Penanda warna sama untuk orang (NIP/Nama) yang muncul lebih dari 1 kali */
     tbody tr.data-row[data-dup-bg] {
       background: var(--dup-bg) !important;
     }
+    tbody tr.data-row[data-dup-bg]:hover {
+      filter: brightness(0.97);
+    }
     tbody tr.data-row[data-dup-accent] td:first-child {
       border-left-color: var(--dup-accent) !important;
-      color: var(--dup-text) !important;
+      color: var(--dup-accent) !important;
       font-weight: 800;
-    }
-    .dup-tag {
-      display: inline-block;
-      margin-left: 6px;
-      padding: 1px 6px;
-      border-radius: 999px;
-      font-size: 10px;
-      font-weight: 800;
-      vertical-align: middle;
-      background: var(--dup-badge-bg);
-      color: var(--dup-text);
-      border: 1px solid var(--dup-border);
     }
 
     .cell-nowrap { white-space: nowrap; }
     .cell-nama {
       white-space: nowrap;
       font-weight: 700;
-      max-width: 240px;
+      max-width: 220px;
     }
     .nama-teks {
       display: inline-block;
@@ -1018,6 +1013,7 @@
       document.getElementById("layarLogin").style.display = "none";
       document.getElementById("kontenDashboard").style.display = "flex";
       aktifkanPantauanAktivitas();
+      selaraskanFilterDivisiPelanggaran();
     }
 
     function cekLoginDashboard() {
@@ -1103,10 +1099,9 @@
     const SPREADSHEET_PELANGGARAN_ID = "1nVDFew5Ug96BN0j_w7aZ_gA6DiF43IMBwZIzFEWP7Pk";
     const GID_PELANGGARAN = "642420235";
     const CACHE_KEY = "cachePersonelKpdjp2026_v10";
-    const CACHE_PELANGGARAN_KEY = "cachePelanggaranKpdjp2026_v7";
+    const CACHE_PELANGGARAN_KEY = "cachePelanggaranKpdjp2026_v8";
     const DURASI_CACHE_MS = 24 * 60 * 60 * 1000;
 
-    // Kolom Keterangan dihapus sesuai permintaan
     const KOLOM_PELANGGARAN = [
       "No",
       "NIP",
@@ -1119,27 +1114,22 @@
       "Total Poin"
     ];
 
-    // Palet warna penanda untuk orang (NIP / Nama) yang muncul lebih dari 1 kali
-    const PALET_DUPLIKAT_TERANG = [
-      { bg: "#fef3c7", accent: "#d97706", text: "#92400e", badgeBg: "#fde68a", border: "#f59e0b" },
-      { bg: "#e0f2fe", accent: "#0284c7", text: "#075985", badgeBg: "#bae6fd", border: "#38bdf8" },
-      { bg: "#fce7f3", accent: "#db2777", text: "#9d174d", badgeBg: "#fbcfe8", border: "#f472b6" },
-      { bg: "#dcfce7", accent: "#16a34a", text: "#166534", badgeBg: "#bbf7d0", border: "#4ade80" },
-      { bg: "#ede9fe", accent: "#7c3aed", text: "#5b21b6", badgeBg: "#ddd6fe", border: "#a78bfa" },
-      { bg: "#ffedd5", accent: "#ea580c", text: "#9a3412", badgeBg: "#fed7aa", border: "#fb923c" },
-      { bg: "#ccfbf1", accent: "#0d9488", text: "#115e59", badgeBg: "#99f6e4", border: "#2dd4bf" },
-      { bg: "#fae8ff", accent: "#c026d3", text: "#86198f", badgeBg: "#f5d0fe", border: "#e879f9" }
+    const WARNA_SAMA_TERANG = [
+      { bg: "#dbeafe", accent: "#1d4ed8" },
+      { bg: "#fef3c7", accent: "#d97706" },
+      { bg: "#dcfce7", accent: "#15803d" },
+      { bg: "#fce7f3", accent: "#be185d" },
+      { bg: "#e0e7ff", accent: "#4338ca" },
+      { bg: "#ffedd5", accent: "#c2410c" }
     ];
 
-    const PALET_DUPLIKAT_MALAM = [
-      { bg: "rgba(217, 119, 6, 0.20)", accent: "#fbbf24", text: "#fde68a", badgeBg: "rgba(245, 158, 11, 0.25)", border: "rgba(251, 191, 36, 0.45)" },
-      { bg: "rgba(2, 132, 199, 0.20)", accent: "#38bdf8", text: "#bae6fd", badgeBg: "rgba(56, 189, 248, 0.25)", border: "rgba(56, 189, 248, 0.45)" },
-      { bg: "rgba(219, 39, 119, 0.20)", accent: "#f472b6", text: "#fbcfe8", badgeBg: "rgba(244, 114, 182, 0.25)", border: "rgba(244, 114, 182, 0.45)" },
-      { bg: "rgba(22, 163, 74, 0.20)", accent: "#4ade80", text: "#bbf7d0", badgeBg: "rgba(74, 222, 128, 0.25)", border: "rgba(74, 222, 128, 0.45)" },
-      { bg: "rgba(124, 58, 237, 0.20)", accent: "#a78bfa", text: "#ddd6fe", badgeBg: "rgba(167, 139, 250, 0.25)", border: "rgba(167, 139, 250, 0.45)" },
-      { bg: "rgba(234, 88, 12, 0.20)", accent: "#fb923c", text: "#fed7aa", badgeBg: "rgba(251, 146, 60, 0.25)", border: "rgba(251, 146, 60, 0.45)" },
-      { bg: "rgba(13, 148, 136, 0.20)", accent: "#2dd4bf", text: "#99f6e4", badgeBg: "rgba(45, 212, 191, 0.25)", border: "rgba(45, 212, 191, 0.45)" },
-      { bg: "rgba(192, 38, 211, 0.20)", accent: "#e879f9", text: "#f5d0fe", badgeBg: "rgba(232, 121, 249, 0.25)", border: "rgba(232, 121, 249, 0.45)" }
+    const WARNA_SAMA_MALAM = [
+      { bg: "#1e3a8a", accent: "#60a5fa" },
+      { bg: "#78350f", accent: "#fbbf24" },
+      { bg: "#14532d", accent: "#4ade80" },
+      { bg: "#831843", accent: "#f472b6" },
+      { bg: "#312e81", accent: "#a5b4fc" },
+      { bg: "#7c2d12", accent: "#fb923c" }
     ];
 
     let modeTema = localStorage.getItem("modeTemaKpdjp") || "auto";
@@ -1149,6 +1139,24 @@
     let semuaPelanggaran = [];
     let pelanggaranIndeks = [];
     let hasilPelanggaranTerakhir = [];
+
+    function selaraskanFilterDivisiPelanggaran() {
+      var sel = document.getElementById("filterDivisiPelanggaran");
+      var kpiTotal = document.getElementById("kpiPelTotalSemua");
+      if (!sel || !kpiTotal) return;
+      if (window.innerWidth <= 820) {
+        sel.style.width = "";
+        return;
+      }
+      var selRect = sel.getBoundingClientRect();
+      var kpiRect = kpiTotal.getBoundingClientRect();
+      if (kpiRect.right > selRect.left + 80) {
+        var lebarPas = Math.round(kpiRect.right - selRect.left);
+        sel.style.width = lebarPas + "px";
+      }
+    }
+
+    window.addEventListener("resize", selaraskanFilterDivisiPelanggaran);
 
     function ambilJamWIB() {
       var bagian = new Intl.DateTimeFormat("id-ID", {
@@ -1218,6 +1226,7 @@
       if (halamanAktif === "pelanggaran") {
         if (!semuaPelanggaran.length) muatPelanggaran(false);
         else renderTabelPelanggaran();
+        setTimeout(selaraskanFilterDivisiPelanggaran, 20);
       }
     }
 
@@ -1331,6 +1340,8 @@
           '<div class="card-sub">' + hitung[d] + ' catatan</div>' +
           '</div>';
       }).join("");
+
+      selaraskanFilterDivisiPelanggaran();
     }
 
     function pilihDivisiPelanggaran(d) {
@@ -1394,22 +1405,18 @@
 
       hasilPelanggaranTerakhir = tersaring;
 
-      // Hitung kemunculan & akumulasi poin per orang (berdasarkan NIP / Nama) pada data yang tampil
       var hitungKemunculan = {};
-      var akumulasiPoinOrang = {};
       for (var m = 0; m < tersaring.length; m++) {
         var idOrang = kunciIdentitasOrang(tersaring[m]);
         if (idOrang) {
           hitungKemunculan[idOrang] = (hitungKemunculan[idOrang] || 0) + 1;
-          akumulasiPoinOrang[idOrang] = (akumulasiPoinOrang[idOrang] || 0) + parseAngka(tersaring[m]["Poin Pelanggaran"]);
         }
       }
 
-      // Berikan warna yang sama untuk setiap orang yang muncul lebih dari 1 kali
       var petaWarnaOrang = {};
       var idxWarna = 0;
       var isGelap = document.body.classList.contains("mode-malam");
-      var paletAktif = isGelap ? PALET_DUPLIKAT_MALAM : PALET_DUPLIKAT_TERANG;
+      var paletAktif = isGelap ? WARNA_SAMA_MALAM : WARNA_SAMA_TERANG;
 
       for (var n = 0; n < tersaring.length; n++) {
         var id = kunciIdentitasOrang(tersaring[n]);
@@ -1446,12 +1453,11 @@
         var idRow = kunciIdentitasOrang(row);
         var jmlMuncul = idRow ? (hitungKemunculan[idRow] || 1) : 1;
         var warnaRow = idRow ? petaWarnaOrang[idRow] : null;
-        var totalOrangIni = idRow ? (akumulasiPoinOrang[idRow] || 0) : parseAngka(row["Poin Pelanggaran"]);
 
         var trStyle = "";
         var dupAttr = "";
         if (warnaRow && jmlMuncul > 1) {
-          trStyle = " style='--dup-bg:" + warnaRow.bg + ";--dup-accent:" + warnaRow.accent + ";--dup-text:" + warnaRow.text + ";--dup-badge-bg:" + warnaRow.badgeBg + ";--dup-border:" + warnaRow.border + ";'";
+          trStyle = " style='--dup-bg:" + warnaRow.bg + ";--dup-accent:" + warnaRow.accent + ";'";
           dupAttr = " data-dup-bg='1' data-dup-accent='1'";
         }
 
@@ -1463,10 +1469,7 @@
           if (col === "No") {
             cells += "<td><span class='cell-nowrap'>" + escapeHtml(row["No"] || String(j + 1)) + "</span></td>";
           } else if (col === "Nama") {
-            var labelKembar = (warnaRow && jmlMuncul > 1)
-              ? "<span class='dup-tag' title='Muncul " + jmlMuncul + "x • Total poin: " + totalOrangIni + "'>" + jmlMuncul + "x • " + totalOrangIni + "pt</span>"
-              : "";
-            cells += "<td><span class='cell-nama' title='" + aman + "'><span class='avatar'>" + inisial(val) + "</span><span class='nama-teks'>" + aman + "</span>" + labelKembar + "</span></td>";
+            cells += "<td><span class='cell-nama' title='" + aman + "'><span class='avatar'>" + inisial(val) + "</span><span class='nama-teks'>" + aman + "</span></span></td>";
           } else if (col === "Poin Pelanggaran" || col === "Total Poin") {
             cells += "<td>" + (val !== "-" ? '<span class="pel-poin-badge">' + aman + "</span>" : "-") + "</td>";
           } else if (col === "Jenis Pelanggaran" || col === "Jabatan") {
@@ -1478,6 +1481,7 @@
         html += '<tr class="data-row" data-pel-idx="' + j + '"' + dupAttr + trStyle + '>' + cells + "</tr>";
       }
       document.getElementById("isiTabelPelanggaran").innerHTML = html;
+      selaraskanFilterDivisiPelanggaran();
     }
 
     function parseCsvBaris(teks) {
