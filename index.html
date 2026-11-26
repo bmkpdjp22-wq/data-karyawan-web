@@ -56,6 +56,82 @@
       transition: background 0.2s ease, color 0.2s ease;
     }
 
+    /* Layar Login */
+    .login-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--hero);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 9999;
+    }
+    .login-card {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 24px;
+      width: 100%;
+      max-width: 350px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+      text-align: center;
+    }
+    .login-tag {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+    .login-card h2 {
+      margin: 0 0 6px;
+      font-size: 19px;
+      font-weight: 800;
+    }
+    .login-card p {
+      margin: 0 0 16px;
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+    .login-input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 13.5px;
+      margin-bottom: 10px;
+      outline: none;
+    }
+    .login-input:focus {
+      border-color: var(--primary);
+    }
+    .login-btn {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 9px;
+      border: 0;
+      background: var(--primary);
+      color: #fff;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .login-btn:hover {
+      opacity: 0.94;
+    }
+    .login-err {
+      display: none;
+      margin-top: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #dc2626;
+    }
+
     .wrap { display: flex; min-height: 100vh; }
 
     /* Sidebar Kiri: Visi & Misi + Tombol Nomor & Divisi */
@@ -586,7 +662,20 @@
   </style>
 </head>
 <body>
-  <div class="wrap">
+  <!-- LAYAR LOGIN -->
+  <div id="layarLogin" class="login-overlay">
+    <div class="login-card">
+      <div class="login-tag">BUILDING MANAGEMENT KPDJP</div>
+      <h2>Login Portal Personel</h2>
+      <p>Masukkan kata sandi untuk membuka dashboard personel 2026</p>
+      <input type="password" id="inputSandiLogin" class="login-input" placeholder="Masukkan kata sandi..."
+             onkeypress="if(event.key === 'Enter') cekLoginDashboard()" />
+      <button type="button" class="login-btn" onclick="cekLoginDashboard()">Masuk</button>
+      <div id="pesanSalahLogin" class="login-err">Kata sandi salah. Silakan coba lagi.</div>
+    </div>
+  </div>
+
+  <div class="wrap" id="kontenDashboard" style="display:none;">
     <!-- SIDEBAR KIRI: VISI & MISI + TOMBOL NOMOR & DIVISI -->
     <aside class="side">
       <div class="side-head">
@@ -649,6 +738,7 @@
           </select>
           <button class="act primary" id="btnRefresh" onclick="muat(true)">Refresh Data</button>
           <button class="act tema" id="btnTema" onclick="gantiModeTema()">Tema: Otomatis WIB</button>
+          <button class="act tema" onclick="logoutDashboard()">Keluar</button>
         </div>
       </div>
 
@@ -832,6 +922,39 @@
   </div>
 
   <script>
+    // ============================================================
+    // PENGATURAN KATA SANDI LOGIN (UBAH DI SINI)
+    // ============================================================
+    const KATA_SANDI_LOGIN = "BMKPDJP2026";
+    // ============================================================
+
+    function bukaDashboardSesudahLogin() {
+      document.getElementById("layarLogin").style.display = "none";
+      document.getElementById("kontenDashboard").style.display = "flex";
+    }
+
+    function cekLoginDashboard() {
+      var inputSandi = document.getElementById("inputSandiLogin").value;
+      var pesanSalah = document.getElementById("pesanSalahLogin");
+
+      if (inputSandi === KATA_SANDI_LOGIN) {
+        sessionStorage.setItem("bm_kpdjp_sudah_login", "ya");
+        pesanSalah.style.display = "none";
+        bukaDashboardSesudahLogin();
+      } else {
+        pesanSalah.style.display = "block";
+      }
+    }
+
+    function logoutDashboard() {
+      sessionStorage.removeItem("bm_kpdjp_sudah_login");
+      location.reload();
+    }
+
+    if (sessionStorage.getItem("bm_kpdjp_sudah_login") === "ya") {
+      bukaDashboardSesudahLogin();
+    }
+
     const URL_DATA = "https://script.google.com/macros/s/AKfycbzKrn6vwNSM5hJGywoYmEXzKwA_rjFKeu9YRQq3lcNdYyO6Z0wIgNC2PYU1DmKNtm7l/exec";
     const CACHE_KEY = "cachePersonelKpdjp2026_cepat";
     const DURASI_CACHE_MS = 24 * 60 * 60 * 1000;
@@ -1321,3 +1444,6 @@
   </script>
 </body>
 </html>
+```[cite: 1]
+
+---
