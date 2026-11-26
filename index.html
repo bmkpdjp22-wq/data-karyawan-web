@@ -562,11 +562,33 @@
       border-bottom-right-radius: 8px;
     }
 
+    /* Penanda warna sama untuk orang (NIP/Nama) yang muncul lebih dari 1 kali */
+    tbody tr.data-row[data-dup-bg] {
+      background: var(--dup-bg) !important;
+    }
+    tbody tr.data-row[data-dup-accent] td:first-child {
+      border-left-color: var(--dup-accent) !important;
+      color: var(--dup-text) !important;
+      font-weight: 800;
+    }
+    .dup-tag {
+      display: inline-block;
+      margin-left: 6px;
+      padding: 1px 6px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 800;
+      vertical-align: middle;
+      background: var(--dup-badge-bg);
+      color: var(--dup-text);
+      border: 1px solid var(--dup-border);
+    }
+
     .cell-nowrap { white-space: nowrap; }
     .cell-nama {
       white-space: nowrap;
       font-weight: 700;
-      max-width: 220px;
+      max-width: 240px;
     }
     .nama-teks {
       display: inline-block;
@@ -587,7 +609,7 @@
     }
     .cell-pendek {
       white-space: normal;
-      max-width: 190px;
+      max-width: 220px;
     }
 
     .avatar {
@@ -1081,9 +1103,10 @@
     const SPREADSHEET_PELANGGARAN_ID = "1nVDFew5Ug96BN0j_w7aZ_gA6DiF43IMBwZIzFEWP7Pk";
     const GID_PELANGGARAN = "642420235";
     const CACHE_KEY = "cachePersonelKpdjp2026_v10";
-    const CACHE_PELANGGARAN_KEY = "cachePelanggaranKpdjp2026_v6";
+    const CACHE_PELANGGARAN_KEY = "cachePelanggaranKpdjp2026_v7";
     const DURASI_CACHE_MS = 24 * 60 * 60 * 1000;
 
+    // Kolom Keterangan dihapus sesuai permintaan
     const KOLOM_PELANGGARAN = [
       "No",
       "NIP",
@@ -1093,13 +1116,32 @@
       "Tanggal Pelanggaran",
       "Jenis Pelanggaran",
       "Poin Pelanggaran",
-      "Total Poin",
-      "Keterangan"
+      "Total Poin"
     ];
 
-    const BATAS_AWAL = 50;
-    let batasTampil = BATAS_AWAL;
-    let timerKetik = null;
+    // Palet warna penanda untuk orang (NIP / Nama) yang muncul lebih dari 1 kali
+    const PALET_DUPLIKAT_TERANG = [
+      { bg: "#fef3c7", accent: "#d97706", text: "#92400e", badgeBg: "#fde68a", border: "#f59e0b" },
+      { bg: "#e0f2fe", accent: "#0284c7", text: "#075985", badgeBg: "#bae6fd", border: "#38bdf8" },
+      { bg: "#fce7f3", accent: "#db2777", text: "#9d174d", badgeBg: "#fbcfe8", border: "#f472b6" },
+      { bg: "#dcfce7", accent: "#16a34a", text: "#166534", badgeBg: "#bbf7d0", border: "#4ade80" },
+      { bg: "#ede9fe", accent: "#7c3aed", text: "#5b21b6", badgeBg: "#ddd6fe", border: "#a78bfa" },
+      { bg: "#ffedd5", accent: "#ea580c", text: "#9a3412", badgeBg: "#fed7aa", border: "#fb923c" },
+      { bg: "#ccfbf1", accent: "#0d9488", text: "#115e59", badgeBg: "#99f6e4", border: "#2dd4bf" },
+      { bg: "#fae8ff", accent: "#c026d3", text: "#86198f", badgeBg: "#f5d0fe", border: "#e879f9" }
+    ];
+
+    const PALET_DUPLIKAT_MALAM = [
+      { bg: "rgba(217, 119, 6, 0.20)", accent: "#fbbf24", text: "#fde68a", badgeBg: "rgba(245, 158, 11, 0.25)", border: "rgba(251, 191, 36, 0.45)" },
+      { bg: "rgba(2, 132, 199, 0.20)", accent: "#38bdf8", text: "#bae6fd", badgeBg: "rgba(56, 189, 248, 0.25)", border: "rgba(56, 189, 248, 0.45)" },
+      { bg: "rgba(219, 39, 119, 0.20)", accent: "#f472b6", text: "#fbcfe8", badgeBg: "rgba(244, 114, 182, 0.25)", border: "rgba(244, 114, 182, 0.45)" },
+      { bg: "rgba(22, 163, 74, 0.20)", accent: "#4ade80", text: "#bbf7d0", badgeBg: "rgba(74, 222, 128, 0.25)", border: "rgba(74, 222, 128, 0.45)" },
+      { bg: "rgba(124, 58, 237, 0.20)", accent: "#a78bfa", text: "#ddd6fe", badgeBg: "rgba(167, 139, 250, 0.25)", border: "rgba(167, 139, 250, 0.45)" },
+      { bg: "rgba(234, 88, 12, 0.20)", accent: "#fb923c", text: "#fed7aa", badgeBg: "rgba(251, 146, 60, 0.25)", border: "rgba(251, 146, 60, 0.45)" },
+      { bg: "rgba(13, 148, 136, 0.20)", accent: "#2dd4bf", text: "#99f6e4", badgeBg: "rgba(45, 212, 191, 0.25)", border: "rgba(45, 212, 191, 0.45)" },
+      { bg: "rgba(192, 38, 211, 0.20)", accent: "#e879f9", text: "#f5d0fe", badgeBg: "rgba(232, 121, 249, 0.25)", border: "rgba(232, 121, 249, 0.45)" }
+    ];
+
     let modeTema = localStorage.getItem("modeTemaKpdjp") || "auto";
     let filterGenderAktif = "";
     let halamanAktif = "personel";
@@ -1148,6 +1190,10 @@
       document.getElementById("infoWaktuWIBPelanggaran").textContent = teksJam;
       document.getElementById("btnTemaPersonel").textContent = teksTombol;
       document.getElementById("btnTemaPelanggaran").textContent = teksTombol;
+
+      if (halamanAktif === "pelanggaran" && hasilPelanggaranTerakhir.length) {
+        renderTabelPelanggaran();
+      }
     }
 
     function gantiModeTema() {
@@ -1223,7 +1269,14 @@
       return m ? parseFloat(m[0]) : 0;
     }
 
-    // Hanya menyaring baris orang yang benar-benar terkena pelanggaran (ada nama & ada jenis pelanggaran / poin)
+    function kunciIdentitasOrang(row) {
+      var nip = String(row["NIP"] || "").replace(/[^a-zA-Z0-9]/g, "").toLowerCase().trim();
+      var nama = String(row["Nama"] || "").toLowerCase().replace(/\s+/g, " ").trim();
+      if (nip && nip !== "-" && nip !== "0") return "nip:" + nip;
+      if (nama && nama !== "-") return "nama:" + nama;
+      return "";
+    }
+
     function normalisasiBarisPelanggaran(rawList) {
       if (!Array.isArray(rawList)) return [];
       var bersih = [];
@@ -1319,7 +1372,6 @@
       renderTabelPelanggaran(labelTambahan);
     }
 
-    // Tampil semua data pelanggaran yang cocok tanpa dipotong
     function renderTabelPelanggaran(labelTambahan) {
       var kata = (document.getElementById("cariPelanggaran").value || "").toLowerCase().trim();
       var div = document.getElementById("filterDivisiPelanggaran").value;
@@ -1335,12 +1387,37 @@
         if (okD && okK) {
           tersaring.push(item.raw);
           totalPoin += item.poin;
-          var kunciOrang = (item.raw["NIP"] || item.raw["Nama"] || "").toLowerCase().trim();
+          var kunciOrang = kunciIdentitasOrang(item.raw);
           if (kunciOrang) setKaryawan[kunciOrang] = true;
         }
       }
 
       hasilPelanggaranTerakhir = tersaring;
+
+      // Hitung kemunculan & akumulasi poin per orang (berdasarkan NIP / Nama) pada data yang tampil
+      var hitungKemunculan = {};
+      var akumulasiPoinOrang = {};
+      for (var m = 0; m < tersaring.length; m++) {
+        var idOrang = kunciIdentitasOrang(tersaring[m]);
+        if (idOrang) {
+          hitungKemunculan[idOrang] = (hitungKemunculan[idOrang] || 0) + 1;
+          akumulasiPoinOrang[idOrang] = (akumulasiPoinOrang[idOrang] || 0) + parseAngka(tersaring[m]["Poin Pelanggaran"]);
+        }
+      }
+
+      // Berikan warna yang sama untuk setiap orang yang muncul lebih dari 1 kali
+      var petaWarnaOrang = {};
+      var idxWarna = 0;
+      var isGelap = document.body.classList.contains("mode-malam");
+      var paletAktif = isGelap ? PALET_DUPLIKAT_MALAM : PALET_DUPLIKAT_TERANG;
+
+      for (var n = 0; n < tersaring.length; n++) {
+        var id = kunciIdentitasOrang(tersaring[n]);
+        if (id && hitungKemunculan[id] > 1 && !petaWarnaOrang[id]) {
+          petaWarnaOrang[id] = paletAktif[idxWarna % paletAktif.length];
+          idxWarna++;
+        }
+      }
 
       var judul = "Daftar Poin Pelanggaran (Sheet ALL)";
       if (div) judul += " • " + div;
@@ -1366,6 +1443,18 @@
       var html = "";
       for (var j = 0; j < tersaring.length; j++) {
         var row = tersaring[j];
+        var idRow = kunciIdentitasOrang(row);
+        var jmlMuncul = idRow ? (hitungKemunculan[idRow] || 1) : 1;
+        var warnaRow = idRow ? petaWarnaOrang[idRow] : null;
+        var totalOrangIni = idRow ? (akumulasiPoinOrang[idRow] || 0) : parseAngka(row["Poin Pelanggaran"]);
+
+        var trStyle = "";
+        var dupAttr = "";
+        if (warnaRow && jmlMuncul > 1) {
+          trStyle = " style='--dup-bg:" + warnaRow.bg + ";--dup-accent:" + warnaRow.accent + ";--dup-text:" + warnaRow.text + ";--dup-badge-bg:" + warnaRow.badgeBg + ";--dup-border:" + warnaRow.border + ";'";
+          dupAttr = " data-dup-bg='1' data-dup-accent='1'";
+        }
+
         var cells = "";
         for (var c = 0; c < KOLOM_PELANGGARAN.length; c++) {
           var col = KOLOM_PELANGGARAN[c];
@@ -1374,16 +1463,19 @@
           if (col === "No") {
             cells += "<td><span class='cell-nowrap'>" + escapeHtml(row["No"] || String(j + 1)) + "</span></td>";
           } else if (col === "Nama") {
-            cells += "<td><span class='cell-nama' title='" + aman + "'><span class='avatar'>" + inisial(val) + "</span><span class='nama-teks'>" + aman + "</span></span></td>";
+            var labelKembar = (warnaRow && jmlMuncul > 1)
+              ? "<span class='dup-tag' title='Muncul " + jmlMuncul + "x • Total poin: " + totalOrangIni + "'>" + jmlMuncul + "x • " + totalOrangIni + "pt</span>"
+              : "";
+            cells += "<td><span class='cell-nama' title='" + aman + "'><span class='avatar'>" + inisial(val) + "</span><span class='nama-teks'>" + aman + "</span>" + labelKembar + "</span></td>";
           } else if (col === "Poin Pelanggaran" || col === "Total Poin") {
             cells += "<td>" + (val !== "-" ? '<span class="pel-poin-badge">' + aman + "</span>" : "-") + "</td>";
-          } else if (col === "Jenis Pelanggaran" || col === "Keterangan" || col === "Jabatan") {
+          } else if (col === "Jenis Pelanggaran" || col === "Jabatan") {
             cells += "<td><div class='cell-pendek' title='" + aman + "'>" + aman + "</div></td>";
           } else {
             cells += "<td><span class='cell-nowrap' title='" + aman + "'>" + aman + "</span></td>";
           }
         }
-        html += '<tr class="data-row" data-pel-idx="' + j + '">' + cells + "</tr>";
+        html += '<tr class="data-row" data-pel-idx="' + j + '"' + dupAttr + trStyle + '>' + cells + "</tr>";
       }
       document.getElementById("isiTabelPelanggaran").innerHTML = html;
     }
