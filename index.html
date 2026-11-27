@@ -310,7 +310,6 @@
       font-weight: 600;
     }
 
-    /* Bar kontrol seragam seperti Data Personel */
     .bar {
       display: flex;
       gap: 7px;
@@ -415,7 +414,6 @@
       text-overflow: ellipsis;
     }
 
-    /* Baris kartu divisi rata kiri-kanan dengan baris KPI di atasnya & spasi proporsional */
     .cards {
       display: flex;
       flex-wrap: wrap;
@@ -505,12 +503,12 @@
     }
     .btn-mini.utama:hover { opacity: 0.92; color: #fff; }
 
-      #halamanPersonel, #halamanPelanggaran {
-        display: flex;
-        flex-direction: column;
-        flex: 1 1 auto;
-        min-height: 0;
-      }
+    #halamanPersonel, #halamanPelanggaran {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
+    }
 
     .box {
       background: var(--card);
@@ -865,7 +863,7 @@
         </button>
       </div>
 
-          <div class="side-foot">
+      <div class="side-foot">
         <b>Helpdesk BM:</b> Ext. 50000 • WA 081188093005<br>
         <b>Email:</b> bmkpdjp22@gmail.com
       </div>
@@ -953,7 +951,7 @@
         </div>
       </section>
 
-      <!-- HALAMAN POIN PELANGGARAN (HANYA DATA TERKENA PELANGGARAN DI SHEET ALL, TAMPIL SEMUA) -->
+      <!-- HALAMAN POIN PELANGGARAN -->
       <section id="halamanPelanggaran" style="display:none;">
         <div class="hero">
           <div class="hero-top">
@@ -1034,7 +1032,7 @@
         </div>
       </section>
 
-      <!-- HALAMAN DATA TEMUAN (TAMPILAN SERAGAM SEPERTI DATA PERSONEL) -->
+      <!-- HALAMAN DATA TEMUAN -->
       <section id="halamanTemuan" style="display:none; flex-direction:column; flex:1 1 auto; min-height:0;">
         <div class="hero">
           <div class="hero-top">
@@ -1293,24 +1291,6 @@
       "Total Poin"
     ];
 
-    const WARNA_SAMA_TERANG = [
-      { bg: "#dbeafe", accent: "#1d4ed8" },
-      { bg: "#fef3c7", accent: "#d97706" },
-      { bg: "#dcfce7", accent: "#15803d" },
-      { bg: "#fce7f3", accent: "#be185d" },
-      { bg: "#e0e7ff", accent: "#4338ca" },
-      { bg: "#ffedd5", accent: "#c2410c" }
-    ];
-
-    const WARNA_SAMA_MALAM = [
-      { bg: "#1e3a8a", accent: "#60a5fa" },
-      { bg: "#78350f", accent: "#fbbf24" },
-      { bg: "#14532d", accent: "#4ade80" },
-      { bg: "#831843", accent: "#f472b6" },
-      { bg: "#312e81", accent: "#a5b4fc" },
-      { bg: "#7c2d12", accent: "#fb923c" }
-    ];
-
     let modeTema = localStorage.getItem("modeTemaKpdjp") || "auto";
     let filterGenderAktif = "";
     let halamanAktif = "personel";
@@ -1332,7 +1312,6 @@
       }
       renderTabelPelanggaran();
     }
-
 
     function normalisasiNamaOrang(nama) {
       return String(nama || "")
@@ -1376,7 +1355,6 @@
           continue;
         }
 
-        // Pencocokan cadangan jika nama hanya sebagian / ada gelar atau spasi berbeda
         for (var k = 0; k < keys.length; k++) {
           var cand = keys[k];
           if (cand.length >= 5 && (cand.indexOf(namaPel) !== -1 || namaPel.indexOf(cand) !== -1)) {
@@ -1715,7 +1693,7 @@
         }).join(sep);
         barisCsv.push(rowCsv);
       });
-      var blob = new Blob(["﻿" + barisCsv.join("\n")], { type: "text/csv;charset=utf-8;" });
+      var blob = new Blob(["\uFEFF" + barisCsv.join("\n")], { type: "text/csv;charset=utf-8;" });
       var link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
       link.download = "poin-pelanggaran-sheet-all-bm-kpdjp.csv";
@@ -1802,7 +1780,7 @@
         gabung.indexOf("house") !== -1 || gabung.indexOf("clean") !== -1 ||
         gabung.indexOf("kebersihan") !== -1 || gabung.indexOf("gondola") !== -1 ||
         gabung.indexOf("gardener") !== -1 || gabung.indexOf("taman") !== -1 ||
-        gabung.indexOf("pest") !== -1 || /hk/.test(gabung) || /cs/.test(gabung)
+        gabung.indexOf("pest") !== -1 || / hk /.test(gabung) || / cs /.test(gabung)
       ) return "Housekeeping";
 
       if (
@@ -1824,12 +1802,12 @@
       if (
         gabung.indexOf("building manager") !== -1 || gabung.indexOf("assistant building") !== -1 ||
         gabung.indexOf("management") !== -1 || gabung.indexOf("office") !== -1 ||
-        gabung.indexOf("admin") !== -1 || /tr/.test(gabung) ||
+        gabung.indexOf("admin") !== -1 || / tr /.test(gabung) ||
         gabung.indexOf("sdm") !== -1 || gabung.indexOf("finance") !== -1 ||
         gabung.indexOf("akuntansi") !== -1 || gabung.indexOf("facility") !== -1 ||
         gabung.indexOf("hse") !== -1 || gabung.indexOf("k3") !== -1 ||
         gabung.indexOf("logistik") !== -1 || gabung.indexOf("gudang") !== -1 ||
-        /mo/.test(gabung)
+        / mo /.test(gabung)
       ) return "Management Office";
 
       return "";
@@ -2226,9 +2204,7 @@
         }
         listTr[p] = '<tr class="data-row" data-idx="' + p + '">' + listTd.join("") + "</tr>";
       }
-      var htmlRows = listTr.join("");
-
-      document.getElementById("isiTabel").innerHTML = htmlRows;
+      document.getElementById("isiTabel").innerHTML = listTr.join("");
     }
 
     document.getElementById("isiTabel").addEventListener("click", function(e) {
@@ -2271,7 +2247,6 @@
       timerKetik = setTimeout(tampil, 120);
     });
     document.getElementById("filterDivisi").addEventListener("change", function(e) { pilihDivisi(e.target.value); });
-
 
     function parseAngka(val) {
       var n = parseFloat(String(val || "0").replace(/[^0-9.-]/g, ""));
@@ -2480,7 +2455,6 @@
         muatTemuan(false);
       }
     }
-
 
     // BAGIAN DATA TEMUAN (GS TEMUAN & BA)
     const URL_TEMUAN_GS = "https://script.google.com/macros/s/AKfycbzKrn6vwNSM5hJGywoYmEXzKwA_rjFKeu9YRQq3lcNdYyO6Z0wIgNC2PYU1DmKNtm7l/exec";
@@ -2891,8 +2865,7 @@
       var barisCsv = [KOLOM_TEMUAN.map(function(k) { return '"' + String(k).replace(/"/g, '""') + '"'; }).join(sep)];
       hasilTemuanTerakhir.forEach(function(r) {
         var rowCsv = KOLOM_TEMUAN.map(function(k) {
-          return '"' + String(r[k] || "").replace(/[
-]+/g, " ").replace(/"/g, '""') + '"';
+          return '"' + String(r[k] || "").replace(/[\r\n]+/g, " ").replace(/"/g, '""') + '"';
         }).join(sep);
         barisCsv.push(rowCsv);
       });
@@ -2928,7 +2901,7 @@
     perbaruiTampilanTema();
     setInterval(perbaruiTampilanTema, 1000);
 
-        muat(false);
+    muat(false);
   </script>
 </body>
 </html>
