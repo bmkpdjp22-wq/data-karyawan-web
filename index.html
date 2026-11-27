@@ -2241,10 +2241,14 @@
 
     function bangunDivisiPelanggaran() {
       var hitung = {};
+      var orangPerDiv = {};
       for (var i = 0; i < pelanggaranIndeks.length; i++) {
         var d = pelanggaranIndeks[i].div;
         if (d) {
           hitung[d] = (hitung[d] || 0) + 1;
+          if (!orangPerDiv[d]) orangPerDiv[d] = {};
+          var kOrang = kunciIdentitasOrang(pelanggaranIndeks[i].raw) || ("row_" + i);
+          orangPerDiv[d][kOrang] = true;
         }
       }
       var listDiv = URUTAN_DIVISI.filter(function(d) { return hitung[d] > 0; });
@@ -2257,7 +2261,8 @@
       if (sel) {
         sel.innerHTML = '<option value="">Semua Divisi</option>' +
           listDiv.map(function(d) {
-            return '<option value="' + escapeHtml(d) + '">' + escapeHtml(d) + ' (' + hitung[d] + ')</option>';
+            var jmlOrang = orangPerDiv[d] ? Object.keys(orangPerDiv[d]).length : 0;
+            return '<option value="' + escapeHtml(d) + '">' + escapeHtml(d) + ' (' + jmlOrang + ' orang)</option>';
           }).join("");
         sel.value = listDiv.indexOf(divAktif) !== -1 ? divAktif : "";
       }
