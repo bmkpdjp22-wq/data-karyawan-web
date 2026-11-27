@@ -859,6 +859,10 @@
           <span class="num-chip danger">2</span>
           <span>Poin Pelanggaran</span>
         </button>
+        <button class="side-menu-btn" id="btnMenuDataTemuan" onclick="pindahHalaman('temuan')">
+          <span class="num-chip" style="background:#0d9488;">3</span>
+          <span>Data Temuan</span>
+        </button>
       </div>
 
           <div class="side-foot">
@@ -1024,6 +1028,92 @@
               <button class="btn-mini utama" id="btnPelTambah" onclick="muatLebihBanyakPelanggaran()">+50 Baris Lagi</button>
               <button class="btn-mini" id="btnPelSemua" onclick="tampilkanSemuaBarisPelanggaran()">Tampilkan Semua</button>
               <button class="btn-mini" id="btnPelRingkas" onclick="ringkasKeAwalPelanggaran()">Ringkas (50 Baris)</button>
+            </div>
+            <button class="btn-mini" onclick="pindahHalaman('personel')">Kembali ke Data Personel</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- HALAMAN DATA TEMUAN (TAMPILAN SERAGAM SEPERTI DATA PERSONEL) -->
+      <section id="halamanTemuan" style="display:none; flex-direction:column; flex:1 1 auto; min-height:0;">
+        <div class="hero">
+          <div class="hero-top">
+            <div>
+              <h1>DATA TEMUAN BM KPDJP</h1>
+              <p id="infoTemuan">Memuat data temuan...</p>
+            </div>
+            <span class="jam-pill" id="infoWaktuWIBTemuan">WIB: --:--:-- • Mode Otomatis</span>
+          </div>
+          <div class="bar">
+            <input id="cariTemuan" type="text" placeholder="Cari uraian temuan, divisi, gedung, lokasi, tanggal, status, atau no BA..." />
+            <select id="filterDivisiTemuan" onchange="pilihDivisiTemuan(this.value)">
+              <option value="">Semua Divisi</option>
+            </select>
+            <select id="filterStatusTemuan" onchange="pilihStatusTemuan(this.value)">
+              <option value="">Semua Status</option>
+              <option value="tunda">Tunda</option>
+              <option value="selesai">Selesai</option>
+            </select>
+            <button class="act primary" id="btnRefreshTemuan" onclick="muatTemuan(true)">Refresh Data</button>
+            <button class="act tema" id="btnTemaTemuan" onclick="gantiModeTema()">Tema: Otomatis WIB</button>
+            <button class="act tema" onclick="logoutDashboard()">Keluar</button>
+          </div>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi klik aktif" id="kpiTemuanSemua" onclick="resetFilterTemuan()">
+            <div class="k-label">Hasil Filter Aktif</div>
+            <div class="k-row">
+              <span class="k-val" id="valTemuanTampil">0</span>
+              <span class="k-hint">Klik reset filter</span>
+            </div>
+          </div>
+          <div class="kpi klik" id="kpiTemuanTunda" onclick="toggleStatusTemuan('tunda')">
+            <div class="k-label">Status Tunda</div>
+            <div class="k-row">
+              <span class="k-val" id="valTemuanTunda">0</span>
+              <span class="k-hint">Klik filter Tunda</span>
+            </div>
+          </div>
+          <div class="kpi klik" id="kpiTemuanSelesai" onclick="toggleStatusTemuan('selesai')">
+            <div class="k-label">Status Selesai</div>
+            <div class="k-row">
+              <span class="k-val" id="valTemuanSelesai">0</span>
+              <span class="k-hint">Klik filter Selesai</span>
+            </div>
+          </div>
+          <div class="kpi klik" id="kpiTemuanTotal" onclick="tampilkanSemuaTemuanPer50()">
+            <div class="k-label">Total Temuan</div>
+            <div class="k-row">
+              <span class="k-val" id="valTemuanTotal">0</span>
+              <span class="k-hint">Klik semua (50/hal)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="cards" id="kartuDivisiTemuan"></div>
+
+        <div class="table-top">
+          <span style="font-weight:700; font-size:13.5px;" id="judulTabelTemuan">Daftar Temuan</span>
+          <div class="table-actions">
+            <button class="btn-mini" onclick="unduhCSVTemuan()">Unduh CSV Hasil Filter</button>
+          </div>
+        </div>
+
+        <div class="box">
+          <table>
+            <thead><tr id="kepalaTabelTemuan"></tr></thead>
+            <tbody id="isiTabelTemuan"></tbody>
+          </table>
+        </div>
+
+        <div class="footer-bar">
+          <span id="infoBarisTemuan">Baris tampil: 0</span>
+          <div class="footer-nav">
+            <div id="navigasiTemuanBawah" style="display:none; gap:8px; flex-wrap:wrap; align-items:center;">
+              <button class="btn-mini utama" id="btnTemuanTambah" onclick="muatLebihBanyakTemuan()">+50 Baris Lagi</button>
+              <button class="btn-mini" id="btnTemuanSemua" onclick="tampilkanSemuaBarisTemuan()">Tampilkan Semua</button>
+              <button class="btn-mini" id="btnTemuanRingkas" onclick="ringkasKeAwalTemuan()">Ringkas (50 Baris)</button>
             </div>
             <button class="btn-mini" onclick="pindahHalaman('personel')">Kembali ke Data Personel</button>
           </div>
@@ -2347,13 +2437,13 @@
 
       var labelMode = modeTema === "dark" ? "Mode Gelap" : (modeTema === "light" ? "Mode Terang" : "Mode Otomatis");
       var infoJam = "WIB: " + jamWIB + " • " + labelMode;
-      ["infoWaktuWIBPersonel", "infoWaktuWIBPelanggaran"].forEach(function(id) {
+      ["infoWaktuWIBPersonel", "infoWaktuWIBPelanggaran", "infoWaktuWIBTemuan"].forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.textContent = infoJam;
       });
 
       var labelTombol = modeTema === "dark" ? "Tema: Gelap" : (modeTema === "light" ? "Tema: Terang" : "Tema: Otomatis WIB");
-      ["btnTemaPersonel", "btnTemaPelanggaran"].forEach(function(id) {
+      ["btnTemaPersonel", "btnTemaPelanggaran", "btnTemaTemuan"].forEach(function(id) {
         var b = document.getElementById(id);
         if (b) b.textContent = labelTombol;
       });
@@ -2366,21 +2456,474 @@
     }
 
     function pindahHalaman(hal) {
-      halamanAktif = hal === "pelanggaran" ? "pelanggaran" : "personel";
+      if (hal === "pelanggaran") halamanAktif = "pelanggaran";
+      else if (hal === "temuan") halamanAktif = "temuan";
+      else halamanAktif = "personel";
+
       var secP = document.getElementById("halamanPersonel");
       var secV = document.getElementById("halamanPelanggaran");
+      var secT = document.getElementById("halamanTemuan");
       var btnP = document.getElementById("btnMenuDataPersonel");
       var btnV = document.getElementById("btnMenuPoinPelanggaran");
+      var btnT = document.getElementById("btnMenuDataTemuan");
 
       if (secP) secP.style.display = halamanAktif === "personel" ? "flex" : "none";
       if (secV) secV.style.display = halamanAktif === "pelanggaran" ? "flex" : "none";
+      if (secT) secT.style.display = halamanAktif === "temuan" ? "flex" : "none";
       if (btnP) btnP.classList.toggle("aktif", halamanAktif === "personel");
       if (btnV) btnV.classList.toggle("aktif", halamanAktif === "pelanggaran");
+      if (btnT) btnT.classList.toggle("aktif", halamanAktif === "temuan");
 
       if (halamanAktif === "pelanggaran") {
         muatPelanggaran(false);
+      } else if (halamanAktif === "temuan") {
+        muatTemuan(false);
       }
     }
+
+
+    // BAGIAN DATA TEMUAN (GS TEMUAN & BA)
+    const URL_TEMUAN_GS = "https://script.google.com/macros/s/AKfycbzKrn6vwNSM5hJGywoYmEXzKwA_rjFKeu9YRQq3lcNdYyO6Z0wIgNC2PYU1DmKNtm7l/exec";
+    const SHEET_TEMUAN_ID = "1kW3IsDOgG7uhh02mJc3DYz_d8bjDt_-nKQxvbB5A8EE";
+    const GID_TEMUAN_SHEET = "0";
+    const CACHE_TEMUAN_KEY = "cacheTemuanKpdjp2026_v1";
+    const BATAS_TEMUAN_AWAL = 50;
+
+    const KOLOM_TEMUAN = [
+      "No",
+      "Divisi",
+      "Uraian Temuan",
+      "Gedung",
+      "Lokasi / Lantai",
+      "Tanggal Temuan",
+      "Jenis Temuan",
+      "No BA",
+      "Status",
+      "Tindak Lanjut",
+      "Tanggal Perbaikan",
+      "Keterangan"
+    ];
+
+    let batasTemuanTampil = BATAS_TEMUAN_AWAL;
+    let filterStatusTemuanAktif = "";
+    let timerKetikTemuan = null;
+    let semuaTemuan = [];
+    let temuanIndeks = [];
+    let hasilTemuanTerakhir = [];
+    let barisTemuanDitampilkan = [];
+
+    function normalisasiBarisTemuan(raw) {
+      if (!Array.isArray(raw)) return [];
+      return raw.map(function(item, idx) {
+        var r = item && typeof item === "object" ? item : {};
+        var noVal = String(r.no || r["NO"] || r["No"] || (idx + 1)).trim();
+        var divRaw = String(r.divisi || r["DIVISI"] || r["Divisi"] || "").trim();
+        var divNorm = normalisasiNamaDivisi(divRaw, "");
+        var divTampil = divNorm || divRaw || "-";
+        var uraianVal = String(r.uraian_temuan || r["URAIAN TEMUAN"] || r["Uraian Temuan"] || r.uraian || "").trim();
+        var gedungVal = String(r.gedung || r["GEDUNG"] || r["Gedung"] || "").trim();
+        var lokasiVal = String(r.lokasi || r["LOKASI/LANTAI (DETAIL)"] || r["LOKASI/LANTAI"] || r["Lokasi / Lantai"] || "").trim();
+        var tglTemuanVal = String(r.tanggal_temuan || r["TANGGAL TEMUAN"] || r["Tanggal Temuan"] || "").trim();
+        var jenisVal = String(r.jenis_temuan || r["TEMUAN (PREVENTIVE/BA)"] || r["Jenis Temuan"] || "").trim();
+        var noBaVal = String(r.no_ba || r["NO BA (JIKA ADA)"] || r["NO BA"] || r["No BA"] || "").trim();
+        var statusVal = String(r.status || r["STATUS (TUNDA/SELESAI)"] || r["STATUS"] || r["Status"] || "").trim();
+        var tindakLanjutVal = String(r.tindak_lanjut || r["TINDAK LANJUT"] || r["Tindak Lanjut"] || "").trim();
+        var tglPerbaikanVal = String(r.tanggal_perbaikan || r["TANGGAL PERBAIKAN"] || r["Tanggal Perbaikan"] || "").trim();
+        var ketVal = String(r.keterangan || r["KETERANGAN"] || r["Keterangan"] || "").trim();
+
+        return {
+          "No": noVal || String(idx + 1),
+          "Divisi": divTampil,
+          "Uraian Temuan": uraianVal || "-",
+          "Gedung": gedungVal || "-",
+          "Lokasi / Lantai": lokasiVal || "-",
+          "Tanggal Temuan": tglTemuanVal || "-",
+          "Jenis Temuan": jenisVal || "-",
+          "No BA": noBaVal || "-",
+          "Status": statusVal || "Tunda",
+          "Tindak Lanjut": tindakLanjutVal || "-",
+          "Tanggal Perbaikan": tglPerbaikanVal || "-",
+          "Keterangan": ketVal || "-"
+        };
+      }).filter(function(row) {
+        var u = String(row["Uraian Temuan"] || "").trim().toLowerCase();
+        var d = String(row["Divisi"] || "").trim().toLowerCase();
+        return (u && u !== "-" && u !== "uraian temuan") || (d && d !== "-" && d !== "divisi");
+      });
+    }
+
+    function prosesDataTemuan(raw, labelTambahan) {
+      semuaTemuan = normalisasiBarisTemuan(raw);
+      document.getElementById("kepalaTabelTemuan").innerHTML = KOLOM_TEMUAN.map(function(k) {
+        return "<th>" + escapeHtml(k) + "</th>";
+      }).join("");
+
+      temuanIndeks = semuaTemuan.map(function(r) {
+        var divKat = normalisasiNamaDivisi(r["Divisi"], "");
+        var stLower = String(r["Status"] || "").trim().toLowerCase();
+        var isSelesai = stLower.indexOf("selesai") !== -1 || stLower === "done" || stLower === "closed";
+        var isTunda = !isSelesai && (stLower.indexOf("tunda") !== -1 || stLower.indexOf("pending") !== -1 || stLower.indexOf("proses") !== -1 || stLower.indexOf("open") !== -1 || stLower !== "");
+
+        var gabungan = [divKat];
+        for (var k = 0; k < KOLOM_TEMUAN.length; k++) {
+          var v = r[KOLOM_TEMUAN[k]];
+          if (v && v !== "-") gabungan.push(String(v));
+        }
+
+        return {
+          raw: r,
+          div: divKat,
+          isTunda: isTunda,
+          isSelesai: isSelesai,
+          teksCari: gabungan.join(" ").toLowerCase()
+        };
+      });
+
+      bangunDivisiTemuan();
+      renderTabelTemuan(labelTambahan);
+    }
+
+    function bangunDivisiTemuan() {
+      var hitung = {};
+      for (var i = 0; i < temuanIndeks.length; i++) {
+        var d = temuanIndeks[i].div;
+        if (d) {
+          hitung[d] = (hitung[d] || 0) + 1;
+        }
+      }
+      var listDiv = URUTAN_DIVISI.filter(function(d) { return hitung[d] > 0; });
+      Object.keys(hitung).forEach(function(d) {
+        if (listDiv.indexOf(d) === -1 && hitung[d] > 0) listDiv.push(d);
+      });
+
+      var sel = document.getElementById("filterDivisiTemuan");
+      var divAktif = sel ? sel.value : "";
+      if (sel) {
+        sel.innerHTML = '<option value="">Semua Divisi</option>' +
+          listDiv.map(function(d) {
+            return '<option value="' + escapeHtml(d) + '">' + escapeHtml(d) + ' (' + hitung[d] + ')</option>';
+          }).join("");
+        sel.value = listDiv.indexOf(divAktif) !== -1 ? divAktif : "";
+      }
+
+      var wrapKartu = document.getElementById("kartuDivisiTemuan");
+      if (wrapKartu) {
+        wrapKartu.innerHTML = listDiv.map(function(d) {
+          var aktif = (sel && sel.value === d) ? " aktif" : "";
+          var amanAttr = escapeHtml(d);
+          var amanJs = d.replace(/'/g, "\\'");
+          return '<div class="card' + aktif + '" data-div="' + amanAttr + '" onclick="pilihDivisiTemuan(\'' + amanJs + '\')"><b>' + amanAttr + '</b><div class="card-sub">' + hitung[d] + ' temuan</div></div>';
+        }).join("");
+      }
+    }
+
+    function perbaruiStatusTemuanUI() {
+      var divAktif = document.getElementById("filterDivisiTemuan").value;
+      var kataAktif = (document.getElementById("cariTemuan").value || "").trim();
+      var tanpaFilterLain = !filterStatusTemuanAktif && !divAktif && !kataAktif;
+
+      document.getElementById("kpiTemuanTunda").classList.toggle("aktif", filterStatusTemuanAktif === "tunda");
+      document.getElementById("kpiTemuanSelesai").classList.toggle("aktif", filterStatusTemuanAktif === "selesai");
+      document.getElementById("kpiTemuanSemua").classList.toggle("aktif", filterStatusTemuanAktif === "");
+      document.getElementById("kpiTemuanTotal").classList.toggle("aktif", tanpaFilterLain);
+
+      var judul = "Daftar Temuan";
+      if (divAktif) judul += " • " + divAktif;
+      if (filterStatusTemuanAktif === "tunda") judul += " • Tunda";
+      else if (filterStatusTemuanAktif === "selesai") judul += " • Selesai";
+      document.getElementById("judulTabelTemuan").textContent = judul;
+    }
+
+    function renderTabelTemuan(labelTambahan) {
+      var kata = (document.getElementById("cariTemuan").value || "").toLowerCase().trim();
+      var div = document.getElementById("filterDivisiTemuan").value;
+
+      var saringTanpaStatus = [];
+      var jmlTunda = 0;
+      var jmlSelesai = 0;
+
+      for (var i = 0; i < temuanIndeks.length; i++) {
+        var item = temuanIndeks[i];
+        var okD = !div || item.div === div;
+        var okK = !kata || item.teksCari.indexOf(kata) !== -1;
+        if (okD && okK) {
+          saringTanpaStatus.push(item);
+          if (item.isSelesai) jmlSelesai++;
+          else if (item.isTunda) jmlTunda++;
+        }
+      }
+
+      var tersaring = [];
+      for (var j = 0; j < saringTanpaStatus.length; j++) {
+        var it = saringTanpaStatus[j];
+        if (filterStatusTemuanAktif === "tunda" && !it.isTunda) continue;
+        if (filterStatusTemuanAktif === "selesai" && !it.isSelesai) continue;
+        tersaring.push(it.raw);
+      }
+
+      hasilTemuanTerakhir = tersaring;
+      perbaruiStatusTemuanUI();
+
+      var barisPotongan = tersaring.slice(0, batasTemuanTampil);
+      barisTemuanDitampilkan = barisPotongan;
+
+      var suffix = labelTambahan ? " " + labelTambahan : "";
+      var labelSt = filterStatusTemuanAktif === "tunda" ? " [Tunda]" : (filterStatusTemuanAktif === "selesai" ? " [Selesai]" : "");
+
+      document.getElementById("infoTemuan").textContent =
+        "Menampilkan " + barisPotongan.length + " dari " + tersaring.length + " data cocok" + labelSt + " (" + semuaTemuan.length + " total temuan)" + suffix;
+      document.getElementById("valTemuanTampil").textContent = tersaring.length;
+      document.getElementById("valTemuanTunda").textContent = jmlTunda;
+      document.getElementById("valTemuanSelesai").textContent = jmlSelesai;
+      document.getElementById("valTemuanTotal").textContent = semuaTemuan.length;
+      document.getElementById("infoBarisTemuan").textContent =
+        "Baris tampil: " + barisPotongan.length + " dari " + tersaring.length;
+
+      var lebihDari50 = tersaring.length > BATAS_TEMUAN_AWAL;
+      var masihAda = barisPotongan.length < tersaring.length;
+      var sudahDiperluas = barisPotongan.length > BATAS_TEMUAN_AWAL;
+      var navT = document.getElementById("navigasiTemuanBawah");
+      if (navT) {
+        navT.style.display = lebihDari50 ? "flex" : "none";
+        document.getElementById("btnTemuanTambah").style.display = masihAda ? "inline-block" : "none";
+        document.getElementById("btnTemuanSemua").style.display = masihAda ? "inline-block" : "none";
+        document.getElementById("btnTemuanRingkas").style.display = sudahDiperluas ? "inline-block" : "none";
+      }
+
+      if (!barisPotongan.length) {
+        document.getElementById("isiTabelTemuan").innerHTML =
+          "<tr><td colspan='" + KOLOM_TEMUAN.length + "' style='text-align:center; padding:18px; color:var(--muted);'>Tidak ada data temuan yang cocok.</td></tr>";
+        return;
+      }
+
+      var listTr = new Array(barisPotongan.length);
+      for (var p = 0; p < barisPotongan.length; p++) {
+        var r = barisPotongan[p];
+        var listTd = new Array(KOLOM_TEMUAN.length);
+        for (var c = 0; c < KOLOM_TEMUAN.length; c++) {
+          var k = KOLOM_TEMUAN[c];
+          var val = r[k] || "-";
+          var aman = escapeHtml(val);
+          if (k === "No") {
+            listTd[c] = "<td><span class='cell-nowrap'>" + escapeHtml(val !== "-" ? val : String(p + 1)) + "</span></td>";
+          } else if (k === "Uraian Temuan") {
+            listTd[c] = "<td><span class='cell-nama' title='" + aman + "'><span class='avatar'>" + inisial(val) + "</span><span class='nama-teks'>" + aman + "</span></span></td>";
+          } else if (k === "Status") {
+            var stLow = String(val).toLowerCase();
+            if (stLow.indexOf("selesai") !== -1) {
+              listTd[c] = "<td><span class='badge-gender badge-laki'>" + aman + "</span></td>";
+            } else {
+              listTd[c] = "<td><span class='pel-poin-badge'>" + aman + "</span></td>";
+            }
+          } else if (k === "Lokasi / Lantai" || k === "Tindak Lanjut" || k === "Keterangan") {
+            listTd[c] = "<td><div class='cell-wrap' title='" + aman + "'>" + aman + "</div></td>";
+          } else {
+            listTd[c] = "<td><span class='cell-nowrap' title='" + aman + "'>" + aman + "</span></td>";
+          }
+        }
+        listTr[p] = '<tr class="data-row" data-temuan-idx="' + p + '">' + listTd.join("") + "</tr>";
+      }
+      document.getElementById("isiTabelTemuan").innerHTML = listTr.join("");
+    }
+
+    function ambilTemuanViaGviz() {
+      var urlCsv =
+        "https://docs.google.com/spreadsheets/d/" +
+        SHEET_TEMUAN_ID +
+        "/gviz/tq?tqx=out:csv&gid=" +
+        GID_TEMUAN_SHEET +
+        "&t=" +
+        Date.now();
+
+      return fetch(urlCsv, { redirect: "follow" })
+        .then(function(res) {
+          if (!res.ok) throw new Error("GViz Temuan HTTP " + res.status);
+          return res.text();
+        })
+        .then(function(csvText) {
+          if (!csvText || csvText.trim().indexOf("<!DOCTYPE") === 0 || csvText.trim().indexOf("<html") === 0) {
+            throw new Error("Sheet Temuan belum dapat dibaca publik.");
+          }
+          var matriks = parseCsvBaris(csvText);
+          var idxHeader = -1;
+          for (var r = 0; r < matriks.length; r++) {
+            var rowUpper = matriks[r].join("|").toUpperCase();
+            if (rowUpper.indexOf("URAIAN TEMUAN") !== -1 || (rowUpper.indexOf("DIVISI") !== -1 && rowUpper.indexOf("GEDUNG") !== -1)) {
+              idxHeader = r;
+              break;
+            }
+          }
+          if (idxHeader === -1) return [];
+          var headers = matriks[idxHeader].map(function(h) { return String(h || "").trim().toUpperCase(); });
+          var listObj = [];
+          for (var i = idxHeader + 1; i < matriks.length; i++) {
+            var row = matriks[i], obj = {};
+            var hasVal = false;
+            for (var c = 0; c < headers.length; c++) {
+              if (headers[c]) {
+                var v = String(row[c] || "").trim();
+                if (v) hasVal = true;
+                obj[headers[c]] = v;
+              }
+            }
+            if (hasVal) listObj.push(obj);
+          }
+          return listObj;
+        });
+    }
+
+    async function muatTemuan(paksaSegar) {
+      var btn = document.getElementById("btnRefreshTemuan");
+      var adaCacheAwal = false;
+
+      if (!paksaSegar) {
+        try {
+          var rawCache = localStorage.getItem(CACHE_TEMUAN_KEY);
+          if (rawCache) {
+            var parsed = JSON.parse(rawCache);
+            if (parsed && Array.isArray(parsed.data) && parsed.data.length) {
+              adaCacheAwal = true;
+              var umur = Date.now() - (parsed.ts || 0);
+              prosesDataTemuan(parsed.data, umur < DURASI_CACHE_MS ? "(dari cache)" : "(menyegarkan di latar belakang...)");
+              if (umur < DURASI_CACHE_MS) return;
+            }
+          }
+        } catch (e) {}
+      } else {
+        document.getElementById("infoTemuan").textContent = "Memuat data temuan terbaru...";
+      }
+
+      if (btn) btn.disabled = true;
+      var raw = [];
+      var sumber = "(data terbaru)";
+
+      try {
+        var res = await fetchDenganBatasWaktu(URL_TEMUAN_GS, 9000);
+        if (res.ok) {
+          var json = await res.json();
+          if (json && Array.isArray(json.temuan)) {
+            raw = json.temuan;
+          } else if (json && json.data && Array.isArray(json.data.temuan)) {
+            raw = json.data.temuan;
+          } else {
+            raw = ekstrakArrayPelanggaran(json);
+          }
+        }
+      } catch (e) { raw = []; }
+
+      if (!raw.length) {
+        try {
+          raw = await ambilTemuanViaGviz();
+          sumber = "(via sheet temuan)";
+        } catch (e) { raw = []; }
+      }
+
+      if (raw.length) {
+        try { localStorage.setItem(CACHE_TEMUAN_KEY, JSON.stringify({ ts: Date.now(), data: raw })); } catch (e) {}
+        prosesDataTemuan(raw, sumber);
+      } else if (!adaCacheAwal) {
+        document.getElementById("infoTemuan").textContent =
+          "Data temuan belum terbaca. Pastikan deployment Web App GS aktif dan/atau sheet diizinkan akses baca.";
+        prosesDataTemuan([], "");
+      }
+
+      if (btn) btn.disabled = false;
+    }
+
+    function pilihDivisiTemuan(d) {
+      batasTemuanTampil = BATAS_TEMUAN_AWAL;
+      var sel = document.getElementById("filterDivisiTemuan");
+      if (sel) sel.value = d || "";
+      document.querySelectorAll("#kartuDivisiTemuan .card").forEach(function(c) {
+        var judul = c.querySelector("b") ? c.querySelector("b").textContent.trim() : "";
+        c.classList.toggle("aktif", Boolean(d) && judul === d);
+      });
+      renderTabelTemuan();
+    }
+
+    function pilihStatusTemuan(st) {
+      filterStatusTemuanAktif = st || "";
+      document.getElementById("filterStatusTemuan").value = filterStatusTemuanAktif;
+      batasTemuanTampil = BATAS_TEMUAN_AWAL;
+      renderTabelTemuan();
+    }
+
+    function toggleStatusTemuan(st) {
+      if (filterStatusTemuanAktif === st) pilihStatusTemuan("");
+      else pilihStatusTemuan(st);
+    }
+
+    function resetFilterTemuan() {
+      batasTemuanTampil = BATAS_TEMUAN_AWAL;
+      filterStatusTemuanAktif = "";
+      document.getElementById("filterStatusTemuan").value = "";
+      var cari = document.getElementById("cariTemuan");
+      if (cari) cari.value = "";
+      pilihDivisiTemuan("");
+    }
+
+    function tampilkanSemuaTemuanPer50() {
+      pindahHalaman("temuan");
+      resetFilterTemuan();
+    }
+
+    function muatLebihBanyakTemuan() {
+      batasTemuanTampil += 50;
+      renderTabelTemuan();
+    }
+
+    function tampilkanSemuaBarisTemuan() {
+      batasTemuanTampil = hasilTemuanTerakhir.length || semuaTemuan.length;
+      renderTabelTemuan();
+    }
+
+    function ringkasKeAwalTemuan() {
+      batasTemuanTampil = BATAS_TEMUAN_AWAL;
+      renderTabelTemuan();
+    }
+
+    function unduhCSVTemuan() {
+      if (!hasilTemuanTerakhir.length) {
+        alert("Tidak ada data temuan untuk diunduh.");
+        return;
+      }
+      var sep = ";";
+      var barisCsv = [KOLOM_TEMUAN.map(function(k) { return '"' + String(k).replace(/"/g, '""') + '"'; }).join(sep)];
+      hasilTemuanTerakhir.forEach(function(r) {
+        var rowCsv = KOLOM_TEMUAN.map(function(k) {
+          return '"' + String(r[k] || "").replace(/[
+]+/g, " ").replace(/"/g, '""') + '"';
+        }).join(sep);
+        barisCsv.push(rowCsv);
+      });
+      var blob = new Blob(["\uFEFF" + barisCsv.join("\n")], { type: "text/csv;charset=utf-8;" });
+      var link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "data-temuan-bm-kpdjp.csv";
+      link.click();
+    }
+
+    document.getElementById("isiTabelTemuan").addEventListener("click", function(e) {
+      var tr = e.target.closest("tr.data-row[data-temuan-idx]");
+      if (!tr) return;
+      var idx = parseInt(tr.getAttribute("data-temuan-idx"), 10);
+      var r = barisTemuanDitampilkan[idx];
+      if (!r) return;
+      dataModalAktif = null;
+      document.getElementById("modalJudul").textContent = r["Uraian Temuan"] || "Detail Temuan";
+      document.getElementById("detailIsi").innerHTML = KOLOM_TEMUAN.map(function(k) {
+        return "<p style='margin:6px 0;'><b>" + escapeHtml(k) + ":</b> " + escapeHtml(r[k] || "-") + "</p>";
+      }).join("");
+      document.getElementById("modalAksiPersonel").style.display = "none";
+      document.getElementById("modalAksiUmum").style.display = "flex";
+      document.getElementById("modal").classList.add("aktif");
+    });
+
+    document.getElementById("cariTemuan").addEventListener("input", function() {
+      batasTemuanTampil = BATAS_TEMUAN_AWAL;
+      clearTimeout(timerKetikTemuan);
+      timerKetikTemuan = setTimeout(renderTabelTemuan, 120);
+    });
 
     perbaruiTampilanTema();
     setInterval(perbaruiTampilanTema, 1000);
