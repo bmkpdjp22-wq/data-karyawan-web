@@ -2273,7 +2273,8 @@
           var aktif = (sel && sel.value === d) ? " aktif" : "";
           var amanAttr = escapeHtml(d);
           var amanJs = d.replace(/'/g, "\\'");
-          return '<div class="card' + aktif + '" data-div="' + amanAttr + '" onclick="pilihDivisiPelanggaran(\'' + amanJs + '\')"><b>' + amanAttr + '</b><div class="card-sub">' + hitung[d] + ' catatan</div></div>';
+          var jmlOrang = orangPerDiv[d] ? Object.keys(orangPerDiv[d]).length : 0;
+          return '<div class="card' + aktif + '" data-div="' + amanAttr + '" onclick="pilihDivisiPelanggaran(\'' + amanJs + '\')"><b>' + amanAttr + '</b><div class="card-sub">' + jmlOrang + ' orang</div></div>';
         }).join("");
       }
     }
