@@ -310,7 +310,6 @@
       font-weight: 600;
     }
 
-    /* Bar kontrol seragam seperti Data Personel */
     .bar {
       display: flex;
       gap: 7px;
@@ -415,7 +414,6 @@
       text-overflow: ellipsis;
     }
 
-    /* Baris kartu divisi rata kiri-kanan dengan baris KPI di atasnya & spasi proporsional */
     .cards {
       display: flex;
       flex-wrap: wrap;
@@ -505,12 +503,12 @@
     }
     .btn-mini.utama:hover { opacity: 0.92; color: #fff; }
 
-      #halamanPersonel, #halamanPelanggaran {
-        display: flex;
-        flex-direction: column;
-        flex: 1 1 auto;
-        min-height: 0;
-      }
+    #halamanPersonel, #halamanPelanggaran {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
+    }
 
     .box {
       background: var(--card);
@@ -811,7 +809,7 @@
         </button>
       </div>
 
-          <div class="side-foot">
+      <div class="side-foot">
         <b>Helpdesk BM:</b> Ext. 50000 • WA 081188093005<br>
         <b>Email:</b> bmkpdjp22@gmail.com
       </div>
@@ -899,7 +897,7 @@
         </div>
       </section>
 
-      <!-- HALAMAN POIN PELANGGARAN (HANYA DATA TERKENA PELANGGARAN DI SHEET ALL, TAMPIL SEMUA) -->
+      <!-- HALAMAN POIN PELANGGARAN -->
       <section id="halamanPelanggaran" style="display:none;">
         <div class="hero">
           <div class="hero-top">
@@ -1356,7 +1354,7 @@
       document.getElementById("kartuDivisiPelanggaran").innerHTML = listDiv.map(function(d) {
         var isAktif = aktif === d ? " aktif" : "";
         var dataDivAttr = URUTAN_DIVISI.indexOf(d) !== -1 ? ' data-div="' + escapeHtml(d) + '"' : "";
-        return '<div class="card' + isAktif + '"' + dataDivAttr + ' onclick="pilihDivisiPelanggaran('' + d.replace(/'/g, "\'") + '')">' +
+        return '<div class="card' + isAktif + '"' + dataDivAttr + ' onclick="pilihDivisiPelanggaran(\'' + d.replace(/'/g, "\\'") + '\')">' +
           '<b>' + escapeHtml(d) + '</b>' +
           '<div class="card-sub">' + hitung[d] + ' catatan</div>' +
           '</div>';
