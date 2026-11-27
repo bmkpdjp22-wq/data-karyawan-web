@@ -1,1037 +1,4 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DASHBOARD BM KPDJP</title>
-  <style>
-    :root {
-      --sidebar: #0f172a;
-      --sidebar-hover: #1e293b;
-      --sidebar-active: #2563eb;
-      --bg: #f1f5f9;
-      --card: #ffffff;
-      --text: #0f172a;
-      --muted: #64748b;
-      --border: #e2e8f0;
-      --row-alt: #eff6ff;
-      --row-hover: #dbeafe;
-      --th-bg: #eef2ff;
-      --th-text: #1e293b;
-      --pill-bg: #f1f5f9;
-      --pill-text: #334155;
-      --primary: #2563eb;
-      --primary-soft: #eff6ff;
-      --hero: linear-gradient(135deg, #0f172a 0%, #1d4ed8 58%, #4338ca 100%);
-      --shadow: 0 10px 24px -6px rgba(15, 23, 42, 0.08);
-    }
-
-    body.mode-malam {
-      --sidebar: #05070c;
-      --sidebar-hover: #111827;
-      --sidebar-active: #1d4ed8;
-      --bg: #07090f;
-      --card: #101522;
-      --text: #f1f5f9;
-      --muted: #94a3b8;
-      --border: #1e293b;
-      --row-alt: #132238;
-      --row-hover: #1e3a5f;
-      --th-bg: #131c31;
-      --th-text: #e2e8f0;
-      --pill-bg: #1e293b;
-      --pill-text: #e2e8f0;
-      --primary: #3b82f6;
-      --primary-soft: #172554;
-      --hero: linear-gradient(135deg, #05070c 0%, #111c3a 58%, #1e1b4b 100%);
-      --shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.65);
-    }
-
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: "Segoe UI", Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      transition: background 0.2s ease, color 0.2s ease;
-    }
-
-    .login-overlay {
-      position: fixed;
-      inset: 0;
-      background:
-        radial-gradient(circle at 18% 20%, rgba(56, 189, 248, 0.24), transparent 42%),
-        radial-gradient(circle at 82% 78%, rgba(129, 140, 248, 0.25), transparent 45%),
-        var(--hero);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      z-index: 9999;
-    }
-    .login-card {
-      background: rgba(255, 255, 255, 0.96);
-      backdrop-filter: blur(14px);
-      color: var(--text);
-      border: 1px solid rgba(255, 255, 255, 0.65);
-      border-radius: 22px;
-      padding: 32px 26px 28px;
-      width: 100%;
-      max-width: 375px;
-      box-shadow: 0 28px 60px -12px rgba(2, 6, 23, 0.55);
-      text-align: center;
-    }
-    .login-badge-icon {
-      width: 52px;
-      height: 52px;
-      margin: 0 auto 14px;
-      border-radius: 15px;
-      background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
-      color: #fff;
-      display: grid;
-      place-items: center;
-      box-shadow: 0 12px 24px -6px rgba(37, 99, 235, 0.5);
-    }
-    .login-tag {
-      font-size: 10.5px;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #2563eb;
-      margin-bottom: 6px;
-    }
-    .login-card h2 {
-      margin: 0 0 6px;
-      font-size: 21px;
-      font-weight: 800;
-      color: #0f172a;
-      letter-spacing: -0.01em;
-    }
-    .login-card p {
-      margin: 0 0 20px;
-      font-size: 13px;
-      color: #64748b;
-      line-height: 1.5;
-    }
-    .sandi-box {
-      position: relative;
-      margin-bottom: 12px;
-    }
-    .login-input {
-      width: 100%;
-      padding: 12px 68px 12px 14px;
-      border-radius: 12px;
-      border: 1.5px solid #cbd5e1;
-      background: #f8fafc;
-      color: #0f172a;
-      font-size: 13.5px;
-      transition: all 0.16s ease;
-      outline: none;
-    }
-    .login-input:focus {
-      background: #ffffff;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14);
-    }
-    .btn-intip {
-      position: absolute;
-      right: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      border: 1px solid #cbd5e1;
-      background: #ffffff;
-      color: #475569;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 5px 9px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.14s ease;
-    }
-    .btn-intip:hover {
-      color: #2563eb;
-      border-color: #2563eb;
-      background: #eff6ff;
-    }
-    .login-btn {
-      width: 100%;
-      padding: 12px 16px;
-      border-radius: 12px;
-      border: 0;
-      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-      color: #fff;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 10px 20px -6px rgba(37, 99, 235, 0.5);
-      transition: transform 0.12s ease, box-shadow 0.15s ease, opacity 0.15s ease;
-    }
-    .login-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 14px 24px -6px rgba(37, 99, 235, 0.6);
-      opacity: 0.98;
-    }
-    .login-err {
-      display: none;
-      margin-top: 12px;
-      padding: 8px 12px;
-      border-radius: 10px;
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      font-size: 12px;
-      font-weight: 600;
-      color: #dc2626;
-    }
-
-    .wrap { display: flex; min-height: 100vh; align-items: stretch; }
-
-    .side {
-      width: 260px;
-      background: var(--sidebar);
-      color: #fff;
-      padding: 14px 14px 16px;
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 10px;
-      border-right: 1px solid var(--border);
-    }
-    .side-head h3 {
-      margin: 0 0 4px;
-      font-size: 14.5px;
-      line-height: 1.35;
-    }
-    .side-loc {
-      font-size: 11px;
-      color: #93c5fd;
-      line-height: 1.4;
-      padding-bottom: 10px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-    }
-    .side-menu {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-top: 2px;
-    }
-    .side-menu-btn {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #f1f5f9;
-      padding: 8px 10px;
-      border-radius: 9px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      text-align: left;
-      transition: all 0.14s ease;
-    }
-    .side-menu-btn:hover {
-      background: var(--sidebar-hover);
-      border-color: rgba(96, 165, 250, 0.55);
-      color: #fff;
-    }
-    .side-menu-btn.aktif {
-      background: var(--sidebar-active);
-      border-color: rgba(147, 197, 253, 0.65);
-      color: #fff;
-    }
-    .num-chip {
-      display: inline-grid;
-      place-items: center;
-      min-width: 20px;
-      height: 20px;
-      padding: 0 5px;
-      border-radius: 6px;
-      background: #2563eb;
-      color: #fff;
-      font-size: 10.5px;
-      font-weight: 800;
-      flex-shrink: 0;
-    }
-    .side-menu-btn.aktif .num-chip {
-      background: rgba(255, 255, 255, 0.22);
-    }
-    .num-chip.danger {
-      background: #dc2626;
-    }
-
-    .side-foot {
-      margin-top: auto;
-      font-size: 11px;
-      color: #cbd5e1;
-      line-height: 1.45;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 10px;
-      padding: 8px 10px;
-      min-height: 44px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .main { flex: 1; padding: 14px 18px 16px; min-width: 0; display: flex; flex-direction: column; justify-content: flex-start; }
-
-    .hero {
-      background: var(--hero);
-      color: #fff;
-      padding: 15px 20px;
-      border-radius: 14px;
-      margin-bottom: 8px;
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .hero-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .hero h1 { margin: 0 0 4px; font-size: 21px; font-weight: 800; }
-    .hero p { margin: 0 0 12px; font-size: 12.5px; color: #dbeafe; }
-
-    .jam-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(0, 0, 0, 0.32);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      color: #f8fafc;
-      padding: 5px 10px;
-      border-radius: 999px;
-      font-size: 11.5px;
-      font-weight: 600;
-    }
-
-    .bar {
-      display: flex;
-      gap: 7px;
-      flex-wrap: nowrap;
-      align-items: center;
-    }
-    input, select, button.act {
-      padding: 8px 11px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      font-size: 12.5px;
-      height: 36px;
-    }
-    input {
-      flex: 1 1 auto;
-      min-width: 180px;
-      background: var(--card);
-      color: var(--text);
-      outline: none;
-    }
-    select {
-      flex: 0 0 auto;
-      background: var(--card);
-      color: var(--text);
-      cursor: pointer;
-    }
-    button.act {
-      flex: 0 0 auto;
-      white-space: nowrap;
-      background: #e2e8f0;
-      color: #0f172a;
-      border-color: transparent;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    button.act:hover { background: #cbd5e1; }
-    button.act.primary { background: #38bdf8; color: #082f49; }
-    button.act.primary:hover { background: #7dd3fc; }
-    button.act.tema {
-      background: rgba(255, 255, 255, 0.16);
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.25);
-    }
-
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-    .kpi {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 6px 9px;
-      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.03);
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      min-width: 0;
-    }
-    .kpi.klik {
-      cursor: pointer;
-      transition: transform 0.12s ease, border-color 0.15s ease, background 0.15s ease;
-    }
-    .kpi.klik:hover {
-      border-color: var(--primary);
-      transform: translateY(-1px);
-    }
-    .kpi.klik.aktif {
-      border-color: var(--primary);
-      background: var(--primary-soft);
-      box-shadow: 0 0 0 1px var(--primary);
-    }
-    .kpi .k-label {
-      font-size: 9.5px;
-      color: var(--muted);
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      line-height: 1.15;
-    }
-    .kpi .k-row {
-      display: flex;
-      align-items: baseline;
-      gap: 7px;
-      min-width: 0;
-    }
-    .kpi .k-val {
-      font-size: 14.5px;
-      font-weight: 800;
-      line-height: 1.15;
-      color: var(--text);
-      flex-shrink: 0;
-    }
-    .kpi .k-hint {
-      font-size: 10px;
-      color: var(--muted);
-      line-height: 1.2;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .cards {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-    .card {
-      flex: 1 1 0;
-      min-width: 118px;
-      --div-accent: #2563eb;
-      --div-tint: linear-gradient(135deg, #eff6ff 0%, #ffffff 72%);
-      --div-badge-text: #1d4ed8;
-      background: var(--div-tint);
-      padding: 7px 10px;
-      border-radius: 9px;
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--div-accent);
-      cursor: pointer;
-      transition: transform 0.14s ease, box-shadow 0.14s ease, border-color 0.14s ease;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 2px;
-    }
-    body.mode-malam .card {
-      background: linear-gradient(135deg, rgba(30, 41, 59, 0.85) 0%, var(--card) 75%);
-    }
-    .card:hover {
-      transform: translateY(-1px);
-      border-color: var(--div-accent);
-      box-shadow: 0 6px 14px -4px rgba(15, 23, 42, 0.12);
-    }
-    .card.aktif {
-      border-color: var(--div-accent);
-      box-shadow: 0 0 0 1.5px var(--div-accent), 0 8px 16px -4px rgba(37, 99, 235, 0.2);
-    }
-    .card b {
-      font-size: 11.5px;
-      font-weight: 700;
-      line-height: 1.25;
-      color: var(--text);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .card-sub {
-      font-size: 10.5px;
-      font-weight: 600;
-      color: var(--div-badge-text);
-      white-space: nowrap;
-    }
-    body.mode-malam .card-sub { color: #cbd5e1; }
-
-    .card[data-div="Management Office"] { --div-accent: #2563eb; --div-tint: linear-gradient(135deg, #eff6ff 0%, #ffffff 75%); --div-badge-text: #1d4ed8; }
-    .card[data-div="Engineering"] { --div-accent: #0284c7; --div-tint: linear-gradient(135deg, #f0f9ff 0%, #ffffff 75%); --div-badge-text: #0369a1; }
-    .card[data-div="Security"] { --div-accent: #4f46e5; --div-tint: linear-gradient(135deg, #eef2ff 0%, #ffffff 75%); --div-badge-text: #4338ca; }
-    .card[data-div="Housekeeping"] { --div-accent: #0d9488; --div-tint: linear-gradient(135deg, #f0fdfa 0%, #ffffff 75%); --div-badge-text: #0f766e; }
-    .card[data-div="Banquet"] { --div-accent: #d97706; --div-tint: linear-gradient(135deg, #fffbeb 0%, #ffffff 75%); --div-badge-text: #b45309; }
-    .card[data-div="Driver"] { --div-accent: #059669; --div-tint: linear-gradient(135deg, #ecfdf5 0%, #ffffff 75%); --div-badge-text: #047857; }
-    .card[data-div="Receptionist"] { --div-accent: #7c3aed; --div-tint: linear-gradient(135deg, #f5f3ff 0%, #ffffff 75%); --div-badge-text: #6d28d9; }
-
-    .table-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 8px;
-    }
-    .table-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-    .btn-mini {
-      background: var(--card);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 6px 11px;
-      border-radius: 8px;
-      font-size: 11.5px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .btn-mini:hover { border-color: var(--primary); color: var(--primary); }
-    .btn-mini.utama {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: #fff;
-    }
-    .btn-mini.utama:hover { opacity: 0.92; color: #fff; }
-
-    #halamanPersonel, #halamanPelanggaran {
-      display: flex;
-      flex-direction: column;
-      flex: 1 1 auto;
-      min-height: 0;
-    }
-
-    .box {
-      background: var(--card);
-      padding: 8px 10px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      overflow: auto;
-      flex: 1 1 auto;
-      min-height: 460px;
-      max-height: 590px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0 4px;
-      font-size: 12px;
-    }
-    thead th {
-      position: sticky;
-      top: 0;
-      background: var(--th-bg);
-      color: var(--th-text);
-      z-index: 2;
-      padding: 9px 11px;
-      text-align: left;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      border-top: 1px solid var(--border);
-      border-bottom: 1.5px solid var(--border);
-      white-space: nowrap;
-    }
-    thead th:first-child {
-      border-left: 1px solid var(--border);
-      border-top-left-radius: 8px;
-      border-bottom-left-radius: 8px;
-      text-align: center;
-      width: 54px;
-    }
-    thead th:last-child {
-      border-right: 1px solid var(--border);
-      border-top-right-radius: 8px;
-      border-bottom-right-radius: 8px;
-    }
-
-    tbody tr.data-row {
-      background: var(--card);
-      transition: transform 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
-    }
-    tbody tr.data-row:nth-child(even) {
-      background: var(--row-alt);
-    }
-    tbody tr.data-row:hover {
-      background: var(--row-hover);
-      cursor: pointer;
-      box-shadow: 0 3px 10px rgba(37, 99, 235, 0.1);
-    }
-    tbody tr.data-row td {
-      padding: 8px 11px;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      vertical-align: middle;
-      line-height: 1.35;
-      color: var(--text);
-    }
-    tbody tr.data-row td:first-child {
-      border-left: 3px solid var(--primary);
-      border-top-left-radius: 8px;
-      border-bottom-left-radius: 8px;
-      text-align: center;
-      font-weight: 700;
-      font-size: 11px;
-      color: var(--muted);
-    }
-    tbody tr.data-row td:last-child {
-      border-right: 1px solid var(--border);
-      border-top-right-radius: 8px;
-      border-bottom-right-radius: 8px;
-    }
-
-    .cell-nowrap { white-space: nowrap; }
-    .cell-nama {
-      white-space: nowrap;
-      font-weight: 700;
-      max-width: 220px;
-    }
-    .nama-teks {
-      display: inline-block;
-      vertical-align: middle;
-      max-width: 175px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .cell-wrap {
-      white-space: normal;
-      word-break: break-word;
-      min-width: 170px;
-      max-width: 250px;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-    .cell-pendek {
-      white-space: normal;
-      max-width: 220px;
-    }
-
-    .avatar {
-      display: inline-grid;
-      place-items: center;
-      width: 24px;
-      height: 24px;
-      border-radius: 999px;
-      background: var(--primary-soft);
-      color: var(--primary);
-      border: 1px solid var(--border);
-      font-size: 10px;
-      font-weight: 800;
-      margin-right: 6px;
-      vertical-align: middle;
-      flex-shrink: 0;
-    }
-
-    .badge-gender {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-size: 10.5px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-    .badge-laki {
-      background: #dbeafe;
-      color: #1d4ed8;
-    }
-    .badge-perempuan {
-      background: #fce7f3;
-      color: #be185d;
-    }
-    body.mode-malam .badge-laki {
-      background: rgba(59, 130, 246, 0.22);
-      color: #93c5fd;
-    }
-    body.mode-malam .badge-perempuan {
-      background: rgba(236, 72, 153, 0.22);
-      color: #f9a8d4;
-    }
-
-    .pel-poin-badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 800;
-      background: #fee2e2;
-      color: #b91c1c;
-    }
-    body.mode-malam .pel-poin-badge {
-      background: rgba(239, 68, 68, 0.22);
-      color: #fca5a5;
-    }
-
-    .nama-wrap-dd {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      max-width: 100%;
-    }
-    .btn-dd-pel {
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      padding: 2px 7px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      background: var(--primary-soft);
-      color: var(--primary);
-      font-size: 10.5px;
-      font-weight: 800;
-      cursor: pointer;
-      line-height: 1.2;
-      flex-shrink: 0;
-      transition: all 0.14s ease;
-    }
-    .btn-dd-pel:hover {
-      background: var(--primary);
-      color: #fff;
-      border-color: var(--primary);
-    }
-    .btn-dd-pel .panah-dd {
-      display: inline-block;
-      font-size: 9px;
-      transition: transform 0.16s ease;
-    }
-    .btn-dd-pel.terbuka .panah-dd {
-      transform: rotate(180deg);
-    }
-    tbody tr.data-row.sub-pel-row {
-      background: var(--primary-soft) !important;
-    }
-    tbody tr.data-row.sub-pel-row td {
-      font-size: 11.5px;
-      padding-top: 6px;
-      padding-bottom: 6px;
-      border-top-style: dashed;
-    }
-    tbody tr.data-row.sub-pel-row td:first-child {
-      border-left-color: #f59e0b !important;
-      color: var(--muted) !important;
-      font-weight: 600;
-    }
-
-    .footer-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 8px;
-      padding: 8px 14px;
-      min-height: 44px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      font-size: 11.5px;
-      color: var(--muted);
-    }
-    .footer-nav {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .modal-backdrop {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.72);
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      z-index: 50;
-    }
-    .modal-backdrop.aktif { display: flex; }
-    .modal-isi {
-      background: var(--card);
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 20px;
-      border-radius: 14px;
-      max-width: 560px;
-      width: 100%;
-      max-height: 86vh;
-      overflow: auto;
-    }
-    .modal-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
-    .btn-dark {
-      background: var(--primary);
-      color: #fff;
-      border: 0;
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .btn-sec {
-      background: var(--pill-bg);
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    @media (max-width: 1100px) {
-      .bar { flex-wrap: wrap; }
-      input { min-width: 220px; }
-    }
-    @media (max-width: 960px) {
-      .kpi-grid { grid-template-columns: repeat(2, minmax(130px, 1fr)); }
-    }
-    @media (max-width: 768px) {
-      .wrap { flex-direction: column; }
-      .side { width: 100%; position: static; max-height: none; border-right: 0; border-bottom: 1px solid var(--border); }
-      .main { padding: 14px; }
-      .bar { flex-wrap: wrap; }
-    }
-  </style>
-</head>
-<body>
-  <div id="layarLogin" class="login-overlay">
-    <div class="login-card">
-      <div class="login-badge-icon" aria-hidden="true">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-        </svg>
-      </div>
-      <div class="login-tag">BUILDING MANAGEMENT KPDJP</div>
-      <h2>Login Portal</h2>
-      <p>Masukkan kata sandi untuk membuka dashboard</p>
-      <div class="sandi-box">
-        <input type="password" id="inputSandiLogin" class="login-input" placeholder="Masukkan kata sandi..."
-               onkeypress="if(event.key === 'Enter') cekLoginDashboard()" />
-        <button type="button" class="btn-intip" id="btnIntipSandi" onclick="toggleLihatSandi()">Lihat</button>
-      </div>
-      <button type="button" class="login-btn" onclick="cekLoginDashboard()">Masuk</button>
-      <div id="pesanSalahLogin" class="login-err">Kata sandi salah. Silakan coba lagi.</div>
-    </div>
-  </div>
-
-  <div class="wrap" id="kontenDashboard" style="display:none;">
-    <aside class="side">
-      <div class="side-head">
-        <h3>BUILDING MANAGEMENT KPDJP</h3>
-        <div class="side-loc">Jl. Gatot Subroto No. 40–42, Jakarta Selatan • Kantor Pusat DJP</div>
-      </div>
-
-      <div class="side-menu">
-        <button class="side-menu-btn aktif" id="btnMenuDataPersonel" onclick="pindahHalaman('personel')">
-          <span class="num-chip">1</span>
-          <span>Data Personel</span>
-        </button>
-        <button class="side-menu-btn" id="btnMenuPoinPelanggaran" onclick="pindahHalaman('pelanggaran')">
-          <span class="num-chip danger">2</span>
-          <span>Poin Pelanggaran</span>
-        </button>
-      </div>
-
-      <div class="side-foot">
-        <b>Helpdesk BM:</b> Ext. 50000 • WA 081188093005<br>
-        <b>Email:</b> bmkpdjp22@gmail.com
-      </div>
-    </aside>
-
-    <main class="main">
-      <section id="halamanPersonel" style="display:flex;">
-        <div class="hero">
-          <div class="hero-top">
-            <div>
-              <h1>DATA PERSONEL BM KPDJP</h1>
-              <p id="infoStats">Memuat data...</p>
-            </div>
-            <span class="jam-pill" id="infoWaktuWIBPersonel">WIB: --:--:-- • Mode Otomatis</span>
-          </div>
-          <div class="bar">
-            <input id="cari" type="text" placeholder="Cari nama, NIP, NIK, jabatan, atau kata kunci..." />
-            <select id="filterDivisi"><option value="">Semua Divisi</option></select>
-            <select id="filterGender" onchange="pilihGender(this.value)">
-              <option value="">Semua Gender</option>
-              <option value="laki">Laki - Laki</option>
-              <option value="perempuan">Perempuan</option>
-            </select>
-            <button class="act primary" id="btnRefresh" onclick="muat(true)">Refresh Data</button>
-            <button class="act tema" id="btnTemaPersonel" onclick="gantiModeTema()">Tema: Otomatis WIB</button>
-            <button class="act tema" onclick="logoutDashboard()">Keluar</button>
-          </div>
-        </div>
-
-        <div class="kpi-grid">
-          <div class="kpi klik" id="kpiCardSemua" onclick="pilihGender('')">
-            <div class="k-label">Hasil Filter Aktif</div>
-            <div class="k-row">
-              <span class="k-val" id="kpiTampil">0</span>
-              <span class="k-hint" title="Klik reset gender ke semua data">Klik reset gender</span>
-            </div>
-          </div>
-          <div class="kpi klik" id="kpiCardLaki" onclick="toggleGender('laki')">
-            <div class="k-label">Laki - Laki</div>
-            <div class="k-row">
-              <span class="k-val" id="kpiLaki">0</span>
-              <span class="k-hint" title="Klik untuk filter Laki - Laki">Klik filter Laki - Laki</span>
-            </div>
-          </div>
-          <div class="kpi klik" id="kpiCardPerempuan" onclick="toggleGender('perempuan')">
-            <div class="k-label">Perempuan</div>
-            <div class="k-row">
-              <span class="k-val" id="kpiPerempuan">0</span>
-              <span class="k-hint" title="Klik untuk filter Perempuan">Klik filter Perempuan</span>
-            </div>
-          </div>
-          <div class="kpi klik" id="kpiCardTotalPersonel" onclick="tampilkanSemuaPersonelPer50()">
-            <div class="k-label">Total Personel</div>
-            <div class="k-row">
-              <span class="k-val" id="kpiTotalPersonel">0</span>
-              <span class="k-hint" title="Klik tampilkan semua (per 50 data)">Klik semua (50/hal)</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="cards" id="kartuDivisi"></div>
-
-        <div class="table-top">
-          <span style="font-weight:700; font-size:13.5px;" id="judulTabel">Daftar Personel</span>
-          <div class="table-actions">
-            <button class="btn-mini" onclick="unduhCSV()">Unduh CSV Hasil Filter</button>
-          </div>
-        </div>
-
-        <div class="box">
-          <table>
-            <thead><tr id="kepalaTabel"></tr></thead>
-            <tbody id="isiTabel"></tbody>
-          </table>
-        </div>
-
-        <div class="footer-bar">
-          <span id="infoBarisTabel">Baris tampil: 0</span>
-          <div class="footer-nav" id="navigasiBawah">
-            <button class="btn-mini utama" id="btnBawahTambah" onclick="muatLebihBanyak()">+50 Baris Lagi</button>
-            <button class="btn-mini" id="btnBawahSemua" onclick="tampilkanSemuaBaris()">Tampilkan Semua</button>
-            <button class="btn-mini" id="btnBawahRingkas" onclick="ringkasKeAwal()">Ringkas (50 Baris)</button>
-          </div>
-        </div>
-      </section>
-
-      <section id="halamanPelanggaran" style="display:none;">
-        <div class="hero">
-          <div class="hero-top">
-            <div>
-              <h1>POIN PELANGGARAN BM KPDJP</h1>
-              <p id="infoPelanggaran">Memuat seluruh data pelanggaran dari sheet ALL...</p>
-            </div>
-            <span class="jam-pill" id="infoWaktuWIBPelanggaran">WIB: --:--:-- • Mode Otomatis</span>
-          </div>
-          <div class="bar">
-            <input id="cariPelanggaran" type="text" placeholder="Cari nama, NIP, jabatan, divisi, tanggal, atau jenis pelanggaran..." oninput="batasPelanggaranTampil = BATAS_PELANGGARAN_AWAL; renderTabelPelanggaran()" />
-            <select id="filterDivisiPelanggaran" onchange="pilihDivisiPelanggaran(this.value)">
-              <option value="">Semua Divisi</option>
-            </select>
-            <button class="act primary" id="btnRefreshPelanggaran" onclick="muatPelanggaran(true)">Refresh Data</button>
-            <button class="act tema" id="btnTemaPelanggaran" onclick="gantiModeTema()">Tema: Otomatis WIB</button>
-            <button class="act tema" onclick="logoutDashboard()">Keluar</button>
-          </div>
-        </div>
-
-        <div class="kpi-grid">
-          <div class="kpi klik aktif" id="kpiPelTampil" onclick="resetFilterPelanggaran()">
-            <div class="k-label">Catatan Tampil</div>
-            <div class="k-row">
-              <span class="k-val" id="valPelTampil">0</span>
-              <span class="k-hint">Klik reset filter</span>
-            </div>
-          </div>
-          <div class="kpi">
-            <div class="k-label">Total Poin Tampil</div>
-            <div class="k-row">
-              <span class="k-val" id="valPelTotalPoin">0</span>
-              <span class="k-hint">Akumulasi poin</span>
-            </div>
-          </div>
-          <div class="kpi">
-            <div class="k-label">Karyawan Tercatat</div>
-            <div class="k-row">
-              <span class="k-val" id="valPelKaryawan">0</span>
-              <span class="k-hint">Nama / NIP unik</span>
-            </div>
-          </div>
-          <div class="kpi klik" id="kpiPelTotalSemua" onclick="resetFilterPelanggaran()">
-            <div class="k-label">Total Semua Data</div>
-            <div class="k-row">
-              <span class="k-val" id="valPelSemua">0</span>
-              <span class="k-hint">Seluruh sheet ALL</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="cards" id="kartuDivisiPelanggaran"></div>
-
-        <div class="table-top">
-          <span style="font-weight:700; font-size:13.5px;" id="judulTabelPelanggaran">Daftar Poin Pelanggaran (Sheet ALL)</span>
-          <div class="table-actions">
-            <button class="btn-mini" onclick="unduhCSVPelanggaran()">Unduh CSV Hasil Filter</button>
-          </div>
-        </div>
-
-        <div class="box">
-          <table>
-            <thead><tr id="kepalaTabelPelanggaran"></tr></thead>
-            <tbody id="isiTabelPelanggaran"></tbody>
-          </table>
-        </div>
-
-        <div class="footer-bar">
-          <span id="infoBarisPelanggaran">Baris tampil: 0</span>
-          <div class="footer-nav">
-            <div id="navigasiPelanggaranBawah" style="display:none; gap:8px; flex-wrap:wrap; align-items:center;">
-              <button class="btn-mini utama" id="btnPelTambah" onclick="muatLebihBanyakPelanggaran()">+50 Baris Lagi</button>
-              <button class="btn-mini" id="btnPelSemua" onclick="tampilkanSemuaBarisPelanggaran()">Tampilkan Semua</button>
-              <button class="btn-mini" id="btnPelRingkas" onclick="ringkasKeAwalPelanggaran()">Ringkas (50 Baris)</button>
-            </div>
-            <button class="btn-mini" onclick="pindahHalaman('personel')">Kembali ke Data Personel</button>
-          </div>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <div id="modal" class="modal-backdrop" onclick="if(event.target.id==='modal') tutupModal()">
-    <div class="modal-isi">
-      <h3 style="margin-top:0;" id="modalJudul">Detail Data</h3>
-      <div id="detailIsi"></div>
-      <div class="modal-actions" id="modalAksiPersonel">
-        <button class="btn-sec" id="btnSalinNip" onclick="salinNilai('nip')">Salin NIP</button>
-        <button class="btn-sec" id="btnSalinEmail" onclick="salinNilai('email')">Salin Email</button>
-        <button class="btn-dark" onclick="tutupModal()">Tutup</button>
-      </div>
-      <div class="modal-actions" id="modalAksiUmum" style="display:none;">
-        <button class="btn-dark" onclick="tutupModal()">Tutup</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
+<script>
     const KATA_SANDI_LOGIN = "KapalApi";
     const BATAS_MENIT_TIDAK_AKTIF = 15;
     const BATAS_MS = BATAS_MENIT_TIDAK_AKTIF * 60 * 1000;
@@ -1170,8 +137,8 @@
     const URL_PELANGGARAN = "https://script.google.com/macros/s/AKfycbxsnb6ZUzIpdbmdiGeNaJiasl9nCqAdGcCRO_n5XtDZpReCZ2SZJw-4ZusstYiNB5EX/exec";
     const SPREADSHEET_PELANGGARAN_ID = "1nVDFew5Ug96BN0j_w7aZ_gA6DiF43IMBwZIzFEWP7Pk";
     const GID_PELANGGARAN = "642420235";
-    const CACHE_KEY = "cachePersonelKpdjp2026_v13_jabatan_divisi";
-    const CACHE_PELANGGARAN_KEY = "cachePelanggaranKpdjp2026_v9";
+    const CACHE_KEY = "cachePersonelKpdjp2026_v14_jabatan_divisi";
+    const CACHE_PELANGGARAN_KEY = "cachePelanggaranKpdjp2026_v14";
     const DURASI_CACHE_MS = 24 * 60 * 60 * 1000;
 
     const KOLOM_PELANGGARAN = [
@@ -1222,6 +189,130 @@
 
     function susunDaftarKolom() {
       return urutkanKolomJabatanSebelumDivisi(KOLOM_UTAMA);
+    }
+
+    function parseAngka(val) {
+      var n = parseFloat(String(val || "0").replace(/[^0-9.-]/g, ""));
+      return isNaN(n) ? 0 : n;
+    }
+
+    function kunciIdentitasOrang(r) {
+      if (!r || typeof r !== "object") return "";
+      var nip = String(r["NIP"] || r["nip"] || "").trim();
+      var nama = normalisasiNamaOrang(r["Nama"] || r["Nama Lengkap (Sesuai KTP)"] || r["nama"] || "");
+      if (nip && nip !== "-" && nip !== "0") return "nip_" + nip.toLowerCase();
+      if (nama) return "nama_" + nama;
+      return "";
+    }
+
+    function ekstrakArrayPelanggaran(json) {
+      if (!json) return [];
+      if (Array.isArray(json)) return json;
+      if (Array.isArray(json.data)) return json.data;
+      if (Array.isArray(json.rows)) return json.rows;
+      if (Array.isArray(json.records)) return json.records;
+      return [];
+    }
+
+    function normalisasiBarisPelanggaran(raw) {
+      if (!Array.isArray(raw)) return [];
+      return raw.map(function(item, idx) {
+        var r = item && typeof item === "object" ? item : {};
+        var noVal = String(r["No"] || r["no"] || r["Nomor"] || r["nomor"] || (idx + 1)).trim();
+        var nipVal = String(r["NIP"] || r["nip"] || "").trim();
+        var namaVal = String(r["Nama"] || r["Nama Lengkap (Sesuai KTP)"] || r["Nama Karyawan"] || r["nama"] || "").trim();
+        var jabVal = String(r["Jabatan"] || r["jabatan"] || r["Posisi"] || "").trim();
+        var divRaw = String(r["Devisi"] || r["devisi"] || r["Divisi"] || r["divisi"] || r["Departemen"] || r["Unit"] || "").trim();
+        var divNorm = normalisasiNamaDivisi(divRaw, jabVal);
+        var divTampil = divNorm || divRaw || "-";
+        var tglVal = String(r["Tanggal Pelanggaran"] || r["Tanggal"] || r["tanggal"] || "").trim();
+        var jenisVal = String(r["Jenis Pelanggaran"] || r["Pelanggaran"] || r["Keterangan"] || "").trim();
+        var poinVal = String(r["Poin Pelanggaran"] || r["Poin"] || r["poin"] || "0").trim();
+        var totalVal = String(r["Total Poin"] || r["Total"] || r["Akumulasi Poin"] || poinVal || "0").trim();
+
+        return {
+          "No": noVal,
+          "NIP": nipVal || "-",
+          "Nama": namaVal,
+          "Jabatan": jabVal || "-",
+          "Devisi": divTampil,
+          "Divisi": divTampil,
+          "Tanggal Pelanggaran": tglVal || "-",
+          "Jenis Pelanggaran": jenisVal || "-",
+          "Poin Pelanggaran": poinVal,
+          "Total Poin": totalVal
+        };
+      }).filter(function(row) {
+        var n = String(row["Nama"] || "").trim().toLowerCase();
+        return n && n !== "nama" && n !== "total" && n !== "jumlah";
+      });
+    }
+
+    function bangunDivisiPelanggaran() {
+      var hitung = {};
+      for (var i = 0; i < pelanggaranIndeks.length; i++) {
+        var d = pelanggaranIndeks[i].div;
+        if (d) {
+          hitung[d] = (hitung[d] || 0) + 1;
+        }
+      }
+      var listDiv = URUTAN_DIVISI.filter(function(d) { return hitung[d] > 0; });
+      Object.keys(hitung).forEach(function(d) {
+        if (listDiv.indexOf(d) === -1 && hitung[d] > 0) listDiv.push(d);
+      });
+
+      var sel = document.getElementById("filterDivisiPelanggaran");
+      var divAktif = sel ? sel.value : "";
+      if (sel) {
+        sel.innerHTML = '<option value="">Semua Divisi</option>' +
+          listDiv.map(function(d) {
+            return '<option value="' + escapeHtml(d) + '">' + escapeHtml(d) + ' (' + hitung[d] + ')</option>';
+          }).join("");
+        sel.value = listDiv.indexOf(divAktif) !== -1 ? divAktif : "";
+      }
+
+      var wrapKartu = document.getElementById("kartuDivisiPelanggaran");
+      if (wrapKartu) {
+        wrapKartu.innerHTML = listDiv.map(function(d) {
+          var aktif = (sel && sel.value === d) ? " aktif" : "";
+          var amanAttr = escapeHtml(d);
+          var amanJs = d.replace(/'/g, "\\'");
+          return '<div class="card' + aktif + '" data-div="' + amanAttr + '" onclick="pilihDivisiPelanggaran(\'' + amanJs + '\')"><b>' + amanAttr + '</b><div class="card-sub">' + hitung[d] + ' data</div></div>';
+        }).join("");
+      }
+    }
+
+    function pilihDivisiPelanggaran(d) {
+      batasPelanggaranTampil = BATAS_PELANGGARAN_AWAL;
+      var sel = document.getElementById("filterDivisiPelanggaran");
+      if (sel) sel.value = d || "";
+      document.querySelectorAll("#kartuDivisiPelanggaran .card").forEach(function(c) {
+        var judul = c.querySelector("b") ? c.querySelector("b").textContent.trim() : "";
+        c.classList.toggle("aktif", Boolean(d) && judul === d);
+      });
+      renderTabelPelanggaran();
+    }
+
+    function resetFilterPelanggaran() {
+      batasPelanggaranTampil = BATAS_PELANGGARAN_AWAL;
+      var cari = document.getElementById("cariPelanggaran");
+      if (cari) cari.value = "";
+      pilihDivisiPelanggaran("");
+    }
+
+    function muatLebihBanyakPelanggaran() {
+      batasPelanggaranTampil += 50;
+      renderTabelPelanggaran();
+    }
+
+    function tampilkanSemuaBarisPelanggaran() {
+      batasPelanggaranTampil = pelanggaranIndeks.length || semuaPelanggaran.length;
+      renderTabelPelanggaran();
+    }
+
+    function ringkasKeAwalPelanggaran() {
+      batasPelanggaranTampil = BATAS_PELANGGARAN_AWAL;
+      renderTabelPelanggaran();
     }
 
     function toggleDropdownPelanggaran(kunciGrup, ev) {
@@ -2129,6 +1220,51 @@
     });
     document.getElementById("filterDivisi").addEventListener("change", function(e) { pilihDivisi(e.target.value); });
 
+    function perbaruiTampilanTema() {
+      var jamWIB = new Date().toLocaleTimeString("id-ID", { timeZone: "Asia/Jakarta", hour12: false });
+      var jamInt = parseInt(jamWIB.split(":")[0], 10);
+      var pakaiMalam = modeTema === "dark" ? true : (modeTema === "light" ? false : (isNaN(jamInt) ? false : (jamInt >= 18 || jamInt < 6)));
+      document.body.classList.toggle("mode-malam", pakaiMalam);
+
+      var labelMode = modeTema === "dark" ? "Mode Gelap" : (modeTema === "light" ? "Mode Terang" : "Mode Otomatis");
+      var infoJam = "WIB: " + jamWIB + " • " + labelMode;
+      ["infoWaktuWIBPersonel", "infoWaktuWIBPelanggaran"].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = infoJam;
+      });
+
+      var labelTombol = modeTema === "dark" ? "Tema: Gelap" : (modeTema === "light" ? "Tema: Terang" : "Tema: Otomatis WIB");
+      ["btnTemaPersonel", "btnTemaPelanggaran"].forEach(function(id) {
+        var b = document.getElementById(id);
+        if (b) b.textContent = labelTombol;
+      });
+    }
+
+    function gantiModeTema() {
+      modeTema = modeTema === "auto" ? "dark" : (modeTema === "dark" ? "light" : "auto");
+      try { localStorage.setItem("modeTemaKpdjp", modeTema); } catch (e) {}
+      perbaruiTampilanTema();
+    }
+
+    function pindahHalaman(hal) {
+      halamanAktif = hal === "pelanggaran" ? "pelanggaran" : "personel";
+      var secP = document.getElementById("halamanPersonel");
+      var secV = document.getElementById("halamanPelanggaran");
+      var btnP = document.getElementById("btnMenuDataPersonel");
+      var btnV = document.getElementById("btnMenuPoinPelanggaran");
+
+      if (secP) secP.style.display = halamanAktif === "personel" ? "flex" : "none";
+      if (secV) secV.style.display = halamanAktif === "pelanggaran" ? "flex" : "none";
+      if (btnP) btnP.classList.toggle("aktif", halamanAktif === "personel");
+      if (btnV) btnV.classList.toggle("aktif", halamanAktif === "pelanggaran");
+
+      if (halamanAktif === "pelanggaran") {
+        muatPelanggaran(false);
+      }
+    }
+
+    perbaruiTampilanTema();
+    setInterval(perbaruiTampilanTema, 1000);
     muat(false);
   </script>
 </body>
