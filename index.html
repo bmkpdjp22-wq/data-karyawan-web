@@ -1826,6 +1826,7 @@
       });
 
       bangunDivisi();
+      bangunDivisiPelanggaran();
       segarkanIndeksPelanggaranSetelahNip();
       tampil(labelTambahan);
     }
@@ -2239,9 +2240,29 @@
       });
     }
 
+    function hitungTotalPersonelPerDivisi() {
+      var totalDiv = {};
+      for (var i = 0; i < dataIndeks.length; i++) {
+        var d = dataIndeks[i].div;
+        if (d) {
+          totalDiv[d] = (totalDiv[d] || 0) + 1;
+        }
+      }
+      return totalDiv;
+    }
+
+    function formatPersenPelanggaran(jmlKenaPoin, totalDivisi) {
+      if (!totalDivisi || totalDivisi <= 0) return "";
+      var pct = (jmlKenaPoin / totalDivisi) * 100;
+      var pctTeks = (Math.round(pct * 10) / 10).toLocaleString("id-ID", { maximumFractionDigits: 1 });
+      return jmlKenaPoin + "/" + totalDivisi + " (" + pctTeks + "%)";
+    }
+
     function bangunDivisiPelanggaran() {
       var hitung = {};
       var orangPerDiv = {};
+      var totalPersonelDiv = hitungTotalPersonelPerDivisi();
+
       for (var i = 0; i < pelanggaranIndeks.length; i++) {
         var d = pelanggaranIndeks[i].div;
         if (d) {
@@ -2262,7 +2283,9 @@
         sel.innerHTML = '<option value="">Semua Divisi</option>' +
           listDiv.map(function(d) {
             var jmlOrang = orangPerDiv[d] ? Object.keys(orangPerDiv[d]).length : 0;
-            return '<option value="' + escapeHtml(d) + '">' + escapeHtml(d) + ' (' + jmlOrang + ' orang)</option>';
+            var totDiv = totalPersonelDiv[d] || 0;
+            var infoPct = totDiv > 0 ? " • " + formatPersenPelanggaran(jmlOrang, totDiv) : "";
+            return '<option value="' + escapeHtml(d) + '">' + escapeHtml(d) + ' (' + jmlOrang + ' orang' + infoPct + ')</option>';
           }).join("");
         sel.value = listDiv.indexOf(divAktif) !== -1 ? divAktif : "";
       }
@@ -2274,7 +2297,11 @@
           var amanAttr = escapeHtml(d);
           var amanJs = d.replace(/'/g, "\\'");
           var jmlOrang = orangPerDiv[d] ? Object.keys(orangPerDiv[d]).length : 0;
-          return '<div class="card' + aktif + '" data-div="' + amanAttr + '" onclick="pilihDivisiPelanggaran(\'' + amanJs + '\')"><b>' + amanAttr + '</b><div class="card-sub">' + jmlOrang + ' orang</div></div>';
+          var totDiv = totalPersonelDiv[d] || 0;
+          var subPct = totDiv > 0
+            ? ' <span style="font-size:9.5px; opacity:0.85; font-weight:500;">(' + formatPersenPelanggaran(jmlOrang, totDiv) + ')</span>'
+            : '';
+          return '<div class="card' + aktif + '" data-div="' + amanAttr + '" onclick="pilihDivisiPelanggaran(\'' + amanJs + '\')"><b>' + amanAttr + '</b><div class="card-sub">' + jmlOrang + ' orang' + subPct + '</div></div>';
         }).join("");
       }
     }
