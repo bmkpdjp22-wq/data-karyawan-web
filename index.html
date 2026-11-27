@@ -310,6 +310,7 @@
       font-weight: 600;
     }
 
+    /* Bar kontrol seragam seperti Data Personel */
     .bar {
       display: flex;
       gap: 7px;
@@ -414,6 +415,7 @@
       text-overflow: ellipsis;
     }
 
+    /* Baris kartu divisi rata kiri-kanan dengan baris KPI di atasnya & spasi proporsional */
     .cards {
       display: flex;
       flex-wrap: wrap;
@@ -503,12 +505,12 @@
     }
     .btn-mini.utama:hover { opacity: 0.92; color: #fff; }
 
-    #halamanPersonel, #halamanPelanggaran {
-      display: flex;
-      flex-direction: column;
-      flex: 1 1 auto;
-      min-height: 0;
-    }
+      #halamanPersonel, #halamanPelanggaran {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+        min-height: 0;
+      }
 
     .box {
       background: var(--card);
@@ -591,6 +593,18 @@
       border-right: 1px solid var(--border);
       border-top-right-radius: 8px;
       border-bottom-right-radius: 8px;
+    }
+
+    tbody tr.data-row[data-dup-bg] {
+      background: var(--dup-bg) !important;
+    }
+    tbody tr.data-row[data-dup-bg]:hover {
+      filter: brightness(0.97);
+    }
+    tbody tr.data-row[data-dup-accent] td:first-child {
+      border-left-color: var(--dup-accent) !important;
+      color: var(--dup-accent) !important;
+      font-weight: 800;
     }
 
     .cell-nowrap { white-space: nowrap; }
@@ -847,13 +861,14 @@
         </button>
       </div>
 
-      <div class="side-foot">
+          <div class="side-foot">
         <b>Helpdesk BM:</b> Ext. 50000 • WA 081188093005<br>
         <b>Email:</b> bmkpdjp22@gmail.com
       </div>
     </aside>
 
     <main class="main">
+      <!-- HALAMAN DATA PERSONEL -->
       <section id="halamanPersonel" style="display:flex;">
         <div class="hero">
           <div class="hero-top">
@@ -934,6 +949,7 @@
         </div>
       </section>
 
+      <!-- HALAMAN POIN PELANGGARAN (HANYA DATA TERKENA PELANGGARAN DI SHEET ALL, TAMPIL SEMUA) -->
       <section id="halamanPelanggaran" style="display:none;">
         <div class="hero">
           <div class="hero-top">
@@ -1034,6 +1050,7 @@
   <script>
     const KATA_SANDI_LOGIN = "KapalApi";
     const BATAS_MENIT_TIDAK_AKTIF = 15;
+
     const BATAS_MS = BATAS_MENIT_TIDAK_AKTIF * 60 * 1000;
     const KEY_LOGIN = "bm_kpdjp_sudah_login";
     const KEY_AKTIVITAS_TERAKHIR = "bm_kpdjp_aktivitas_terakhir";
@@ -1170,8 +1187,8 @@
     const URL_PELANGGARAN = "https://script.google.com/macros/s/AKfycbxsnb6ZUzIpdbmdiGeNaJiasl9nCqAdGcCRO_n5XtDZpReCZ2SZJw-4ZusstYiNB5EX/exec";
     const SPREADSHEET_PELANGGARAN_ID = "1nVDFew5Ug96BN0j_w7aZ_gA6DiF43IMBwZIzFEWP7Pk";
     const GID_PELANGGARAN = "642420235";
-    const CACHE_KEY = "cachePersonelKpdjp2026_v15_clean";
-    const CACHE_PELANGGARAN_KEY = "cachePelanggaranKpdjp2026_v15_clean";
+    const CACHE_KEY = "cachePersonelKpdjp2026_v13_jabatan_divisi";
+    const CACHE_PELANGGARAN_KEY = "cachePelanggaranKpdjp2026_v9";
     const DURASI_CACHE_MS = 24 * 60 * 60 * 1000;
 
     const KOLOM_PELANGGARAN = [
@@ -1186,6 +1203,24 @@
       "Total Poin"
     ];
 
+    const WARNA_SAMA_TERANG = [
+      { bg: "#dbeafe", accent: "#1d4ed8" },
+      { bg: "#fef3c7", accent: "#d97706" },
+      { bg: "#dcfce7", accent: "#15803d" },
+      { bg: "#fce7f3", accent: "#be185d" },
+      { bg: "#e0e7ff", accent: "#4338ca" },
+      { bg: "#ffedd5", accent: "#c2410c" }
+    ];
+
+    const WARNA_SAMA_MALAM = [
+      { bg: "#1e3a8a", accent: "#60a5fa" },
+      { bg: "#78350f", accent: "#fbbf24" },
+      { bg: "#14532d", accent: "#4ade80" },
+      { bg: "#831843", accent: "#f472b6" },
+      { bg: "#312e81", accent: "#a5b4fc" },
+      { bg: "#7c2d12", accent: "#fb923c" }
+    ];
+
     let modeTema = localStorage.getItem("modeTemaKpdjp") || "auto";
     let filterGenderAktif = "";
     let halamanAktif = "personel";
@@ -1198,28 +1233,16 @@
     let barisPelanggaranDitampilkan = [];
     let grupPelanggaranTerbuka = {};
 
-    const BATAS_AWAL = 50;
-    let batasTampil = BATAS_AWAL;
-    let timerKetik = null;
-    let semuaData = [];
-    let dataIndeks = [];
-    let hasilTerakhir = [];
-    let barisDitampilkan = [];
-    let kolomList = KOLOM_UTAMA.slice();
-    let dataModalAktif = null;
-
-    function escapeHtml(teks) {
-      return String(teks || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
+    function toggleDropdownPelanggaran(kunciGrup, ev) {
+      if (ev) ev.stopPropagation();
+      if (grupPelanggaranTerbuka[kunciGrup]) {
+        delete grupPelanggaranTerbuka[kunciGrup];
+      } else {
+        grupPelanggaranTerbuka[kunciGrup] = true;
+      }
+      renderTabelPelanggaran();
     }
 
-    function parseAngka(val) {
-      var n = parseFloat(String(val || "0").replace(/[^0-9.-]/g, ""));
-      return isNaN(n) ? 0 : n;
-    }
 
     function normalisasiNamaOrang(nama) {
       return String(nama || "")
@@ -1227,209 +1250,6 @@
         .replace(/[^a-z0-9\s]/g, " ")
         .replace(/\s+/g, " ")
         .trim();
-    }
-
-    function kunciIdentitasOrang(r) {
-      if (!r || typeof r !== "object") return "";
-      var nip = String(r["NIP"] || r["nip"] || "").trim();
-      var nama = normalisasiNamaOrang(r["Nama"] || r["Nama Lengkap (Sesuai KTP)"] || r["nama"] || "");
-      if (nip && nip !== "-" && nip !== "0") return "nip_" + nip.toLowerCase();
-      if (nama) return "nama_" + nama;
-      return "";
-    }
-
-    function urutkanKolomJabatanSebelumDivisi(arr) {
-      var list = Array.isArray(arr) ? arr.slice() : [];
-      var idxJab = -1, idxDiv = -1;
-      for (var i = 0; i < list.length; i++) {
-        var low = String(list[i] || "").trim().toLowerCase();
-        if (low === "jabatan") idxJab = i;
-        if (low === "divisi" || low === "devisi") idxDiv = i;
-      }
-      if (idxJab !== -1 && idxDiv !== -1 && idxJab > idxDiv) {
-        var colJab = list.splice(idxJab, 1)[0];
-        var newIdxDiv = -1;
-        for (var j = 0; j < list.length; j++) {
-          var low2 = String(list[j] || "").trim().toLowerCase();
-          if (low2 === "divisi" || low2 === "devisi") { newIdxDiv = j; break; }
-        }
-        if (newIdxDiv !== -1) {
-          list.splice(newIdxDiv, 0, colJab);
-        }
-      }
-      return list;
-    }
-
-    function susunDaftarKolom() {
-      return urutkanKolomJabatanSebelumDivisi(KOLOM_UTAMA);
-    }
-
-    function normalisasiNamaDivisi(divRaw, jabatanRaw) {
-      var raw = String(divRaw || "").trim();
-      var lower = raw.toLowerCase();
-
-      if (lower) {
-        if (lower.indexOf("management") !== -1 || lower.indexOf("office") !== -1 || lower === "mo" || lower.indexOf("tr & sdm") !== -1 || lower.indexOf("tr&sdm") !== -1 || lower === "tr" || lower === "sdm") {
-          return "Management Office";
-        }
-        if (lower.indexOf("eng") !== -1 || lower.indexOf("teknisi") !== -1 || lower.indexOf("mep") !== -1) {
-          return "Engineering";
-        }
-        if (lower.indexOf("sec") !== -1 || lower.indexOf("satpam") !== -1 || lower.indexOf("keamanan") !== -1 || lower.indexOf("pengamanan") !== -1) {
-          return "Security";
-        }
-        if (lower.indexOf("house") !== -1 || lower.indexOf("clean") !== -1 || lower.indexOf("kebersihan") !== -1 || lower === "hk" || lower === "cs") {
-          return "Housekeeping";
-        }
-        if (lower.indexOf("banquet") !== -1 || lower.indexOf("meeting") !== -1 || lower.indexOf("pantry") !== -1) {
-          return "Banquet";
-        }
-        if (lower.indexOf("driver") !== -1 || lower.indexOf("sopir") !== -1 || lower.indexOf("pengemudi") !== -1) {
-          return "Driver";
-        }
-        if (lower.indexOf("resep") !== -1 || lower.indexOf("reception") !== -1 || lower.indexOf("front office") !== -1) {
-          return "Receptionist";
-        }
-      }
-
-      return deteksiDivisiDariJabatan(jabatanRaw);
-    }
-
-    function deteksiDivisiDariRow(r) {
-      if (!r || typeof r !== "object") return "";
-      var kolomDivisi = String(
-        r["Divisi"] || r["divisi"] || r["Devisi"] || r["devisi"] ||
-        r["Departemen"] || r["departemen"] || r["Unit"] || r["Bagian"] || ""
-      ).trim();
-      if (kolomDivisi) {
-        var norm = normalisasiNamaDivisi(kolomDivisi, r.Jabatan || r.jabatan || "");
-        if (norm) return norm;
-      }
-      var jabatan = String(r.Jabatan || r.jabatan || "").trim();
-      var gabung = (kolomDivisi + " " + jabatan).toLowerCase().trim();
-      if (!gabung) return "";
-
-      if (
-        gabung.indexOf("sec") !== -1 || gabung.indexOf("satpam") !== -1 ||
-        gabung.indexOf("guard") !== -1 || gabung.indexOf("pengamanan") !== -1 ||
-        gabung.indexOf("keamanan") !== -1 || gabung.indexOf("danru") !== -1 ||
-        gabung.indexOf("komandan regu") !== -1 || gabung.indexOf("waka") !== -1 ||
-        gabung.indexOf("patroli") !== -1 || gabung.indexOf("posko") !== -1 ||
-        gabung.indexOf("cctv") !== -1 || gabung.indexOf("k9") !== -1 ||
-        gabung.indexOf("pkd") !== -1 || gabung.indexOf("pamdal") !== -1 ||
-        gabung.indexOf("sekuriti") !== -1
-      ) return "Security";
-
-      if (
-        gabung.indexOf("eng") !== -1 || gabung.indexOf("teknisi") !== -1 ||
-        gabung.indexOf("mep") !== -1 || gabung.indexOf("hvac") !== -1 ||
-        gabung.indexOf("bas") !== -1 || gabung.indexOf("listrik") !== -1 ||
-        gabung.indexOf("mekanikal") !== -1 || gabung.indexOf("elektrikal") !== -1 ||
-        gabung.indexOf("plumbing") !== -1 || gabung.indexOf("genset") !== -1 ||
-        gabung.indexOf("lift") !== -1 || gabung.indexOf("sipil") !== -1
-      ) return "Engineering";
-
-      if (
-        gabung.indexOf("house") !== -1 || gabung.indexOf("clean") !== -1 ||
-        gabung.indexOf("kebersihan") !== -1 || gabung.indexOf("gondola") !== -1 ||
-        gabung.indexOf("gardener") !== -1 || gabung.indexOf("taman") !== -1 ||
-        gabung.indexOf("pest") !== -1 || / hk /.test(gabung) || / cs /.test(gabung)
-      ) return "Housekeeping";
-
-      if (
-        gabung.indexOf("banquet") !== -1 || gabung.indexOf("meeting") !== -1 ||
-        gabung.indexOf("rapat") !== -1 || gabung.indexOf("pramusaji") !== -1 ||
-        gabung.indexOf("pantry") !== -1 || gabung.indexOf("waiter") !== -1
-      ) return "Banquet";
-
-      if (
-        gabung.indexOf("driver") !== -1 || gabung.indexOf("sopir") !== -1 ||
-        gabung.indexOf("pengemudi") !== -1
-      ) return "Driver";
-
-      if (
-        gabung.indexOf("resep") !== -1 || gabung.indexOf("reception") !== -1 ||
-        gabung.indexOf("front office") !== -1 || gabung.indexOf("operator") !== -1
-      ) return "Receptionist";
-
-      if (
-        gabung.indexOf("building manager") !== -1 || gabung.indexOf("assistant building") !== -1 ||
-        gabung.indexOf("management") !== -1 || gabung.indexOf("office") !== -1 ||
-        gabung.indexOf("admin") !== -1 || / tr /.test(gabung) ||
-        gabung.indexOf("sdm") !== -1 || gabung.indexOf("finance") !== -1 ||
-        gabung.indexOf("akuntansi") !== -1 || gabung.indexOf("facility") !== -1 ||
-        gabung.indexOf("hse") !== -1 || gabung.indexOf("k3") !== -1 ||
-        gabung.indexOf("logistik") !== -1 || gabung.indexOf("gudang") !== -1 ||
-        / mo /.test(gabung)
-      ) return "Management Office";
-
-      return "";
-    }
-
-    function deteksiDivisiDariJabatan(jabatan) {
-      return deteksiDivisiDariRow({ Jabatan: jabatan });
-    }
-
-    function getGender(row) {
-      return String(row["Jenis Kelamin"] || row["jenis kelamin"] || "").trim().toLowerCase();
-    }
-
-    function getNip(row) {
-      return String(row.NIP || row.nip || "").trim();
-    }
-
-    function getEmail(row) {
-      return String(row["Alamat Email"] || row.Email || row.email || "").trim();
-    }
-
-    function inisial(teks) {
-      var kata = String(teks || "PR").trim().split(/\s+/).filter(Boolean);
-      if (!kata.length) return "PR";
-      if (kata.length === 1) return kata[0].slice(0, 2).toUpperCase();
-      return ((kata[0][0] || "") + (kata[1][0] || "")).toUpperCase();
-    }
-
-    function ekstrakArrayPelanggaran(json) {
-      if (!json) return [];
-      if (Array.isArray(json)) return json;
-      if (Array.isArray(json.data)) return json.data;
-      if (Array.isArray(json.rows)) return json.rows;
-      if (Array.isArray(json.records)) return json.records;
-      return [];
-    }
-
-    function normalisasiBarisPelanggaran(raw) {
-      if (!Array.isArray(raw)) return [];
-      return raw.map(function(item, idx) {
-        var r = item && typeof item === "object" ? item : {};
-        var noVal = String(r["No"] || r["no"] || r["Nomor"] || r["nomor"] || (idx + 1)).trim();
-        var nipVal = String(r["NIP"] || r["nip"] || "").trim();
-        var namaVal = String(r["Nama"] || r["Nama Lengkap (Sesuai KTP)"] || r["Nama Karyawan"] || r["nama"] || "").trim();
-        var jabVal = String(r["Jabatan"] || r["jabatan"] || r["Posisi"] || "").trim();
-        var divRaw = String(r["Devisi"] || r["devisi"] || r["Divisi"] || r["divisi"] || r["Departemen"] || r["Unit"] || "").trim();
-        var divNorm = normalisasiNamaDivisi(divRaw, jabVal);
-        var divTampil = divNorm || divRaw || "-";
-        var tglVal = String(r["Tanggal Pelanggaran"] || r["Tanggal"] || r["tanggal"] || "").trim();
-        var jenisVal = String(r["Jenis Pelanggaran"] || r["Pelanggaran"] || r["Keterangan"] || "").trim();
-        var poinVal = String(r["Poin Pelanggaran"] || r["Poin"] || r["poin"] || "0").trim();
-        var totalVal = String(r["Total Poin"] || r["Total"] || r["Akumulasi Poin"] || poinVal || "0").trim();
-
-        return {
-          "No": noVal,
-          "NIP": nipVal || "-",
-          "Nama": namaVal,
-          "Jabatan": jabVal || "-",
-          "Devisi": divTampil,
-          "Divisi": divTampil,
-          "Tanggal Pelanggaran": tglVal || "-",
-          "Jenis Pelanggaran": jenisVal || "-",
-          "Poin Pelanggaran": poinVal,
-          "Total Poin": totalVal
-        };
-      }).filter(function(row) {
-        var n = String(row["Nama"] || "").trim().toLowerCase();
-        return n && n !== "nama" && n !== "total" && n !== "jumlah";
-      });
     }
 
     function bangunKamussNipPersonel() {
@@ -1466,6 +1286,7 @@
           continue;
         }
 
+        // Pencocokan cadangan jika nama hanya sebagian / ada gelar atau spasi berbeda
         for (var k = 0; k < keys.length; k++) {
           var cand = keys[k];
           if (cand.length >= 5 && (cand.indexOf(namaPel) !== -1 || namaPel.indexOf(cand) !== -1)) {
@@ -1496,83 +1317,6 @@
       if (halamanAktif === "pelanggaran") {
         renderTabelPelanggaran();
       }
-    }
-
-    function bangunDivisiPelanggaran() {
-      var hitung = {};
-      for (var i = 0; i < pelanggaranIndeks.length; i++) {
-        var d = pelanggaranIndeks[i].div;
-        if (d) {
-          hitung[d] = (hitung[d] || 0) + 1;
-        }
-      }
-      var listDiv = URUTAN_DIVISI.filter(function(d) { return hitung[d] > 0; });
-      Object.keys(hitung).forEach(function(d) {
-        if (listDiv.indexOf(d) === -1 && hitung[d] > 0) listDiv.push(d);
-      });
-
-      var sel = document.getElementById("filterDivisiPelanggaran");
-      var divAktif = sel ? sel.value : "";
-      if (sel) {
-        sel.innerHTML = '<option value="">Semua Divisi</option>' +
-          listDiv.map(function(d) {
-            return '<option value="' + escapeHtml(d) + '">' + escapeHtml(d) + ' (' + hitung[d] + ')</option>';
-          }).join("");
-        sel.value = listDiv.indexOf(divAktif) !== -1 ? divAktif : "";
-      }
-
-      var wrapKartu = document.getElementById("kartuDivisiPelanggaran");
-      if (wrapKartu) {
-        wrapKartu.innerHTML = listDiv.map(function(d) {
-          var aktif = (sel && sel.value === d) ? " aktif" : "";
-          var amanAttr = escapeHtml(d);
-          var amanJs = d.replace(/'/g, "\\'");
-          return '<div class="card' + aktif + '" data-div="' + amanAttr + '" onclick="pilihDivisiPelanggaran(\'' + amanJs + '\')"><b>' + amanAttr + '</b><div class="card-sub">' + hitung[d] + ' data</div></div>';
-        }).join("");
-      }
-    }
-
-    function pilihDivisiPelanggaran(d) {
-      batasPelanggaranTampil = BATAS_PELANGGARAN_AWAL;
-      var sel = document.getElementById("filterDivisiPelanggaran");
-      if (sel) sel.value = d || "";
-      document.querySelectorAll("#kartuDivisiPelanggaran .card").forEach(function(c) {
-        var judul = c.querySelector("b") ? c.querySelector("b").textContent.trim() : "";
-        c.classList.toggle("aktif", Boolean(d) && judul === d);
-      });
-      renderTabelPelanggaran();
-    }
-
-    function resetFilterPelanggaran() {
-      batasPelanggaranTampil = BATAS_PELANGGARAN_AWAL;
-      var cari = document.getElementById("cariPelanggaran");
-      if (cari) cari.value = "";
-      pilihDivisiPelanggaran("");
-    }
-
-    function muatLebihBanyakPelanggaran() {
-      batasPelanggaranTampil += 50;
-      renderTabelPelanggaran();
-    }
-
-    function tampilkanSemuaBarisPelanggaran() {
-      batasPelanggaranTampil = pelanggaranIndeks.length || semuaPelanggaran.length;
-      renderTabelPelanggaran();
-    }
-
-    function ringkasKeAwalPelanggaran() {
-      batasPelanggaranTampil = BATAS_PELANGGARAN_AWAL;
-      renderTabelPelanggaran();
-    }
-
-    function toggleDropdownPelanggaran(kunciGrup, ev) {
-      if (ev) ev.stopPropagation();
-      if (grupPelanggaranTerbuka[kunciGrup]) {
-        delete grupPelanggaranTerbuka[kunciGrup];
-      } else {
-        grupPelanggaranTerbuka[kunciGrup] = true;
-      }
-      renderTabelPelanggaran();
     }
 
     function prosesDataPelanggaran(raw, labelTambahan) {
@@ -1638,6 +1382,7 @@
       }
 
       hasilPelanggaranTerakhir = tersaring;
+
       var potonganGrup = grupList.slice(0, batasPelanggaranTampil);
 
       var judul = "Daftar Poin Pelanggaran (Sheet ALL)";
@@ -1675,7 +1420,6 @@
 
       barisPelanggaranDitampilkan = [];
       var html = "";
-      var kolomPelUrut = urutkanKolomJabatanSebelumDivisi(KOLOM_PELANGGARAN);
 
       for (var g = 0; g < potonganGrup.length; g++) {
         var grp = potonganGrup[g];
@@ -1693,6 +1437,7 @@
             jumlahCatatan + 'x <span class="panah-dd">▼</span></button>';
         }
 
+        var kolomPelUrut = urutkanKolomJabatanSebelumDivisi(KOLOM_PELANGGARAN);
         var cells = "";
         for (var c = 0; c < kolomPelUrut.length; c++) {
           var col = kolomPelUrut[c];
@@ -1880,20 +1625,185 @@
         }).join(sep);
         barisCsv.push(rowCsv);
       });
-      var blob = new Blob(["\uFEFF" + barisCsv.join("\n")], { type: "text/csv;charset=utf-8;" });
+      var blob = new Blob(["﻿" + barisCsv.join("\n")], { type: "text/csv;charset=utf-8;" });
       var link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
       link.download = "poin-pelanggaran-sheet-all-bm-kpdjp.csv";
       link.click();
     }
 
+    // BAGIAN DATA PERSONEL
+    const BATAS_AWAL = 50;
+    let batasTampil = BATAS_AWAL;
+    let timerKetik = null;
+    let semuaData = [];
+    let dataIndeks = [];
+    let hasilTerakhir = [];
+    let barisDitampilkan = [];
+    let kolomList = KOLOM_UTAMA.slice();
+    let dataModalAktif = null;
+
+    function normalisasiNamaDivisi(divRaw, jabatanRaw) {
+      var raw = String(divRaw || "").trim();
+      var lower = raw.toLowerCase();
+
+      if (lower) {
+        if (lower.indexOf("management") !== -1 || lower.indexOf("office") !== -1 || lower === "mo" || lower.indexOf("tr & sdm") !== -1 || lower.indexOf("tr&sdm") !== -1 || lower === "tr" || lower === "sdm") {
+          return "Management Office";
+        }
+        if (lower.indexOf("eng") !== -1 || lower.indexOf("teknisi") !== -1 || lower.indexOf("mep") !== -1) {
+          return "Engineering";
+        }
+        if (lower.indexOf("sec") !== -1 || lower.indexOf("satpam") !== -1 || lower.indexOf("keamanan") !== -1 || lower.indexOf("pengamanan") !== -1) {
+          return "Security";
+        }
+        if (lower.indexOf("house") !== -1 || lower.indexOf("clean") !== -1 || lower.indexOf("kebersihan") !== -1 || lower === "hk" || lower === "cs") {
+          return "Housekeeping";
+        }
+        if (lower.indexOf("banquet") !== -1 || lower.indexOf("meeting") !== -1 || lower.indexOf("pantry") !== -1) {
+          return "Banquet";
+        }
+        if (lower.indexOf("driver") !== -1 || lower.indexOf("sopir") !== -1 || lower.indexOf("pengemudi") !== -1) {
+          return "Driver";
+        }
+        if (lower.indexOf("resep") !== -1 || lower.indexOf("reception") !== -1 || lower.indexOf("front office") !== -1) {
+          return "Receptionist";
+        }
+      }
+
+      return deteksiDivisiDariJabatan(jabatanRaw);
+    }
+
+    function deteksiDivisiDariRow(r) {
+      if (!r || typeof r !== "object") return "";
+      var kolomDivisi = String(
+        r["Divisi"] || r["divisi"] || r["Devisi"] || r["devisi"] ||
+        r["Departemen"] || r["departemen"] || r["Unit"] || r["Bagian"] || ""
+      ).trim();
+      if (kolomDivisi) {
+        var norm = normalisasiNamaDivisi(kolomDivisi, r.Jabatan || r.jabatan || "");
+        if (norm) return norm;
+      }
+      var jabatan = String(r.Jabatan || r.jabatan || "").trim();
+      var gabung = (kolomDivisi + " " + jabatan).toLowerCase().trim();
+      if (!gabung) return "";
+
+      if (
+        gabung.indexOf("sec") !== -1 || gabung.indexOf("satpam") !== -1 ||
+        gabung.indexOf("guard") !== -1 || gabung.indexOf("pengamanan") !== -1 ||
+        gabung.indexOf("keamanan") !== -1 || gabung.indexOf("danru") !== -1 ||
+        gabung.indexOf("komandan regu") !== -1 || gabung.indexOf("waka") !== -1 ||
+        gabung.indexOf("patroli") !== -1 || gabung.indexOf("posko") !== -1 ||
+        gabung.indexOf("cctv") !== -1 || gabung.indexOf("k9") !== -1 ||
+        gabung.indexOf("pkd") !== -1 || gabung.indexOf("pamdal") !== -1 ||
+        gabung.indexOf("sekuriti") !== -1
+      ) return "Security";
+
+      if (
+        gabung.indexOf("eng") !== -1 || gabung.indexOf("teknisi") !== -1 ||
+        gabung.indexOf("mep") !== -1 || gabung.indexOf("hvac") !== -1 ||
+        gabung.indexOf("bas") !== -1 || gabung.indexOf("listrik") !== -1 ||
+        gabung.indexOf("mekanikal") !== -1 || gabung.indexOf("elektrikal") !== -1 ||
+        gabung.indexOf("plumbing") !== -1 || gabung.indexOf("genset") !== -1 ||
+        gabung.indexOf("lift") !== -1 || gabung.indexOf("sipil") !== -1
+      ) return "Engineering";
+
+      if (
+        gabung.indexOf("house") !== -1 || gabung.indexOf("clean") !== -1 ||
+        gabung.indexOf("kebersihan") !== -1 || gabung.indexOf("gondola") !== -1 ||
+        gabung.indexOf("gardener") !== -1 || gabung.indexOf("taman") !== -1 ||
+        gabung.indexOf("pest") !== -1 || /hk/.test(gabung) || /cs/.test(gabung)
+      ) return "Housekeeping";
+
+      if (
+        gabung.indexOf("banquet") !== -1 || gabung.indexOf("meeting") !== -1 ||
+        gabung.indexOf("rapat") !== -1 || gabung.indexOf("pramusaji") !== -1 ||
+        gabung.indexOf("pantry") !== -1 || gabung.indexOf("waiter") !== -1
+      ) return "Banquet";
+
+      if (
+        gabung.indexOf("driver") !== -1 || gabung.indexOf("sopir") !== -1 ||
+        gabung.indexOf("pengemudi") !== -1
+      ) return "Driver";
+
+      if (
+        gabung.indexOf("resep") !== -1 || gabung.indexOf("reception") !== -1 ||
+        gabung.indexOf("front office") !== -1 || gabung.indexOf("operator") !== -1
+      ) return "Receptionist";
+
+      if (
+        gabung.indexOf("building manager") !== -1 || gabung.indexOf("assistant building") !== -1 ||
+        gabung.indexOf("management") !== -1 || gabung.indexOf("office") !== -1 ||
+        gabung.indexOf("admin") !== -1 || /tr/.test(gabung) ||
+        gabung.indexOf("sdm") !== -1 || gabung.indexOf("finance") !== -1 ||
+        gabung.indexOf("akuntansi") !== -1 || gabung.indexOf("facility") !== -1 ||
+        gabung.indexOf("hse") !== -1 || gabung.indexOf("k3") !== -1 ||
+        gabung.indexOf("logistik") !== -1 || gabung.indexOf("gudang") !== -1 ||
+        /mo/.test(gabung)
+      ) return "Management Office";
+
+      return "";
+    }
+
+    function deteksiDivisiDariJabatan(jabatan) {
+      return deteksiDivisiDariRow({ Jabatan: jabatan });
+    }
+
+    function getGender(row) {
+      return String(row["Jenis Kelamin"] || row["jenis kelamin"] || "").trim().toLowerCase();
+    }
+
+    function getNip(row) {
+      return String(row.NIP || row.nip || "").trim();
+    }
+
+    function getEmail(row) {
+      return String(row["Alamat Email"] || row.Email || row.email || "").trim();
+    }
+
+    function inisial(teks) {
+      var kata = String(teks || "PR").trim().split(/\s+/).filter(Boolean);
+      if (!kata.length) return "PR";
+      if (kata.length === 1) return kata[0].slice(0, 2).toUpperCase();
+      return ((kata[0][0] || "") + (kata[1][0] || "")).toUpperCase();
+    }
+
+    function urutkanKolomJabatanSebelumDivisi(arr) {
+      var list = Array.isArray(arr) ? arr.slice() : [];
+      var idxJab = -1, idxDiv = -1;
+      for (var i = 0; i < list.length; i++) {
+        var low = String(list[i] || "").trim().toLowerCase();
+        if (low === "jabatan") idxJab = i;
+        if (low === "divisi" || low === "devisi") idxDiv = i;
+      }
+      if (idxJab !== -1 && idxDiv !== -1 && idxJab > idxDiv) {
+        var colJab = list.splice(idxJab, 1)[0];
+        var newIdxDiv = -1;
+        for (var j = 0; j < list.length; j++) {
+          var low2 = String(list[j] || "").trim().toLowerCase();
+          if (low2 === "divisi" || low2 === "devisi") { newIdxDiv = j; break; }
+        }
+        if (newIdxDiv !== -1) {
+          list.splice(newIdxDiv, 0, colJab);
+        }
+      }
+      return list;
+    }
+
+    function susunDaftarKolom() {
+      return urutkanKolomJabatanSebelumDivisi(KOLOM_UTAMA);
+    }
+
     function prosesDataArray(raw, labelTambahan) {
       semuaData = Array.isArray(raw) ? raw : [];
       kolomList = susunDaftarKolom();
-      document.getElementById("kepalaTabel").innerHTML = kolomList.map(function(k) { return "<th>" + escapeHtml(k) + "</th>"; }).join("");
+      document.getElementById("kepalaTabel").innerHTML = kolomList.map(function(k) { return "<th>" + k + "</th>"; }).join("");
 
       dataIndeks = semuaData.map(function(r) {
         var divKat = deteksiDivisiDariRow(r);
+        if (r && typeof r === "object") {
+          r._divTerdeteksi = divKat;
+        }
         var genderNorm = getGender(r);
         var isLaki = genderNorm.indexOf("laki") !== -1;
         var isPerempuan = !isLaki && genderNorm.indexOf("perempuan") !== -1;
@@ -1937,14 +1847,13 @@
       document.getElementById("kpiTotalPersonel").textContent = semuaData.length;
 
       document.getElementById("filterDivisi").innerHTML = '<option value="">Semua Divisi</option>' +
-        listDiv.map(function(d) { return '<option value="' + escapeHtml(d) + '">' + escapeHtml(d) + ' (' + hitung[d] + ')</option>'; }).join("");
+        listDiv.map(function(d) { return '<option value="' + d + '">' + d + ' (' + hitung[d] + ')</option>'; }).join("");
       document.getElementById("filterDivisi").value = divAktif;
 
       document.getElementById("kartuDivisi").innerHTML = listDiv.map(function(d) {
         var aktifClass = divAktif === d ? " aktif" : "";
-        var amanAttr = escapeHtml(d);
-        var amanJs = d.replace(/'/g, "\\'");
-        return '<div class="card' + aktifClass + '" data-div="' + amanAttr + '" onclick="pilihDivisi(\'' + amanJs + '\')"><b>' + amanAttr + '</b><div class="card-sub">' + hitung[d] + ' personel</div></div>';
+        var amanAttr = d.replace(/"/g, "&quot;");
+        return '<div class="card' + aktifClass + '" data-div="' + amanAttr + '" onclick="pilihDivisi(\'' + d.replace(/'/g, "\\'") + '\')"><b>' + d + '</b><div class="card-sub">' + hitung[d] + ' personel</div></div>';
       }).join("");
     }
 
@@ -2096,11 +2005,24 @@
       });
     }
 
+    function escapeHtml(teks) {
+      return String(teks || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
     function formatSel(kolom, nilai, nomorUrut) {
       var kl = kolom.toLowerCase();
       var teks = String(nilai || "").trim();
       var aman = escapeHtml(teks || "-");
 
+      if (kl === "divisi" || kl === "devisi") {
+        var hasilDiv = teks && teks !== "-" ? teks : (nilai && nilai._divTerdeteksi ? nilai._divTerdeteksi : "-");
+        var amanDiv = escapeHtml(hasilDiv);
+        return '<span class="cell-nowrap" title="' + amanDiv + '">' + amanDiv + '</span>';
+      }
       if (kl === "nomor") {
         return '<span class="cell-nowrap">' + (teks ? escapeHtml(teks) : nomorUrut) + '</span>';
       }
@@ -2206,11 +2128,16 @@
         var listTd = new Array(kolomList.length);
         for (var c = 0; c < kolomList.length; c++) {
           var k = kolomList[c];
-          listTd[c] = "<td>" + formatSel(k, r[k], p + 1) + "</td>";
+          var nilaiSel = (k.toLowerCase() === "divisi" || k.toLowerCase() === "devisi")
+            ? (r[k] || r._divTerdeteksi || "")
+            : r[k];
+          listTd[c] = "<td>" + formatSel(k, nilaiSel, p + 1) + "</td>";
         }
         listTr[p] = '<tr class="data-row" data-idx="' + p + '">' + listTd.join("") + "</tr>";
       }
-      document.getElementById("isiTabel").innerHTML = listTr.join("");
+      var htmlRows = listTr.join("");
+
+      document.getElementById("isiTabel").innerHTML = htmlRows;
     }
 
     document.getElementById("isiTabel").addEventListener("click", function(e) {
@@ -2253,6 +2180,131 @@
       timerKetik = setTimeout(tampil, 120);
     });
     document.getElementById("filterDivisi").addEventListener("change", function(e) { pilihDivisi(e.target.value); });
+
+
+    function parseAngka(val) {
+      var n = parseFloat(String(val || "0").replace(/[^0-9.-]/g, ""));
+      return isNaN(n) ? 0 : n;
+    }
+
+    function kunciIdentitasOrang(r) {
+      if (!r || typeof r !== "object") return "";
+      var nip = String(r["NIP"] || r["nip"] || "").trim();
+      var nama = normalisasiNamaOrang(r["Nama"] || r["Nama Lengkap (Sesuai KTP)"] || r["nama"] || "");
+      if (nip && nip !== "-" && nip !== "0") return "nip_" + nip.toLowerCase();
+      if (nama) return "nama_" + nama;
+      return "";
+    }
+
+    function ekstrakArrayPelanggaran(json) {
+      if (!json) return [];
+      if (Array.isArray(json)) return json;
+      if (Array.isArray(json.data)) return json.data;
+      if (Array.isArray(json.rows)) return json.rows;
+      if (Array.isArray(json.records)) return json.records;
+      return [];
+    }
+
+    function normalisasiBarisPelanggaran(raw) {
+      if (!Array.isArray(raw)) return [];
+      return raw.map(function(item, idx) {
+        var r = item && typeof item === "object" ? item : {};
+        var noVal = String(r["No"] || r["no"] || r["Nomor"] || r["nomor"] || (idx + 1)).trim();
+        var nipVal = String(r["NIP"] || r["nip"] || "").trim();
+        var namaVal = String(r["Nama"] || r["Nama Lengkap (Sesuai KTP)"] || r["Nama Karyawan"] || r["nama"] || "").trim();
+        var jabVal = String(r["Jabatan"] || r["jabatan"] || r["Posisi"] || "").trim();
+        var divRaw = String(r["Devisi"] || r["devisi"] || r["Divisi"] || r["divisi"] || r["Departemen"] || r["Unit"] || "").trim();
+        var divNorm = normalisasiNamaDivisi(divRaw, jabVal);
+        var divTampil = divNorm || divRaw || "-";
+        var tglVal = String(r["Tanggal Pelanggaran"] || r["Tanggal"] || r["tanggal"] || "").trim();
+        var jenisVal = String(r["Jenis Pelanggaran"] || r["Pelanggaran"] || r["Keterangan"] || "").trim();
+        var poinVal = String(r["Poin Pelanggaran"] || r["Poin"] || r["poin"] || "0").trim();
+        var totalVal = String(r["Total Poin"] || r["Total"] || r["Akumulasi Poin"] || poinVal || "0").trim();
+
+        return {
+          "No": noVal,
+          "NIP": nipVal || "-",
+          "Nama": namaVal,
+          "Jabatan": jabVal || "-",
+          "Devisi": divTampil,
+          "Divisi": divTampil,
+          "Tanggal Pelanggaran": tglVal || "-",
+          "Jenis Pelanggaran": jenisVal || "-",
+          "Poin Pelanggaran": poinVal,
+          "Total Poin": totalVal
+        };
+      }).filter(function(row) {
+        var n = String(row["Nama"] || "").trim().toLowerCase();
+        return n && n !== "nama" && n !== "total" && n !== "jumlah";
+      });
+    }
+
+    function bangunDivisiPelanggaran() {
+      var hitung = {};
+      for (var i = 0; i < pelanggaranIndeks.length; i++) {
+        var d = pelanggaranIndeks[i].div;
+        if (d) {
+          hitung[d] = (hitung[d] || 0) + 1;
+        }
+      }
+      var listDiv = URUTAN_DIVISI.filter(function(d) { return hitung[d] > 0; });
+      Object.keys(hitung).forEach(function(d) {
+        if (listDiv.indexOf(d) === -1 && hitung[d] > 0) listDiv.push(d);
+      });
+
+      var sel = document.getElementById("filterDivisiPelanggaran");
+      var divAktif = sel ? sel.value : "";
+      if (sel) {
+        sel.innerHTML = '<option value="">Semua Divisi</option>' +
+          listDiv.map(function(d) {
+            return '<option value="' + escapeHtml(d) + '">' + escapeHtml(d) + ' (' + hitung[d] + ')</option>';
+          }).join("");
+        sel.value = listDiv.indexOf(divAktif) !== -1 ? divAktif : "";
+      }
+
+      var wrapKartu = document.getElementById("kartuDivisiPelanggaran");
+      if (wrapKartu) {
+        wrapKartu.innerHTML = listDiv.map(function(d) {
+          var aktif = (sel && sel.value === d) ? " aktif" : "";
+          var amanAttr = escapeHtml(d);
+          var amanJs = d.replace(/'/g, "\\'");
+          var amanJs = d.replace(/'/g, "\\'");
+        }).join("");
+      }
+    }
+
+    function pilihDivisiPelanggaran(d) {
+      batasPelanggaranTampil = BATAS_PELANGGARAN_AWAL;
+      var sel = document.getElementById("filterDivisiPelanggaran");
+      if (sel) sel.value = d || "";
+      document.querySelectorAll("#kartuDivisiPelanggaran .card").forEach(function(c) {
+        var judul = c.querySelector("b") ? c.querySelector("b").textContent.trim() : "";
+        c.classList.toggle("aktif", Boolean(d) && judul === d);
+      });
+      renderTabelPelanggaran();
+    }
+
+    function resetFilterPelanggaran() {
+      batasPelanggaranTampil = BATAS_PELANGGARAN_AWAL;
+      var cari = document.getElementById("cariPelanggaran");
+      if (cari) cari.value = "";
+      pilihDivisiPelanggaran("");
+    }
+
+    function muatLebihBanyakPelanggaran() {
+      batasPelanggaranTampil += 50;
+      renderTabelPelanggaran();
+    }
+
+    function tampilkanSemuaBarisPelanggaran() {
+      batasPelanggaranTampil = pelanggaranIndeks.length || semuaPelanggaran.length;
+      renderTabelPelanggaran();
+    }
+
+    function ringkasKeAwalPelanggaran() {
+      batasPelanggaranTampil = BATAS_PELANGGARAN_AWAL;
+      renderTabelPelanggaran();
+    }
 
     function perbaruiTampilanTema() {
       var jamWIB = new Date().toLocaleTimeString("id-ID", { timeZone: "Asia/Jakarta", hour12: false });
@@ -2299,7 +2351,8 @@
 
     perbaruiTampilanTema();
     setInterval(perbaruiTampilanTema, 1000);
-    muat(false);
+
+        muat(false);
   </script>
 </body>
 </html>
