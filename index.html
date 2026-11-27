@@ -310,7 +310,6 @@
       font-weight: 600;
     }
 
-    /* Bar kontrol seragam seperti Data Personel */
     .bar {
       display: flex;
       gap: 7px;
@@ -415,7 +414,6 @@
       text-overflow: ellipsis;
     }
 
-    /* Baris kartu divisi rata kiri-kanan dengan baris KPI di atasnya & spasi proporsional */
     .cards {
       display: flex;
       flex-wrap: wrap;
@@ -505,12 +503,12 @@
     }
     .btn-mini.utama:hover { opacity: 0.92; color: #fff; }
 
-      #halamanPersonel, #halamanPelanggaran {
-        display: flex;
-        flex-direction: column;
-        flex: 1 1 auto;
-        min-height: 0;
-      }
+    #halamanPersonel, #halamanPelanggaran {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
+    }
 
     .box {
       background: var(--card);
@@ -593,18 +591,6 @@
       border-right: 1px solid var(--border);
       border-top-right-radius: 8px;
       border-bottom-right-radius: 8px;
-    }
-
-    tbody tr.data-row[data-dup-bg] {
-      background: var(--dup-bg) !important;
-    }
-    tbody tr.data-row[data-dup-bg]:hover {
-      filter: brightness(0.97);
-    }
-    tbody tr.data-row[data-dup-accent] td:first-child {
-      border-left-color: var(--dup-accent) !important;
-      color: var(--dup-accent) !important;
-      font-weight: 800;
     }
 
     .cell-nowrap { white-space: nowrap; }
@@ -861,7 +847,7 @@
         </button>
       </div>
 
-          <div class="side-foot">
+      <div class="side-foot">
         <b>Helpdesk BM:</b> Ext. 50000 • WA 081188093005<br>
         <b>Email:</b> bmkpdjp22@gmail.com
       </div>
@@ -949,7 +935,7 @@
         </div>
       </section>
 
-      <!-- HALAMAN POIN PELANGGARAN (HANYA DATA TERKENA PELANGGARAN DI SHEET ALL, TAMPIL SEMUA) -->
+      <!-- HALAMAN POIN PELANGGARAN -->
       <section id="halamanPelanggaran" style="display:none;">
         <div class="hero">
           <div class="hero-top">
@@ -1186,8 +1172,8 @@
     const URL_PELANGGARAN = "https://script.google.com/macros/s/AKfycbxsnb6ZUzIpdbmdiGeNaJiasl9nCqAdGcCRO_n5XtDZpReCZ2SZJw-4ZusstYiNB5EX/exec";
     const SPREADSHEET_PELANGGARAN_ID = "1nVDFew5Ug96BN0j_w7aZ_gA6DiF43IMBwZIzFEWP7Pk";
     const GID_PELANGGARAN = "642420235";
-    const CACHE_KEY = "cachePersonelKpdjp2026_v10";
-    const CACHE_PELANGGARAN_KEY = "cachePelanggaranKpdjp2026_v9";
+    const CACHE_KEY = "cachePersonelKpdjp2026_v11";
+    const CACHE_PELANGGARAN_KEY = "cachePelanggaranKpdjp2026_v10";
     const DURASI_CACHE_MS = 24 * 60 * 60 * 1000;
 
     const KOLOM_PELANGGARAN = [
@@ -1202,24 +1188,6 @@
       "Total Poin"
     ];
 
-    const WARNA_SAMA_TERANG = [
-      { bg: "#dbeafe", accent: "#1d4ed8" },
-      { bg: "#fef3c7", accent: "#d97706" },
-      { bg: "#dcfce7", accent: "#15803d" },
-      { bg: "#fce7f3", accent: "#be185d" },
-      { bg: "#e0e7ff", accent: "#4338ca" },
-      { bg: "#ffedd5", accent: "#c2410c" }
-    ];
-
-    const WARNA_SAMA_MALAM = [
-      { bg: "#1e3a8a", accent: "#60a5fa" },
-      { bg: "#78350f", accent: "#fbbf24" },
-      { bg: "#14532d", accent: "#4ade80" },
-      { bg: "#831843", accent: "#f472b6" },
-      { bg: "#312e81", accent: "#a5b4fc" },
-      { bg: "#7c2d12", accent: "#fb923c" }
-    ];
-
     let modeTema = localStorage.getItem("modeTemaKpdjp") || "auto";
     let filterGenderAktif = "";
     let halamanAktif = "personel";
@@ -1231,6 +1199,216 @@
     let hasilPelanggaranTerakhir = [];
     let barisPelanggaranDitampilkan = [];
     let grupPelanggaranTerbuka = {};
+
+    function ambilJamWIB() {
+      var bagian = new Intl.DateTimeFormat("id-ID", {
+        timeZone: "Asia/Jakarta",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+      }).formatToParts(new Date());
+
+      var jam = 0;
+      var teksJam = "";
+      bagian.forEach(function(p) {
+        if (p.type === "hour") {
+          jam = parseInt(p.value, 10);
+          teksJam += p.value;
+        } else if (p.type === "minute" || p.type === "second") {
+          teksJam += ":" + p.value;
+        }
+      });
+
+      var adalahMalam = (jam >= 18 || jam < 6);
+      return { jam: jam, teksJam: teksJam, adalahMalam: adalahMalam };
+    }
+
+    function terapkanTema() {
+      var info = ambilJamWIB();
+      var pakaiGelap = modeTema === "dark" || (modeTema === "auto" && info.adalahMalam);
+      document.body.classList.toggle("mode-malam", pakaiGelap);
+
+      var labelMode = modeTema === "auto"
+        ? (info.adalahMalam ? "Otomatis WIB (Malam)" : "Otomatis WIB (Siang)")
+        : (modeTema === "dark" ? "Hitam" : "Terang");
+
+      var teksJam = "WIB: " + info.teksJam + " • " + labelMode;
+      var teksTombol = "Tema: " + (modeTema === "auto" ? "Otomatis WIB" : (modeTema === "dark" ? "Hitam" : "Terang"));
+
+      document.getElementById("infoWaktuWIBPersonel").textContent = teksJam;
+      document.getElementById("infoWaktuWIBPelanggaran").textContent = teksJam;
+      document.getElementById("btnTemaPersonel").textContent = teksTombol;
+      document.getElementById("btnTemaPelanggaran").textContent = teksTombol;
+    }
+
+    function gantiModeTema() {
+      if (modeTema === "auto") modeTema = "dark";
+      else if (modeTema === "dark") modeTema = "light";
+      else modeTema = "auto";
+      localStorage.setItem("modeTemaKpdjp", modeTema);
+      terapkanTema();
+    }
+
+    terapkanTema();
+    setInterval(terapkanTema, 1000);
+
+    function pindahHalaman(namaHal) {
+      halamanAktif = namaHal === "pelanggaran" ? "pelanggaran" : "personel";
+      document.getElementById("btnMenuDataPersonel").classList.toggle("aktif", halamanAktif === "personel");
+      document.getElementById("btnMenuPoinPelanggaran").classList.toggle("aktif", halamanAktif === "pelanggaran");
+
+      document.getElementById("halamanPersonel").style.display = halamanAktif === "personel" ? "flex" : "none";
+      document.getElementById("halamanPelanggaran").style.display = halamanAktif === "pelanggaran" ? "flex" : "none";
+
+      if (halamanAktif === "pelanggaran") {
+        if (!semuaPelanggaran.length) muatPelanggaran(false);
+        else renderTabelPelanggaran();
+      }
+    }
+
+    function normalisasiNamaDivisi(teksDivisi, jabatan) {
+      var s = String(teksDivisi || "").trim();
+      var kl = s.toLowerCase();
+
+      if (kl) {
+        if (kl.indexOf("management") !== -1 || kl.indexOf("office") !== -1 || kl === "mo" || kl.indexOf("tr&sdm") !== -1 || kl.indexOf("sdm") !== -1) return "Management Office";
+        if (kl.indexOf("eng") !== -1 || kl.indexOf("mep") !== -1 || kl.indexOf("teknisi") !== -1) return "Engineering";
+        if (kl.indexOf("sec") !== -1 || kl.indexOf("satpam") !== -1 || kl.indexOf("guard") !== -1) return "Security";
+        if (kl.indexOf("house") !== -1 || kl.indexOf("clean") !== -1 || kl.indexOf("kebersihan") !== -1 || kl === "hk") return "Housekeeping";
+        if (kl.indexOf("banquet") !== -1 || kl.indexOf("meeting") !== -1) return "Banquet";
+        if (kl.indexOf("driver") !== -1 || kl.indexOf("sopir") !== -1 || kl.indexOf("pengemudi") !== -1) return "Driver";
+        if (kl.indexOf("resep") !== -1 || kl.indexOf("reception") !== -1) return "Receptionist";
+        return s;
+      }
+      return deteksiDivisiDariJabatan(jabatan) || "Lainnya";
+    }
+
+    function ekstrakArrayPelanggaran(json) {
+      if (Array.isArray(json)) return json;
+      if (json && Array.isArray(json.data)) return json.data;
+      if (json && Array.isArray(json.rows)) return json.rows;
+      if (json && Array.isArray(json.records)) return json.records;
+      if (json && Array.isArray(json.ALL)) return json.ALL;
+      return [];
+    }
+
+    function ambilFieldPelanggaran(row, namaKolom) {
+      if (row[namaKolom] !== undefined && row[namaKolom] !== null) return row[namaKolom];
+      var target = namaKolom.toLowerCase().replace(/[^a-z0-9]/g, "");
+      var keys = Object.keys(row || {});
+      for (var i = 0; i < keys.length; i++) {
+        var norm = keys[i].toLowerCase().replace(/[^a-z0-9]/g, "");
+        if (norm === target) return row[keys[i]];
+        if (namaKolom === "Devisi" && (norm === "divisi" || norm === "devisi" || norm === "departemen" || norm === "unit")) return row[keys[i]];
+        if (namaKolom === "Nama" && (norm === "nama" || norm.indexOf("namalengkap") !== -1)) return row[keys[i]];
+        if (namaKolom === "Tanggal Pelanggaran" && norm.indexOf("tanggal") !== -1) return row[keys[i]];
+        if (namaKolom === "Jenis Pelanggaran" && norm.indexOf("jenispelanggaran") !== -1) return row[keys[i]];
+        if (namaKolom === "Poin Pelanggaran" && (norm === "poinpelanggaran" || norm === "poin")) return row[keys[i]];
+        if (namaKolom === "Total Poin" && norm === "totalpoin") return row[keys[i]];
+      }
+      return "";
+    }
+
+    function parseAngka(val) {
+      var m = String(val || "").replace(",", ".").match(/-?\d+(\.\d+)?/);
+      return m ? parseFloat(m[0]) : 0;
+    }
+
+    function kunciIdentitasOrang(row) {
+      var nip = String(row["NIP"] || "").replace(/[^a-zA-Z0-9]/g, "").toLowerCase().trim();
+      var nama = String(row["Nama"] || "").toLowerCase().replace(/\s+/g, " ").trim();
+      if (nip && nip !== "-" && nip !== "0") return "nip:" + nip;
+      if (nama && nama !== "-") return "nama:" + nama;
+      return "";
+    }
+
+    function normalisasiBarisPelanggaran(rawList) {
+      if (!Array.isArray(rawList)) return [];
+      var bersih = [];
+      for (var i = 0; i < rawList.length; i++) {
+        var r = rawList[i] || {};
+        var obj = {};
+        for (var k = 0; k < KOLOM_PELANGGARAN.length; k++) {
+          var col = KOLOM_PELANGGARAN[k];
+          var val = ambilFieldPelanggaran(r, col);
+          obj[col] = val === undefined || val === null ? "" : String(val).trim();
+        }
+        var namaCek = (obj["Nama"] || "").trim();
+        var namaLower = namaCek.toLowerCase();
+        var isBarisTotal = (!namaLower || namaLower === "total" || namaLower === "jumlah" || namaLower.indexOf("grand total") === 0);
+        var punyaPelanggaran = Boolean(obj["Jenis Pelanggaran"] || obj["Poin Pelanggaran"] || obj["Tanggal Pelanggaran"]);
+        if (!isBarisTotal && punyaPelanggaran) {
+          if (!obj["No"]) obj["No"] = String(bersih.length + 1);
+          bersih.push(obj);
+        }
+      }
+      return bersih;
+    }
+
+    function bangunDivisiPelanggaran() {
+      var hitung = {};
+      var ekstraDiv = [];
+      for (var i = 0; i < pelanggaranIndeks.length; i++) {
+        var d = pelanggaranIndeks[i].div;
+        hitung[d] = (hitung[d] || 0) + 1;
+        if (URUTAN_DIVISI.indexOf(d) === -1 && d !== "Lainnya" && ekstraDiv.indexOf(d) === -1) {
+          ekstraDiv.push(d);
+        }
+      }
+      if (hitung["Lainnya"]) ekstraDiv.push("Lainnya");
+
+      var listDiv = URUTAN_DIVISI.filter(function(d) { return hitung[d] > 0; }).concat(ekstraDiv);
+      var sel = document.getElementById("filterDivisiPelanggaran");
+      var aktif = sel.value;
+      if (aktif && listDiv.indexOf(aktif) === -1) aktif = "";
+
+      sel.innerHTML = '<option value="">Semua Divisi</option>' +
+        listDiv.map(function(d) {
+          return '<option value="' + escapeHtml(d) + '">' + escapeHtml(d) + ' (' + hitung[d] + ')</option>';
+        }).join("");
+      sel.value = aktif;
+
+      document.getElementById("kartuDivisiPelanggaran").innerHTML = listDiv.map(function(d) {
+        var isAktif = aktif === d ? " aktif" : "";
+        var dataDivAttr = URUTAN_DIVISI.indexOf(d) !== -1 ? ' data-div="' + escapeHtml(d) + '"' : "";
+        return '<div class="card' + isAktif + '"' + dataDivAttr + ' onclick="pilihDivisiPelanggaran(\'' + d.replace(/'/g, "\\'") + '\')">' +
+          '<b>' + escapeHtml(d) + '</b>' +
+          '<div class="card-sub">' + hitung[d] + ' catatan</div>' +
+          '</div>';
+      }).join("");
+    }
+
+    function pilihDivisiPelanggaran(d) {
+      batasPelanggaranTampil = BATAS_PELANGGARAN_AWAL;
+      document.getElementById("filterDivisiPelanggaran").value = d || "";
+      document.querySelectorAll("#kartuDivisiPelanggaran .card").forEach(function(c) {
+        var judul = c.querySelector("b") ? c.querySelector("b").textContent.trim() : "";
+        c.classList.toggle("aktif", Boolean(d) && judul === d);
+      });
+      renderTabelPelanggaran();
+    }
+
+    function resetFilterPelanggaran() {
+      batasPelanggaranTampil = BATAS_PELANGGARAN_AWAL;
+      document.getElementById("cariPelanggaran").value = "";
+      pilihDivisiPelanggaran("");
+    }
+
+    function muatLebihBanyakPelanggaran() {
+      batasPelanggaranTampil += 50;
+      renderTabelPelanggaran();
+    }
+
+    function tampilkanSemuaBarisPelanggaran() {
+      batasPelanggaranTampil = hasilPelanggaranTerakhir.length || semuaPelanggaran.length;
+      renderTabelPelanggaran();
+    }
+
+    function ringkasKeAwalPelanggaran() {
+      batasPelanggaranTampil = BATAS_PELANGGARAN_AWAL;
+      renderTabelPelanggaran();
+    }
 
     function toggleDropdownPelanggaran(kunciGrup, ev) {
       if (ev) ev.stopPropagation();
@@ -1544,7 +1722,7 @@
         }).join(sep);
         barisCsv.push(rowCsv);
       });
-      var blob = new Blob(["﻿" + barisCsv.join("\n")], { type: "text/csv;charset=utf-8;" });
+      var blob = new Blob(["\uFEFF" + barisCsv.join("\n")], { type: "text/csv;charset=utf-8;" });
       var link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
       link.download = "poin-pelanggaran-sheet-all-bm-kpdjp.csv";
@@ -1569,8 +1747,8 @@
         r["Departemen"] || r["departemen"] || r["Unit"] || r["Bagian"] || ""
       ).trim();
       var jabatan = String(r.Jabatan || r.jabatan || "").trim();
-      var gabung = (kolomDivisi + " " + jabatan).toLowerCase().trim();
-      if (!gabung) return "";
+      var gabung = (" " + kolomDivisi + " " + jabatan + " ").toLowerCase();
+      if (!gabung.trim()) return "";
 
       if (
         gabung.indexOf("sec") !== -1 || gabung.indexOf("satpam") !== -1 ||
@@ -1596,7 +1774,7 @@
         gabung.indexOf("house") !== -1 || gabung.indexOf("clean") !== -1 ||
         gabung.indexOf("kebersihan") !== -1 || gabung.indexOf("gondola") !== -1 ||
         gabung.indexOf("gardener") !== -1 || gabung.indexOf("taman") !== -1 ||
-        gabung.indexOf("pest") !== -1 || / hk /.test(gabung) || / cs /.test(gabung)
+        gabung.indexOf("pest") !== -1 || gabung.indexOf(" hk ") !== -1 || gabung.indexOf(" cs ") !== -1
       ) return "Housekeeping";
 
       if (
@@ -1618,12 +1796,12 @@
       if (
         gabung.indexOf("building manager") !== -1 || gabung.indexOf("assistant building") !== -1 ||
         gabung.indexOf("management") !== -1 || gabung.indexOf("office") !== -1 ||
-        gabung.indexOf("admin") !== -1 || / tr /.test(gabung) ||
+        gabung.indexOf("admin") !== -1 || gabung.indexOf(" tr ") !== -1 ||
         gabung.indexOf("sdm") !== -1 || gabung.indexOf("finance") !== -1 ||
         gabung.indexOf("akuntansi") !== -1 || gabung.indexOf("facility") !== -1 ||
         gabung.indexOf("hse") !== -1 || gabung.indexOf("k3") !== -1 ||
         gabung.indexOf("logistik") !== -1 || gabung.indexOf("gudang") !== -1 ||
-        / mo /.test(gabung)
+        gabung.indexOf(" mo ") !== -1
       ) return "Management Office";
 
       return "";
